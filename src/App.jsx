@@ -8,6 +8,11 @@ import SolicitudesCuentas from './pages/admin/Cuentas/SolicitudesCuentas.jsx';
 import DashboardEntrenador from './pages/entrenador/Dashboard/DashboardEntrenador.jsx';
 import DashboardAtleta from './pages/atleta/Dashboard/DashboardAtleta.jsx';
 import PerfilUsuario from './pages/Perfil/PerfilUsuario.jsx';
+import PanelLayout from './layouts/PanelLayout.jsx';
+import menuAdmin from './data/menuAdmin.js';
+import menuAtleta from './data/menuAtleta.js';
+import AdminImplementos from './pages/admin/Implementos/Implementos';
+import AtletaImplementos from './pages/atleta/Implementos/Implementos';
 
 export default function App() {
   return (
@@ -42,6 +47,14 @@ export default function App() {
             </Rutaprotegida>
           }
         />
+
+        <Route element={
+          <Rutaprotegida rolPermitido="administrador">
+            <PanelLayout items={menuAdmin} rol="Administrador" inicioHref="/admin" />
+          </Rutaprotegida>
+        }>
+          <Route path="/admin/implementos" element={<AdminImplementos />} />
+        </Route>
 
         {/* Entrenador */}
         <Route
@@ -78,6 +91,10 @@ export default function App() {
             </Rutaprotegida>
           }
         />
+
+        <Route element={<PanelLayout items={menuAtleta} rol="Atleta" inicioHref="/atleta/dashboard" />}>
+          <Route path="/atleta/implementos" element={<AtletaImplementos />} />
+        </Route>
 
         {/* Cualquier URL que no exista: evita la pantalla en blanco */}
         <Route path="*" element={<Navigate to="/" replace />} />
