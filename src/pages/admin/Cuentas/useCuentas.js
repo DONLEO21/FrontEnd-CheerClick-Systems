@@ -16,6 +16,8 @@ export default function useCuentas(mostrarAviso) {
   const [perfilDetalle, setPerfilDetalle] = useState(null)
   const [cargandoDetalle, setCargandoDetalle] = useState(false)
   const [confirmar, setConfirmar] = useState(null) // { usuario, accion, rol? }
+  const [crearAbierto, setCrearAbierto] = useState(false)
+  const [creando, setCreando] = useState(false)
 
   const cargar = async () => {
     try {
@@ -77,7 +79,7 @@ export default function useCuentas(mostrarAviso) {
 
   useEffect(() => {
     const onKey = (e) => {
-      if (e.key === 'Escape') { setDetalle(null); setConfirmar(null) }
+      if (e.key === 'Escape') { setDetalle(null); setConfirmar(null); setCrearAbierto(false) }
     }
     document.addEventListener('keydown', onKey)
     return () => document.removeEventListener('keydown', onKey)
@@ -111,9 +113,26 @@ export default function useCuentas(mostrarAviso) {
     }
   }
 
+  /* ── crear usuario por admin*/
+  const abrirCrear = () => setCrearAbierto(true)
+  const cerrarCrear = () => setCrearAbierto(false)
+
+  const crearUsuario = async (datos) => {
+    setCreando(true)
+    try {
+      await llamar({ accion: 'crear-usuario', ...datos })
+      setCrearAbierto(false)
+      mostrarAviso(ACCIONES['crear-usuario'].exito, ACCIONES['crear-usuario'].tipo)
+      cargar()
+    } finally {
+      setCreando(false)
+    }
+  }
+
   return {
     usuarios, cargando, tab, setTab, esGestion, alternarVista,
     detalle, setDetalle, perfilDetalle, cargandoDetalle, abrirDetalle, cerrarDetalle,
     confirmar, pedirConfirmacion, cancelarConfirmacion, ejecutar,
+    crearAbierto, creando, abrirCrear, cerrarCrear, crearUsuario,
   }
 }

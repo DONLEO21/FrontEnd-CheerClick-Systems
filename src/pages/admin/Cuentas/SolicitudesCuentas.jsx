@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react'
-import { Search, Users } from 'lucide-react'
-import { useNavigate } from 'react-router-dom';
+import { Search, Users, UserPlus } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 
 import Header from '../../../components/Header/Header.jsx'
 import Sidebar from '../../../components/Sidebar/Sidebar.jsx'
 import AvisoToast from '../../../components/AvisoToast'
 import menuAdmin from '../../../data/menuAdmin.js'
-import { supabase } from '../../../services/supabase'
 import useAviso from '../../../hooks/useAviso'
 
 import useCuentas from './useCuentas.js'
@@ -14,6 +13,7 @@ import VistaSolicitudes from './VistaSolicitudes.jsx'
 import VistaGestion from './VistaGestion.jsx'
 import ModalDetalle from './ModalDetalle.jsx'
 import ModalConfirmar from './ModalConfirmar.jsx'
+import ModalCrearUsuario from './ModalCrearUsuario.jsx'
 import { cerrarSesion as cerrarSesionSistema } from '../../../services/sesion'
 
 import './SolicitudCuentas.css'
@@ -21,27 +21,19 @@ import './SolicitudCuentas.css'
 export default function SolicitudesCuentas() {
   const { aviso, mostrarAviso } = useAviso()
   const c = useCuentas(mostrarAviso)
+  const navigate = useNavigate()
 
   const [busqueda, setBusqueda] = useState('')
   useEffect(() => { setBusqueda('') }, [c.esGestion])
 
-  
-
-// dentro del componente (con useNavigate ya importado):
-const navigate = useNavigate()
-const cerrarSesion = () => cerrarSesionSistema(navigate)
+  const cerrarSesion = () => cerrarSesionSistema(navigate)
   const irAInicio = () => { window.location.href = '/admin' }
 
-  // Acciones lanzadas desde el modal de detalle
   const accionDesdeDetalle = (usuario, accion, extra = {}) => {
-    // Solicitud pendiente: el rol es solo una selección local.
-    // No se guarda nada hasta que el admin apruebe.
     if (accion === 'cambiar-rol' && usuario.estado === 'pendiente') {
       c.setDetalle({ ...usuario, rol: extra.rol })
       return
     }
-
-    // Al aprobar, el rol elegido viaja en la confirmación
     if (accion === 'aprobar') {
       c.pedirConfirmacion(usuario, 'aprobar', { rol: usuario.rol })
     } else {
@@ -80,6 +72,11 @@ const cerrarSesion = () => cerrarSesionSistema(navigate)
                 />
               </div>
               <div className="acciones-btns">
+                {c.esGestion && (
+                  <button className="btn-crear-usuario" onClick={c.abrirCrear}>
+                    <UserPlus size={16} strokeWidth={2.2} /> Crear usuario
+                  </button>
+                )}
                 <button className={`btn ${c.esGestion ? 'btn-azul' : 'btn-amarillo'}`} onClick={c.alternarVista}>
                   <Users size={15} strokeWidth={2} /> {c.esGestion ? 'Validar cuentas' : 'Gestionar cuentas'}
                 </button>
@@ -114,6 +111,14 @@ const cerrarSesion = () => cerrarSesionSistema(navigate)
               cargandoPerfil={c.cargandoDetalle}
               onCerrar={c.cerrarDetalle}
               onAccion={accionDesdeDetalle}
+            />
+          )}
+
+          {c.crearAbierto && (
+            <ModalCrearUsuario
+              onCerrar={c.cerrarCrear}
+              onCrear={c.crearUsuario}
+              creando={c.creando}
             />
           )}
 

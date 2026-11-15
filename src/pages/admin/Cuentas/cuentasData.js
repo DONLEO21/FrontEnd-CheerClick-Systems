@@ -23,6 +23,23 @@ const NOMBRE_PARENTESCO = {
   otro: 'Otro',
 }
 
+// Para campos publicos de la cuenta,nivlees y planes
+export const NIVELES = [
+  ['formativo-king', 'Nivel Inicio | Formativo King'],
+  ['queens', 'Nivel 1 | Queens'],
+  ['princess', 'Nivel 2 | Princess'],
+  ['magic', 'Nivel 3 | Magic'],
+  ['blood-tigers', 'Nivel 4 | Blood Tigers'],
+]
+export const NOMBRE_NIVEL = Object.fromEntries(NIVELES)
+
+export const PLANES = [
+  ['basico', 'Plan básico'],
+  ['black', 'Plan black'],
+  ['white', 'Plan white'],
+]
+export const NOMBRE_PLAN = Object.fromEntries(PLANES)
+
 export const ACCIONES = {
   aprobar: {
     titulo: '¿Aprobar solicitud?',
@@ -53,6 +70,12 @@ export const ACCIONES = {
     desc: (n, rol) => `${n} pasará a ser ${NOMBRE_ROL[rol]}. ¿Confirmas el cambio de rol?`,
     boton: 'Sí, cambiar rol', clase: 'btn-verde',
     exito: 'Rol actualizado', tipo: 'ok',
+  },
+  'crear-usuario': {
+    titulo: '¿Crear usuario?',
+    desc: (n) => `Se creará la cuenta de ${n} ya activa en el sistema. ¿Confirmas la creación?`,
+    boton: 'Sí, crear', clase: 'btn-verde',
+    exito: 'Usuario creado', tipo: 'ok',
   },
 }
 

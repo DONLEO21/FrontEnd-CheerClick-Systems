@@ -1,20 +1,7 @@
 import { useState } from 'react'
 import { supabase } from '../../services/supabase'
 import CampoClave from './CampoClave'
-
-const NIVELES = [
-  ['formativo-king', 'Nivel Inicio | Formativo King'],
-  ['queens', 'Nivel 1 | Queens'],
-  ['princess', 'Nivel 2 | Princess'],
-  ['magic', 'Nivel 3 | Magic'],
-  ['blood-tigers', 'Nivel 4 | Blood Tigers'],
-]
-
-const PLANES = [
-  ['basico', 'Plan básico'],
-  ['black', 'Plan black'],
-  ['white', 'Plan white'],
-]
+import { NIVELES, PLANES } from '../../pages/admin/Cuentas/cuentasData.js'
 
 function Registro({ irA, setNombreRegistrado }) {
   const [nombre, setNombre] = useState('')

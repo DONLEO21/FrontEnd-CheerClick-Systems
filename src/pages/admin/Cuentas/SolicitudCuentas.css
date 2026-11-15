@@ -546,6 +546,28 @@ input, select { font: inherit; outline: none; }
 
 .btn-blanco:hover { border-color: var(--texto-muted); }
 
+/* Botón "Crear usuario" (borde rojo, distinto a Gestionar/Validar cuentas) */
+.btn-crear-usuario {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border: 1.5px solid var(--rojo);
+    border-radius: var(--radio-sm);
+    background: var(--blanco);
+    color: var(--rojo);
+    font-size: var(--texto-sm);
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transicion);
+}
+
+.btn-crear-usuario:hover {
+    background: var(--rojo);
+    color: var(--blanco);
+}
+
 /* ══════════════════════════════════════════════
    PESTAÑAS
    ══════════════════════════════════════════════ */
@@ -1198,6 +1220,9 @@ input, select { font: inherit; outline: none; }
     cursor: default;
 }
 
+/* Los inputs editables del modal "Crear usuario" sí deben mostrar cursor de texto */
+.detalle-grupo input.campo { cursor: text; }
+
 .detalle-fila-nombre {
     display: flex;
     align-items: center;
@@ -1365,6 +1390,9 @@ input, select { font: inherit; outline: none; }
 .aviso-toast::before,
 .aviso-toast::after { content: none; display: none; }
 
+/* ══════════════════════════════════════════════
+   SELECT DE ROL (pill dentro de la tabla)
+   ══════════════════════════════════════════════ */
 .select-rol {
   border: 0;
   cursor: pointer;
@@ -1394,6 +1422,71 @@ input, select { font: inherit; outline: none; }
   color: var(--texto-dark);
   font-weight: 500;
 }
+
+/* ══════════════════════════════════════════════
+   MODAL CREAR USUARIO (campos y contraseña con ojo)
+   ══════════════════════════════════════════════ */
+.campo {
+  width: 100%;
+  min-height: 38px;
+  padding: 9px 12px;
+  border-radius: var(--radio-sm);
+  border: 1.5px solid var(--gris-borde);
+  background: var(--gris-fondo);
+  color: var(--texto-dark);
+  font-size: var(--texto-sm);
+  font-family: inherit;
+  outline: none;
+  transition: var(--transicion);
+}
+
+.campo:focus {
+  border-color: var(--rojo);
+  background: var(--blanco);
+  box-shadow: 0 0 0 3px var(--rojo-light);
+}
+
+.campo::placeholder { color: #bbb; }
+
+.campo:disabled {
+  background: #f0f0f0;
+  color: var(--texto-muted);
+  cursor: not-allowed;
+}
+
+select.campo {
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23999' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 13px center;
+  padding-right: 32px;
+}
+
+/* Contraseña con ojo (CampoClave) */
+.clave-contenedor { position: relative; }
+
+.clave-contenedor .campo { padding-right: 42px; }
+
+.boton-ojo {
+  position: absolute;
+  right: 11px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #aaa;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color .15s;
+}
+
+.boton-ojo:hover { color: var(--rojo); }
+.boton-ojo svg { display: block; }
 
 /* ══════════════════════════════════════════════
    RESPONSIVO
@@ -1433,5 +1526,4 @@ input, select { font: inherit; outline: none; }
     }
 
     .modal-pie .btn { width: 100%; }
-
 }
