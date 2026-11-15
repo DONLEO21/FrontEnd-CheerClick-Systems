@@ -1,13 +1,23 @@
-// src/components/Sidebar/Sidebar.jsx
+
 import { useEffect, useRef, useState } from 'react';
 import './Sidebar.css';
+// El admin también es entrenador de TODOS los niveles: cuando entra en
+// "Vista Entrenador" navega a /admin/calendario, pero esa pantalla sigue
+// siendo, para efectos del menú, la sección "Horarios". Por eso su ruta
+// se trata como un alias de /admin/horarios al decidir qué ícono resaltar.
+const ALIAS_RUTAS = {
+  '/admin/calendario': '/admin/horarios',
+};
 
-// Compara sin distinguir mayúsculas ("/Atleta/Horarios" = "/atleta/horarios")
-// y marca activa también una subruta ("/admin/horarios/algo").
+function normalizarRuta(ruta) {
+  return (ruta || '').toLowerCase().replace(/\/+$/, '');
+}
+
 function esRutaActiva(activeHref, href) {
   if (!activeHref) return false;
-  const actual = activeHref.toLowerCase().replace(/\/+$/, '');
-  const destino = href.toLowerCase().replace(/\/+$/, '');
+  const normalizada = normalizarRuta(activeHref);
+  const actual = ALIAS_RUTAS[normalizada] || normalizada;
+  const destino = normalizarRuta(href);
   return actual === destino || actual.startsWith(destino + '/');
 }
 
@@ -15,7 +25,6 @@ function Sidebar({ items, activeHref, onNavigate }) {
   const [menuAbierto, setMenuAbierto] = useState(false);
   const barraRef = useRef(null);
 
-  // Con el menú abierto: Escape o un clic fuera de la barra lo cierran
   useEffect(() => {
     if (!menuAbierto) return;
 
@@ -65,12 +74,10 @@ function Sidebar({ items, activeHref, onNavigate }) {
                 <a
                   href={item.href}
                   className="menu-lateral__enlace"
-                  // Abierto: el nombre ya se ve, así que se quita el tooltip
                   title={menuAbierto ? undefined : item.titulo}
                   aria-current={activo ? 'page' : undefined}
                   onClick={(e) => {
                     setMenuAbierto(false);
-                    // Sin onNavigate se deja el comportamiento normal del enlace
                     if (!onNavigate) return;
                     e.preventDefault();
                     onNavigate(item.href);

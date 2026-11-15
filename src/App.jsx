@@ -1,12 +1,32 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import './styles.css';
+import './App.css';
+
+// Layout y menús
+import PanelLayout from './layouts/PanelLayout';
+import menuAdmin from './data/menuAdmin';
+import menuAtleta from './data/menuAtleta';
+import menuEntrenador from './data/menuEntrenador';
+
+// Protección de rutas y páginas públicas
 import Rutaprotegida from './components/Rutaprotegida.jsx';
 import Landing from './components/landing/Landing.jsx';
 import AuthPage from './components/auth/AuthPage.jsx';
+import Proximamente from './components/Compartidos/Proximamente.jsx';
+
+// Administrador
 import DashboardAdmin from './pages/admin/Dashboard/DashboardAdmin.jsx';
 import SolicitudesCuentas from './pages/admin/Cuentas/SolicitudesCuentas.jsx';
+import AdminPQRS from './pages/admin/PQRS/PQRS.jsx';
+
+// Entrenador
 import DashboardEntrenador from './pages/entrenador/Dashboard/DashboardEntrenador.jsx';
+
+// Atleta
 import DashboardAtleta from './pages/atleta/Dashboard/DashboardAtleta.jsx';
+import AtletaPQRS from './pages/atleta/PQRS/PQRS.jsx';
+
+// Compartido
 import PerfilUsuario from './pages/Perfil/PerfilUsuario.jsx';
 
 export default function App() {
@@ -17,67 +37,54 @@ export default function App() {
         <Route path="/" element={<Landing />} />
         <Route path="/acceso" element={<AuthPage />} />
 
-        {/* Administrador */}
+        {/* Área Administrador */}
         <Route
           path="/admin"
           element={
             <Rutaprotegida rolPermitido="administrador">
-              <DashboardAdmin />
+              <PanelLayout items={menuAdmin} rol="Administrador" inicioHref="/admin" />
             </Rutaprotegida>
           }
-        />
-        <Route
-          path="/admin/usuarios"
-          element={
-            <Rutaprotegida rolPermitido="administrador">
-              <SolicitudesCuentas />
-            </Rutaprotegida>
-          }
-        />
-        <Route
-          path="/admin/perfil"
-          element={
-            <Rutaprotegida rolPermitido="administrador">
-              <PerfilUsuario rol="admin" />
-            </Rutaprotegida>
-          }
-        />
+        >
+          <Route index element={<DashboardAdmin />} />
+          <Route path="usuarios" element={<SolicitudesCuentas />} />
+          <Route path="pqrs" element={<AdminPQRS />} />
+          <Route path="perfil" element={<PerfilUsuario rol="admin" />} />
 
-        {/* Entrenador */}
+          {/* Secciones del menú que aún no existen */}
+          <Route path="*" element={<Proximamente />} />
+        </Route>
+
+        {/* Área Entrenador */}
         <Route
           path="/entrenador"
           element={
             <Rutaprotegida rolPermitido="entrenador">
-              <DashboardEntrenador />
+              <PanelLayout items={menuEntrenador} rol="Entrenador" inicioHref="/entrenador" />
             </Rutaprotegida>
           }
-        />
-        <Route
-          path="/entrenador/perfil"
-          element={
-            <Rutaprotegida rolPermitido="entrenador">
-              <PerfilUsuario rol="entrenador" />
-            </Rutaprotegida>
-          }
-        />
+        >
+          <Route index element={<DashboardEntrenador />} />
+          <Route path="perfil" element={<PerfilUsuario rol="entrenador" />} />
+          <Route path="*" element={<Proximamente />} />
+        </Route>
 
-        {/* Atleta */}
+        {/* Área Atleta */}
         <Route
           path="/atleta"
           element={
             <Rutaprotegida rolPermitido="atleta">
-              <DashboardAtleta />
+              <PanelLayout items={menuAtleta} rol="Atleta" inicioHref="/atleta" />
             </Rutaprotegida>
           }
-        />
-        <Route
-          path="/atleta/perfil"
-          element={
-            <Rutaprotegida rolPermitido="atleta">
-              <PerfilUsuario rol="atleta" />
-            </Rutaprotegida>
-          }
-        />
+        >
+          <Route index element={<DashboardAtleta />} />
+          {/* TODO: `remitente` debe salir de la sesión real (auth).
+              Por ahora simula al atleta con el que se prueban las PQRS. */}
+          <Route path="pqrs" element={<AtletaPQRS remitente="Leonardo Jara Molina" />} />
+          <Route path="perfil" element={<PerfilUsuario rol="atleta" />} />
+          <Route path="*" element={<Proximamente />} />
+        </Route>
 
         {/* Cualquier URL que no exista: evita la pantalla en blanco */}
         <Route path="*" element={<Navigate to="/" replace />} />
