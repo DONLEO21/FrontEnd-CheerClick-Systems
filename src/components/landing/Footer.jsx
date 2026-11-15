@@ -22,7 +22,7 @@ function Footer() {
             {/* columna izquierda con logo, contacto, explorar y redes */}
             <div className="footer-columnas">
               <div className="footer-columna">
-                <img src="../src/assets/img/Logo-Club.png" alt="Logo Blood Tigers" />
+                <img src="../src/assets/icons/Logo-Club.png" alt="Logo Blood Tigers" />
                 <p>Blood Tigers Cheer</p>
                 <p>Disciplina • Pasión • Trabajo en Equipo</p>
               </div>

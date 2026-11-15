@@ -4,12 +4,12 @@ const horarios = [
     ['Martes', '4:00 - 6:00 PM'],
     ['Viernes', '4:00 - 6:00 PM'],
   ]],
-  ['Nivel 1 | Queens', 'Entrenadora: Alexandra Rivera', [
+  ['Nivel 1 | Queens', 'Entrenador: Ronald Linares', [
     ['Martes', '6:00 - 8:00 PM'],
     ['Jueves', '6:00 - 8:00 PM'],
     ['Sábado', '6:00 - 8:00 PM'],
   ]],
-  ['Nivel 2 | Princess', 'Entrenadora: Yari Gutierrez', [
+  ['Nivel 2 | Princess', 'Entrenador: Ronald Linares', [
     ['Martes', '6:00 - 8:00 PM'],
     ['Viernes', '6:00 - 8:00 PM'],
     ['Sábado', '10:00 - 12:00 PM'],
