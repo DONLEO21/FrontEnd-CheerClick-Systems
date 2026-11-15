@@ -2,9 +2,25 @@ import { useState } from 'react'
 import { supabase } from '../../services/supabase'
 import CampoClave from './CampoClave'
 
+const NIVELES = [
+  ['formativo-king', 'Nivel Inicio | Formativo King'],
+  ['queens', 'Nivel 1 | Queens'],
+  ['princess', 'Nivel 2 | Princess'],
+  ['magic', 'Nivel 3 | Magic'],
+  ['blood-tigers', 'Nivel 4 | Blood Tigers'],
+]
+
+const PLANES = [
+  ['basico', 'Plan básico'],
+  ['black', 'Plan black'],
+  ['white', 'Plan white'],
+]
+
 function Registro({ irA, setNombreRegistrado }) {
   const [nombre, setNombre] = useState('')
   const [apellido, setApellido] = useState('')
+  const [nivel, setNivel] = useState('')
+  const [plan, setPlan] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [mensaje, setMensaje] = useState('')
@@ -19,6 +35,8 @@ function Registro({ irA, setNombreRegistrado }) {
 
     if (!nombreLimpio) return setMensaje('Ingresa tu nombre.')
     if (!apellidoLimpio) return setMensaje('Ingresa tu apellido.')
+    if (!nivel) return setMensaje('Selecciona tu nivel.')
+    if (!plan) return setMensaje('Selecciona tu plan asociado.')
     if (password.length < 6) return setMensaje('La contraseña debe tener mínimo 6 caracteres.')
 
     setCargando(true)
@@ -28,7 +46,7 @@ function Registro({ irA, setNombreRegistrado }) {
       email,
       password,
       options: {
-        data: { nombre: nombreLimpio, apellido: apellidoLimpio },
+        data: { nombre: nombreLimpio, apellido: apellidoLimpio, nivel, plan },
       },
     })
 
@@ -50,7 +68,7 @@ function Registro({ irA, setNombreRegistrado }) {
     <div className="tarjeta">
       <img src="src/assets/icons/Logo-Club.png" alt="Logo BTC" className="logo-imagen" />
       <h2>Crear cuenta</h2>
-      <p className="subtitulo">Complete su información</p>
+      <p className="subtitulo">Completa tu información</p>
 
       <form onSubmit={registrarUsuario}>
         <label className="etiqueta" htmlFor="registro-nombre">Nombre</label>
@@ -91,13 +109,39 @@ function Registro({ irA, setNombreRegistrado }) {
           onChange={(e) => setPassword(e.target.value)}
         />
 
+        <label className="etiqueta" htmlFor="registro-nivel">Nivel</label>
+        <select
+          className="campo"
+          id="registro-nivel"
+          value={nivel}
+          onChange={(e) => setNivel(e.target.value)}
+        >
+          <option value="" disabled hidden>Seleccionar...</option>
+          {NIVELES.map(([v, t]) => (
+            <option key={v} value={v}>{t}</option>
+          ))}
+        </select>
+
+        <label className="etiqueta" htmlFor="registro-plan">Plan asociado</label>
+        <select
+          className="campo"
+          id="registro-plan"
+          value={plan}
+          onChange={(e) => setPlan(e.target.value)}
+        >
+          <option value="" disabled hidden>Seleccionar...</option>
+          {PLANES.map(([v, t]) => (
+            <option key={v} value={v}>{t}</option>
+          ))}
+        </select>
+
         {mensaje && <div className="mensaje-error">{mensaje}</div>}
 
         <button className="boton-primario" type="submit" disabled={cargando}>
           {cargando ? 'Registrando...' : 'Registrarse'}
         </button>
         <p className="nota-pie">
-          ¿Ya tienes cuenta? <a className="enlace-rojo" onClick={() => irA('login')}>Inicia sesión</a>
+          ¿Ya tienes cuenta? <a className="enlace-rojo" onClick={() => irA('login')}>Iniciar sesión</a>
         </p>
       </form>
     </div>
