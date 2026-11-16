@@ -758,3 +758,248 @@
 .foto-editable input[type="file"] {
   display: none;
 }
+
+
+/* ============================================================
+   PEDIDOS (varios productos por pedido)
+   ============================================================ */
+.tabs-implementos {
+  flex-wrap: wrap;
+  row-gap: 8px;
+}
+
+.tabla-pedidos {
+  min-width: 860px;
+}
+
+.celda-productos {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-align: left;
+}
+
+.celda-productos-texto {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+}
+
+.celda-productos-mas {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--gris-suave);
+}
+
+.celda-pago {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.celda-pago svg {
+  color: var(--bs-danger);
+}
+
+.pedido-adm-items {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.pedido-adm-llave {
+  margin: 8px 0 0;
+  font-size: 0.82rem;
+  color: var(--gris-texto);
+}
+
+.pedido-adm-llave strong {
+  color: var(--carbon-oscuro);
+}
+
+.caja-comprobante {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.comprobante-miniatura {
+  padding: 0;
+  border: 1px solid var(--gris-borde);
+  border-radius: 10px;
+  background: var(--gris-fondo-claro);
+  cursor: zoom-in;
+  overflow: hidden;
+  line-height: 0;
+}
+
+.comprobante-miniatura img {
+  width: 96px;
+  height: 96px;
+  object-fit: cover;
+}
+
+/* ============================================================
+   RESEÑAS
+   ============================================================ */
+.resenas-resumen {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.resenas-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px 18px;
+  background: var(--blanco);
+  border: 1px solid #e8edf2;
+  border-left: 3px solid var(--bs-danger);
+  border-radius: 14px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05), 0 0 1px rgba(0, 0, 0, 0.04);
+}
+
+.resenas-stat-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--gris-suave);
+}
+
+.resenas-stat-valor {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--carbon-oscuro);
+}
+
+.resenas-stat-estrella {
+  color: var(--dorado-oscuro);
+  font-size: 1.2rem;
+}
+
+.tabla-resenas {
+  min-width: 860px;
+}
+
+.tabla-resenas td:nth-child(1) {
+  color: var(--carbon-oscuro) !important;
+  font-family: inherit;
+  font-size: inherit;
+  letter-spacing: normal;
+}
+
+.celda-comentario {
+  text-align: left !important;
+  white-space: normal;
+  color: var(--gris-texto-oscuro);
+}
+
+.comentario-resena {
+  position: relative;
+  max-width: 360px; /* ancho para que la línea corte hacia "Me gustaría..." */
+}
+
+.comentario-resena-texto {
+  margin: 0;
+  line-height: 1.45;
+  max-height: calc(1.45em * 2); /* 2 líneas */
+  overflow: hidden;
+}
+
+.comentario-resena-texto.expandido {
+  max-height: none;
+}
+
+.comentario-resena-mas {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  padding: 0 8px;
+  line-height: 1.3;
+  background: var(--gris-hielo, #f1f5f9);
+  border: 1px solid var(--gris-borde-claro, #e2e8f0);
+  border-radius: 999px;
+  color: var(--carbon-oscuro);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+}
+
+.comentario-resena-mas:hover {
+  background: var(--bs-danger);
+  border-color: var(--bs-danger);
+  color: #fff;
+}
+
+/* Expandido: el botón pasa debajo como "Ver menos" */
+.comentario-resena-texto.expandido + .comentario-resena-mas {
+  position: static;
+  display: block;
+  margin-top: 4px;
+  padding: 0;
+  background: none;
+  border: none;
+  color: var(--bs-danger);
+  font-size: 0.78rem;
+  letter-spacing: 0;
+}
+
+.comentario-resena-texto.expandido + .comentario-resena-mas:hover {
+  background: none;
+  color: var(--bs-danger);
+  text-decoration: underline;
+}
+
+.estrellas-tabla {
+  display: inline-flex;
+  gap: 2px;
+  font-size: 15px;
+  white-space: nowrap;
+}
+
+.estrellas-tabla .estrella-llena {
+  color: var(--dorado-oscuro);
+  font-size: 15px;
+}
+
+.estrellas-tabla .estrella-vacia {
+  color: #d1d5db;
+  font-size: 15px;
+}
+
+/* Aprobar / Rechazar deshabilitados: mantienen su color, solo se ven apagados */
+.btn-accion--check:disabled {
+  background: var(--verde-light) !important;
+}
+
+.btn-accion--x:disabled {
+  background: var(--rojo-light) !important;
+}
+
+.btn-accion--check:disabled,
+.btn-accion--x:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* Sin efecto hover cuando están deshabilitados */
+.btn-accion--check:disabled:hover {
+  background: var(--verde-light) !important;
+  color: var(--verde);
+  border-color: #bbf7d0;
+  opacity: 0.45;
+}
+
+.btn-accion--x:disabled:hover {
+  background: var(--rojo-light) !important;
+  color: var(--rojo);
+  border-color: #fecaca;
+  opacity: 0.45;
+}

@@ -7,7 +7,7 @@
       "genero": "Unisex",
       "cantidad": 8,
       "precio": 100000,
-      "estado": "No Disponible",
+      "estado": "Disponible",
       "imagen": "",
       "calificacion": 4,
       "resenas": 30,
@@ -31,7 +31,7 @@
       "genero": "Unisex",
       "cantidad": 13,
       "precio": 100000,
-      "estado": "Disponible",
+      "estado": "No Disponible",
       "imagen": "",
       "calificacion": 3,
       "resenas": 5,
@@ -61,124 +61,202 @@
       ]
     }
   ],
-  "solicitudes": [
+  "pedidos": [
     {
       "id": "SL263",
-      "implementoId": "IM125",
-      "implementoNombre": "Uniforme de Competencia Femenino",
-      "implementoImagen": "",
       "atleta": "Gabriela Deaquiz",
       "categoria": "Magic",
-      "cantidad": 2,
-      "talla": "M",
-      "precioUnitario": 350000,
-      "fechaSolicitud": "2026-04-02",
+      "fecha": "2026-04-02",
+      "items": [
+        {
+          "implementoId": "IM125",
+          "implementoNombre": "Uniforme de Competencia Femenino",
+          "implementoImagen": "",
+          "talla": "M",
+          "cantidad": 2,
+          "precioUnitario": 350000,
+          "resenaEnviada": true,
+          "grupoTalla": "Adolescentes"
+        }
+      ],
+      "total": 700000,
+      "metodoPagoId": "presencial",
       "metodoPago": "Pago presencial",
+      "llavePago": "",
+      "comprobante": "",
       "estado": "Pendiente",
       "motivoRechazo": "",
-      "recibido": true,
-      "resenaEnviada": true,
-      "grupoTalla": "Adolescentes"
+      "recibido": true
     },
     {
       "id": "SL156",
-      "implementoId": "IM213",
-      "implementoNombre": "Zapatillas BTC",
-      "implementoImagen": "",
       "atleta": "Juan Torres",
       "categoria": "Queen",
-      "cantidad": 1,
-      "talla": "40",
-      "precioUnitario": 100000,
-      "fechaSolicitud": "2026-04-04",
-      "metodoPago": "Transferencia",
+      "fecha": "2026-04-04",
+      "items": [
+        {
+          "implementoId": "IM213",
+          "implementoNombre": "Zapatillas BTC",
+          "implementoImagen": "",
+          "talla": "40",
+          "cantidad": 1,
+          "precioUnitario": 100000,
+          "resenaEnviada": false,
+          "grupoTalla": "Calzado"
+        }
+      ],
+      "total": 100000,
+      "metodoPagoId": "nequi",
+      "metodoPago": "Nequi",
+      "llavePago": "",
+      "comprobante": "",
       "estado": "Pendiente",
       "motivoRechazo": "",
-      "grupoTalla": "Calzado"
+      "recibido": false
     },
     {
       "id": "SL589",
-      "implementoId": "IM124",
-      "implementoNombre": "Bolso BTC",
-      "implementoImagen": "",
       "atleta": "Maria Mercado",
       "categoria": "Princess",
-      "cantidad": 2,
-      "talla": "N/A",
-      "precioUnitario": 100000,
-      "fechaSolicitud": "2026-04-04",
-      "metodoPago": "Transferencia",
+      "fecha": "2026-04-04",
+      "items": [
+        {
+          "implementoId": "IM124",
+          "implementoNombre": "Bolso BTC",
+          "implementoImagen": "",
+          "talla": "N/A",
+          "cantidad": 2,
+          "precioUnitario": 100000,
+          "resenaEnviada": false
+        }
+      ],
+      "total": 200000,
+      "metodoPagoId": "nequi",
+      "metodoPago": "Nequi",
+      "llavePago": "",
+      "comprobante": "",
       "estado": "Pendiente",
       "motivoRechazo": "",
-      "recibido": false,
-      "resenaEnviada": false
+      "recibido": false
     },
     {
       "id": "TP62itmnPmY",
-      "estado": "Aprobado",
-      "motivoRechazo": "",
-      "implementoId": "IM125",
-      "implementoNombre": "Uniforme de competencia Femenino",
-      "implementoImagen": "",
       "atleta": "Gabriela Deaquiz",
       "categoria": "Magic",
-      "cantidad": 1,
-      "talla": "N/A",
-      "precioUnitario": 350000,
-      "fechaSolicitud": "2026-09-14",
+      "fecha": "2026-09-14",
+      "items": [
+        {
+          "implementoId": "IM125",
+          "implementoNombre": "Uniforme de competencia Femenino",
+          "implementoImagen": "",
+          "talla": "N/A",
+          "cantidad": 1,
+          "precioUnitario": 350000,
+          "resenaEnviada": true
+        }
+      ],
+      "total": 350000,
+      "metodoPagoId": "presencial",
       "metodoPago": "Pago presencial",
+      "llavePago": "",
       "comprobante": "",
-      "recibido": true,
-      "resenaEnviada": true
+      "estado": "Aprobado",
+      "motivoRechazo": "",
+      "recibido": true
     },
     {
       "id": "OlS7xMhyREc",
-      "estado": "Cancelado",
-      "motivoRechazo": "",
-      "implementoId": "IM213",
-      "implementoNombre": "Zapatillas BTC",
-      "implementoImagen": "",
       "atleta": "Gabriela Deaquiz",
       "categoria": "Magic",
-      "cantidad": 1,
-      "talla": "N/A",
-      "precioUnitario": 100000,
-      "fechaSolicitud": "2026-09-16",
+      "fecha": "2026-09-16",
+      "items": [
+        {
+          "implementoId": "IM213",
+          "implementoNombre": "Zapatillas BTC",
+          "implementoImagen": "",
+          "talla": "N/A",
+          "cantidad": 1,
+          "precioUnitario": 100000,
+          "resenaEnviada": false
+        }
+      ],
+      "total": 100000,
+      "metodoPagoId": "presencial",
       "metodoPago": "Pago presencial",
-      "comprobante": ""
+      "llavePago": "",
+      "comprobante": "",
+      "estado": "Cancelado",
+      "motivoRechazo": "",
+      "recibido": false
     },
     {
       "id": "j59aPKeYhw4",
-      "estado": "Aprobado",
-      "motivoRechazo": "",
-      "implementoId": "IM125",
-      "implementoNombre": "Uniforme de competencia Femenino",
-      "implementoImagen": "",
       "atleta": "Gabriela Deaquiz",
       "categoria": "Magic",
-      "cantidad": 1,
-      "talla": "N/A",
-      "precioUnitario": 350000,
-      "fechaSolicitud": "2026-09-16",
+      "fecha": "2026-09-16",
+      "items": [
+        {
+          "implementoId": "IM125",
+          "implementoNombre": "Uniforme de competencia Femenino",
+          "implementoImagen": "",
+          "talla": "N/A",
+          "cantidad": 1,
+          "precioUnitario": 350000,
+          "resenaEnviada": false
+        }
+      ],
+      "total": 350000,
+      "metodoPagoId": "presencial",
       "metodoPago": "Pago presencial",
-      "comprobante": ""
+      "llavePago": "",
+      "comprobante": "",
+      "estado": "Aprobado",
+      "motivoRechazo": "",
+      "recibido": false
     },
     {
       "id": "r1n7lqmVEKI",
-      "estado": "Pendiente",
-      "motivoRechazo": "",
-      "implementoId": "IM124",
-      "implementoNombre": "Bolso BTC",
-      "implementoImagen": "",
       "atleta": "Gabriela Deaquiz",
       "categoria": "Magic",
-      "cantidad": 1,
-      "talla": "Única",
-      "grupoTalla": "Unica",
-      "precioUnitario": 100000,
-      "fechaSolicitud": "2026-11-01",
+      "fecha": "2026-11-01",
+      "items": [
+        {
+          "implementoId": "IM124",
+          "implementoNombre": "Bolso BTC",
+          "implementoImagen": "",
+          "talla": "Única",
+          "cantidad": 1,
+          "precioUnitario": 100000,
+          "resenaEnviada": false,
+          "grupoTalla": "Unica"
+        }
+      ],
+      "total": 100000,
+      "metodoPagoId": "presencial",
       "metodoPago": "Pago presencial",
-      "comprobante": ""
+      "llavePago": "",
+      "comprobante": "",
+      "estado": "Pendiente",
+      "motivoRechazo": "",
+      "recibido": false
+    }
+  ],
+  "metodosPago": [
+    {
+      "id": "nequi",
+      "nombre": "Nequi",
+      "activo": true,
+      "titular": "Blood Tigers Cheer",
+      "llave": "3001234567",
+      "qr": ""
+    },
+    {
+      "id": "davivienda",
+      "nombre": "Davivienda",
+      "activo": true,
+      "titular": "Blood Tigers Cheer",
+      "llave": "0123456789",
+      "qr": ""
     }
   ],
   "resenasComunidad": [

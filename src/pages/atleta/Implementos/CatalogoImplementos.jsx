@@ -3,72 +3,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { getImplementos } from "../../../services/ImplementosService";
 import { getResenas } from "../../../services/ResenaService";
 import ProductoCard from "./ProductoCard";
-import ModalSolicitarPedido from "./ModalSolicitarPedido";
-
-// Subcomponente reutilizable para el Select personalizado
-function FiltroSelectCustom({ label, value, onChange, options }) {
-  const [open, setOpen] = useState(false);
-  const containerRef = useRef(null);
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (containerRef.current && !containerRef.current.contains(event.target)) {
-        setOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const selectedOption = options.find((opt) => opt.value === value) || options[0];
-
-  return (
-    <div className="filtro-caja-custom" ref={containerRef}>
-      <span className="filtro-label">{label}:</span>
-      <div className="custom-dropdown">
-        <button
-          type="button"
-          className="custom-dropdown-btn"
-          onClick={() => setOpen(!open)}
-        >
-          <span>{selectedOption.label}</span>
-          <svg
-            className={`arrow-icon ${open ? "open" : ""}`}
-            width="10"
-            height="6"
-            viewBox="0 0 10 6"
-            fill="none"
-          >
-            <path
-              d="M1 1L5 5L9 1"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </button>
-
-        {open && (
-          <ul className="custom-dropdown-menu">
-            {options.map((opt) => (
-              <li
-                key={opt.value}
-                className={`custom-dropdown-item ${value === opt.value ? "active" : ""}`}
-                onClick={() => {
-                  onChange(opt.value);
-                  setOpen(false);
-                }}
-              >
-                {opt.label}
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-    </div>
-  );
-}
+import ModalAgregarCarrito from "./ModalAgregarCarrito";
+import FiltroSelect from "../../../components/Compartidos/FiltroSelect";
 
 export default function CatalogoImplementos({ onAviso }) {
   const [implementos, setImplementos] = useState([]);
@@ -115,7 +51,7 @@ export default function CatalogoImplementos({ onAviso }) {
     });
   }, [implementos, busqueda, filtroGenero, filtroTipo]);
 
-  const abrirSolicitud = (producto) => {
+  const abrirAgregar = (producto) => {
     setProductoSeleccionado(producto);
     modalRef.current.showModal();
   };
@@ -138,7 +74,7 @@ export default function CatalogoImplementos({ onAviso }) {
 
         <div className="filtro-selectores">
           {/* Filtro de Género */}
-          <FiltroSelectCustom
+          <FiltroSelect
             label="Género"
             value={filtroGenero}
             onChange={setFiltroGenero}
@@ -151,7 +87,7 @@ export default function CatalogoImplementos({ onAviso }) {
           />
 
           {/* Filtro de Categoría */}
-          <FiltroSelectCustom
+          <FiltroSelect
             label="Categoría"
             value={filtroTipo}
             onChange={setFiltroTipo}
@@ -174,17 +110,20 @@ export default function CatalogoImplementos({ onAviso }) {
         {!cargando && productosFiltrados.length === 0 && <p>No se encontraron productos.</p>}
         {!cargando &&
           productosFiltrados.map((item) => (
-            <ProductoCard key={item.id} implemento={item} onSolicitar={abrirSolicitud} />
+            <ProductoCard key={item.id} implemento={item} onAgregar={abrirAgregar} />
           ))}
       </div>
 
-      <ModalSolicitarPedido
+      <ModalAgregarCarrito
         ref={modalRef}
         implemento={productoSeleccionado}
-        onEnviado={() => {
-          cargar();
-          onAviso("Solicitud enviada correctamente.");
-        }}
+        onAgregado={(implemento, { limitado }) =>
+          onAviso(
+            limitado
+              ? `Agregado al carrito (máximo de unidades disponibles de ${implemento.nombre}).`
+              : `${implemento.nombre} se agregó al carrito.`
+          )
+        }
       />
 
       <div className="seccion-comentarios-comunidad">

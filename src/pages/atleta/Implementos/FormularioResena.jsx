@@ -1,13 +1,18 @@
 import { Fragment, useState } from "react";
 import { crearResena } from "../../../services/ResenaService";
-import { actualizarSolicitud } from "../../../services/SolicitudesService";
+import { marcarResenaEnviada } from "../../../services/PedidosService";
 import { ATLETA_ACTUAL } from "../../../services/AtletaActual";
+import { hoyISO } from "../../../data/pedidos";
 
-export default function FormularioResena({ solicitud, onEnviada }) {
+// Reseña de UN producto del pedido (cada producto se califica por separado)
+export default function FormularioResena({ pedido, item, onEnviada }) {
+  const [abierto, setAbierto] = useState(false);
   const [calificacion, setCalificacion] = useState(0);
   const [comentario, setComentario] = useState("");
   const [enviando, setEnviando] = useState(false);
   const [error, setError] = useState("");
+
+  const idBase = `rating-${pedido.id}-${item.implementoId}-${item.talla}`.replace(/\s+/g, "");
 
   const enviar = async () => {
     if (!calificacion) {
@@ -18,14 +23,15 @@ export default function FormularioResena({ solicitud, onEnviada }) {
     setError("");
     try {
       await crearResena({
-        implementoId: solicitud.implementoId,
-        implementoNombre: solicitud.implementoNombre,
+        implementoId: item.implementoId,
+        implementoNombre: item.implementoNombre,
+        pedidoId: pedido.id,
         atleta: ATLETA_ACTUAL.nombre,
         calificacion,
         comentario,
-        fecha: new Date().toISOString().slice(0, 10),
+        fecha: hoyISO(),
       });
-      await actualizarSolicitud(solicitud.id, { ...solicitud, resenaEnviada: true });
+      await marcarResenaEnviada(pedido.id, item);
       onEnviada();
     } catch (err) {
       setError(err.message);
@@ -34,21 +40,29 @@ export default function FormularioResena({ solicitud, onEnviada }) {
     }
   };
 
+  if (!abierto) {
+    return (
+      <button type="button" className="btn-abrir-resena" onClick={() => setAbierto(true)}>
+        ★ Calificar este producto
+      </button>
+    );
+  }
+
   return (
     <div className="seccion-comentario-recibido">
-      <label>Deja una reseña (opcional):</label>
+      <label>Tu reseña de {item.implementoNombre} (opcional):</label>
 
       <div className="estrellas-rating" role="group" aria-label="Calificación del producto">
         {[5, 4, 3, 2, 1].map((valor) => (
           <Fragment key={valor}>
             <input
               type="radio"
-              id={`rating-${solicitud.id}-${valor}`}
-              name={`rating-${solicitud.id}`}
+              id={`${idBase}-${valor}`}
+              name={idBase}
               checked={calificacion === valor}
               onChange={() => setCalificacion(valor)}
             />
-            <label htmlFor={`rating-${solicitud.id}-${valor}`} title={`${valor} estrellas`}>★</label>
+            <label htmlFor={`${idBase}-${valor}`} title={`${valor} estrellas`}>★</label>
           </Fragment>
         ))}
       </div>

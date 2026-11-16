@@ -1,0 +1,381 @@
+import { forwardRef, Fragment, useState } from "react";
+import { useCarrito } from "../../../context/CarritoContext";
+import { getImplementos } from "../../../services/ImplementosService";
+import { getMetodosPago } from "../../../services/MetodosPagoService";
+import { crearPedido } from "../../../services/PedidosService";
+import { ATLETA_ACTUAL } from "../../../services/AtletaActual";
+import { etiquetaTalla } from "../../../data/tallas";
+import { formatoCOP, hoyISO, METODO_PRESENCIAL } from "../../../data/pedidos";
+import { prepararComprobante } from "../../../utils/archivos";
+import IconoMetodoPago from "../../../components/Pagos/IconoMetodoPago";
+
+const IconoBolsa = ({ size = 18 }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <circle cx="9" cy="21" r="1" />
+    <circle cx="20" cy="21" r="1" />
+    <path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6" />
+  </svg>
+);
+
+const CarritoDrawer = forwardRef(function CarritoDrawer({ onPedidoCreado }, ref) {
+  const { items, unidades, total, cambiarCantidad, quitar, vaciar } = useCarrito();
+
+  const [paso, setPaso] = useState("carrito"); // "carrito" | "pago"
+  const [metodosDigitales, setMetodosDigitales] = useState([]);
+  const [metodoId, setMetodoId] = useState(METODO_PRESENCIAL.id);
+  const [comprobante, setComprobante] = useState("");
+  const [nombreArchivo, setNombreArchivo] = useState("");
+  const [validando, setValidando] = useState(false);
+  const [enviando, setEnviando] = useState(false);
+  const [copiado, setCopiado] = useState(false);
+  const [error, setError] = useState("");
+
+  const metodoDigital = metodosDigitales.find((m) => m.id === metodoId) ?? null;
+  const esDigital = !!metodoDigital;
+
+  const reiniciar = () => {
+    setPaso("carrito");
+    setMetodoId(METODO_PRESENCIAL.id);
+    setComprobante("");
+    setNombreArchivo("");
+    setCopiado(false);
+    setError("");
+  };
+
+  const cerrar = () => ref.current.close();
+
+  // Comprueba contra el catálogo actual que todo siga disponible y con stock
+  const verificarDisponibilidad = async () => {
+    const actuales = await getImplementos();
+    const problemas = [];
+    items.forEach((i) => {
+      const imp = actuales.find((a) => a.id === i.implementoId);
+      if (!imp || imp.estado !== "Disponible") {
+        problemas.push(`${i.implementoNombre} ya no está disponible.`);
+        return;
+      }
+      if (i.grupoTalla) {
+        const t = (imp.tallas ?? []).find((x) => x.grupo === i.grupoTalla && x.talla === i.talla);
+        const stock = Number(t?.stock) || 0;
+        if (stock <= 0) problemas.push(`${i.implementoNombre} (talla ${i.talla}) está agotado.`);
+        else if (stock < i.cantidad)
+          problemas.push(`De ${i.implementoNombre} (talla ${i.talla}) solo quedan ${stock} unidad(es).`);
+      }
+    });
+    return problemas;
+  };
+
+  const irAPago = async () => {
+    setValidando(true);
+    setError("");
+    try {
+      const [problemas, metodos] = await Promise.all([
+        verificarDisponibilidad(),
+        getMetodosPago().catch(() => []), // si falla, queda al menos el pago presencial
+      ]);
+      if (problemas.length > 0) {
+        setError(problemas.join(" "));
+        return;
+      }
+      setMetodosDigitales(metodos.filter((m) => m.activo));
+      setMetodoId(METODO_PRESENCIAL.id);
+      setPaso("pago");
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setValidando(false);
+    }
+  };
+
+  const elegirMetodo = (id) => {
+    setMetodoId(id);
+    setComprobante("");
+    setNombreArchivo("");
+    setCopiado(false);
+    setError("");
+  };
+
+  const elegirComprobante = async (e) => {
+    const archivo = e.target.files?.[0];
+    e.target.value = "";
+    if (!archivo) return;
+    try {
+      setError("");
+      setComprobante(await prepararComprobante(archivo));
+      setNombreArchivo(archivo.name);
+    } catch (err) {
+      setComprobante("");
+      setNombreArchivo("");
+      setError(err.message);
+    }
+  };
+
+  const copiarLlave = async () => {
+    try {
+      await navigator.clipboard.writeText(metodoDigital.llave);
+      setCopiado(true);
+      setTimeout(() => setCopiado(false), 2000);
+    } catch {
+      // Sin permiso para el portapapeles: el número sigue visible para copiarlo a mano
+    }
+  };
+
+  const confirmar = async () => {
+    if (esDigital && !comprobante) {
+      setError("Adjunta el comprobante de pago para continuar.");
+      return;
+    }
+    setEnviando(true);
+    setError("");
+    try {
+      const pedido = await crearPedido({
+        atleta: ATLETA_ACTUAL.nombre,
+        categoria: ATLETA_ACTUAL.categoria,
+        fecha: hoyISO(),
+        items: items.map((i) => ({
+          implementoId: i.implementoId,
+          implementoNombre: i.implementoNombre,
+          implementoImagen: i.implementoImagen,
+          grupoTalla: i.grupoTalla,
+          talla: i.talla,
+          cantidad: i.cantidad,
+          precioUnitario: i.precioUnitario,
+          resenaEnviada: false,
+        })),
+        total,
+        metodoPagoId: esDigital ? metodoDigital.id : METODO_PRESENCIAL.id,
+        metodoPago: esDigital ? metodoDigital.nombre : METODO_PRESENCIAL.nombre,
+        llavePago: esDigital ? metodoDigital.llave : "",
+        comprobante: esDigital ? comprobante : "",
+      });
+      vaciar();
+      onPedidoCreado(pedido);
+      cerrar();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setEnviando(false);
+    }
+  };
+
+  // Clic en el fondo oscuro (el propio <dialog>) cierra el carrito
+  const clicFuera = (e) => {
+    if (e.target === e.currentTarget) cerrar();
+  };
+
+  const vacio = items.length === 0;
+
+  return (
+    <dialog ref={ref} className="dialog-carrito" onClose={reiniciar} onClick={clicFuera}>
+      <header className="carrito-header">
+        <div className="modal-header-icono"><IconoBolsa /></div>
+        <div className="carrito-header-texto">
+          <h3>{paso === "pago" ? "Finalizar pedido" : "Mi carrito"}</h3>
+          <span>
+            {vacio ? "Sin productos" : `${items.length} producto(s) · ${unidades} unidad(es)`}
+          </span>
+        </div>
+        <button type="button" className="btn-cerrar-modal" onClick={cerrar} aria-label="Cerrar carrito">✕</button>
+      </header>
+
+      {!vacio && (
+        <div className="carrito-pasos" aria-label="Progreso del pedido">
+          <div className={`carrito-paso ${paso === "carrito" ? "activo" : "hecho"}`}>
+            <span className="carrito-paso-num">{paso === "carrito" ? "1" : "✓"}</span>
+            Carrito
+          </div>
+          <span className="carrito-paso-linea" />
+          <div className={`carrito-paso ${paso === "pago" ? "activo" : ""}`}>
+            <span className="carrito-paso-num">2</span>
+            Pago
+          </div>
+        </div>
+      )}
+
+      <div className="carrito-cuerpo">
+        {error && <div className="alerta-error" role="alert">{error}</div>}
+
+        {vacio && (
+          <div className="carrito-vacio">
+            <div className="carrito-vacio-icono"><IconoBolsa size={30} /></div>
+            <h4>Tu carrito está vacío</h4>
+            <p>Agrega implementos desde el catálogo y pídelos todos en un solo pedido.</p>
+            <button type="button" className="btn-carrito-secundario" onClick={cerrar}>Ir al catálogo</button>
+          </div>
+        )}
+
+        {/* Paso 1: productos */}
+        {!vacio && paso === "carrito" && (
+          <>
+            <ul className="carrito-lista">
+              {items.map((i) => (
+                <li className="carrito-item" key={i.clave}>
+                  <img src={i.implementoImagen } alt={i.implementoNombre} className="carrito-item-img" />
+                  <div className="carrito-item-info">
+                    <p className="carrito-item-nombre">{i.implementoNombre}</p>
+                    <p className="carrito-item-detalle">
+                      Talla {etiquetaTalla(i)} · {formatoCOP(i.precioUnitario)} c/u
+                    </p>
+                    <div className="carrito-item-fila">
+                      <div className="control-cantidad control-cantidad--sm">
+                        <button type="button" aria-label="Quitar una unidad"
+                          onClick={() => cambiarCantidad(i.clave, i.cantidad - 1)}>−</button>
+                        <input
+                          type="number"
+                          min={1}
+                          max={i.stock}
+                          value={i.cantidad}
+                          aria-label={`Cantidad de ${i.implementoNombre}`}
+                          onChange={(e) => cambiarCantidad(i.clave, e.target.value)}
+                        />
+                        <button type="button" aria-label="Agregar una unidad"
+                          disabled={i.cantidad >= i.stock}
+                          onClick={() => cambiarCantidad(i.clave, i.cantidad + 1)}>+</button>
+                      </div>
+                      <span className="carrito-item-subtotal">{formatoCOP(i.cantidad * i.precioUnitario)}</span>
+                    </div>
+                  </div>
+                  <button type="button" className="carrito-item-quitar" title="Quitar del carrito"
+                    aria-label={`Quitar ${i.implementoNombre} del carrito`} onClick={() => quitar(i.clave)}>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="3 6 5 6 21 6" />
+                      <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                      <path d="M10 11v6M14 11v6" />
+                      <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+                    </svg>
+                  </button>
+                </li>
+              ))}
+            </ul>
+            <button type="button" className="btn-vaciar-carrito" onClick={vaciar}>Vaciar carrito</button>
+          </>
+        )}
+
+        {/* Paso 2: pago */}
+        {!vacio && paso === "pago" && (
+          <>
+            <div className="form-section">
+              <p className="form-section-label">
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
+                  <line x1="1" y1="10" x2="23" y2="10" />
+                </svg>
+                Método de pago
+              </p>
+
+              <div className="opciones-pago-tarjetas opciones-pago-tarjetas--auto" role="radiogroup" aria-label="Método de pago">
+                <input type="radio" name="metodo-pago" id="pago-presencial"
+                  checked={metodoId === METODO_PRESENCIAL.id} onChange={() => elegirMetodo(METODO_PRESENCIAL.id)} />
+                <label htmlFor="pago-presencial" className="tarjeta-pago-label">
+                  <div className="pago-icono"><IconoMetodoPago id="presencial" /></div>
+                  <span className="pago-titulo">Pago presencial</span>
+                  <span className="pago-subtitulo">Al recoger en el club</span>
+                </label>
+
+                {metodosDigitales.map((m) => (
+                  <Fragment key={m.id}>
+                    <input type="radio" name="metodo-pago" id={`pago-${m.id}`}
+                      checked={metodoId === m.id} onChange={() => elegirMetodo(m.id)} />
+                    <label htmlFor={`pago-${m.id}`} className="tarjeta-pago-label">
+                      <div className="pago-icono"><IconoMetodoPago id={m.id} /></div>
+                      <span className="pago-titulo">{m.nombre}</span>
+                      <span className="pago-subtitulo">Pago digital</span>
+                    </label>
+                  </Fragment>
+                ))}
+              </div>
+            </div>
+
+            {esDigital && (
+              <>
+                <div className="pago-digital">
+                  <p className="pago-digital-titulo">Escanea para pagar con {metodoDigital.nombre}</p>
+                  <div className="pago-qr-marco">
+                    {metodoDigital.qr ? (
+                      <img src={metodoDigital.qr} alt={`Código QR de ${metodoDigital.nombre}`} />
+                    ) : (
+                      <div className="pago-qr-vacio">QR no disponible</div>
+                    )}
+                  </div>
+                  {metodoDigital.llave && (
+                    <div className="pago-llave">
+                      <span className="pago-llave-label">Llave</span>
+                      <strong className="pago-llave-valor">{metodoDigital.llave}</strong>
+                      <button type="button" className="btn-copiar-llave" onClick={copiarLlave}>
+                        {copiado ? "¡Copiada!" : "Copiar llave"}
+                      </button>
+                    </div>
+                  )}
+                  {metodoDigital.titular && (
+                    <p className="pago-titular">A nombre de <strong>{metodoDigital.titular}</strong></p>
+                  )}
+                  <p className="pago-valor">Valor a pagar: <strong>{formatoCOP(total)}</strong></p>
+                </div>
+
+                <div className="form-section">
+                  <p className="form-section-label">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                      <polyline points="17 8 12 3 7 8" />
+                      <line x1="12" y1="3" x2="12" y2="15" />
+                    </svg>
+                    Comprobante
+                  </p>
+                  <label htmlFor="comprobante-pago" className={`zona-upload ${nombreArchivo ? "zona-upload--activa" : ""}`}>
+                    <p className="zona-upload-texto">
+                      {nombreArchivo ? "Comprobante cargado" : "Haz clic para subir el comprobante"}
+                    </p>
+                    <span className="zona-upload-hint">PNG, JPG o PDF · Máx. 5 MB</span>
+                    <span className="zona-upload-nombre">{nombreArchivo || "Ningún archivo seleccionado"}</span>
+                  </label>
+                  <input type="file" id="comprobante-pago" accept="image/*,.pdf" style={{ display: "none" }}
+                    onChange={elegirComprobante} />
+                </div>
+              </>
+            )}
+
+            <div className="modal-resumen-precio">
+              {items.map((i) => (
+                <div className="resumen-fila" key={i.clave}>
+                  <span className="resumen-label">{i.cantidad} × {i.implementoNombre} ({i.talla})</span>
+                  <span className="resumen-valor">{formatoCOP(i.cantidad * i.precioUnitario)}</span>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+      </div>
+
+      {!vacio && (
+        <footer className="carrito-pie">
+          <div className="resumen-fila resumen-total">
+            <span>Total del pedido</span>
+            <span>{formatoCOP(total)}</span>
+          </div>
+
+          {paso === "carrito" ? (
+            <button type="button" className="btn-enviar-pedido" onClick={irAPago} disabled={validando}>
+              {validando ? "Verificando disponibilidad..." : "Continuar al pago"}
+            </button>
+          ) : (
+            <div className="carrito-pie-botones">
+              <button type="button" className="btn-carrito-secundario"
+                onClick={() => { setPaso("carrito"); setError(""); }} disabled={enviando}>
+                Volver
+              </button>
+              <button type="button" className="btn-enviar-pedido" onClick={confirmar} disabled={enviando}>
+                {enviando ? "Enviando..." : "Confirmar pedido"}
+              </button>
+            </div>
+          )}
+        </footer>
+      )}
+    </dialog>
+  );
+});
+
+export default CarritoDrawer;
