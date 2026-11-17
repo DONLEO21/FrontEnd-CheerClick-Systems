@@ -24,10 +24,13 @@ import AdminHorarios from './pages/admin/Horarios/Horarios.jsx';
 import AdminImplementos from './pages/admin/Implementos/Implementos';
 import AdminPQRS from './pages/admin/PQRS/PQRS.jsx';
 import AdminPagos from './pages/admin/Pagos/Pagos';
+import AdminAsistencia from './pages/admin/Asistencia/Asistencia';
+import RendimientoAdmin from './pages/admin/Rendimiento/Rendimiento.jsx';
 
 // Entrenador
 import DashboardEntrenador from './pages/entrenador/Dashboard/DashboardEntrenador.jsx';
 import EntrenadorHorarios from './pages/entrenador/Horarios/Horarios.jsx';
+import EntreAsistencia from './pages/entrenador/Asistencia/Asistencia';
 
 // Atleta
 import DashboardAtleta from './pages/atleta/Dashboard/DashboardAtleta.jsx';
@@ -35,6 +38,7 @@ import AtletaHorarios from './pages/atleta/Horarios/Horarios.jsx';
 import AtletaImplementos from './pages/atleta/Implementos/Implementos';
 import AtletaPQRS from './pages/atleta/PQRS/PQRS.jsx';
 import AtletaPagos from './pages/atleta/Pagos/Pagos';
+import RendimientoAtleta from './pages/atleta/Rendimiento/Rendimiento.jsx';
 
 // Compartido
 import PerfilUsuario from './pages/Perfil/PerfilUsuario.jsx';
@@ -63,6 +67,8 @@ export default function App() {
             <Route path="implementos" element={<AdminImplementos />} />
             <Route path="pqrs" element={<AdminPQRS />} />
             <Route path="pagos" element={<AdminPagos />} />
+            <Route path="asistencia" element={<AdminAsistencia />} />
+            <Route path="rendimiento" element={<RendimientoAdmin />} />
             <Route path="perfil" element={<PerfilUsuario rol="admin" />} />
 
             {/* Vista Entrenador del Admin: es entrenador de TODOS los niveles,
@@ -90,6 +96,7 @@ export default function App() {
               path="horarios"
               element={<EntrenadorHorarios esAdmin={false} nivelIdEntrenador={3} />}
             />
+            <Route path="asistencia" element={<EntreAsistencia />} />
             <Route path="perfil" element={<PerfilUsuario rol="entrenador" />} />
             <Route path="*" element={<Proximamente />} />
           </Route>
@@ -110,6 +117,7 @@ export default function App() {
                 Por ahora simula al atleta con el que se prueban las PQRS. */}
             <Route path="pqrs" element={<AtletaPQRS remitente="Leonardo Jara Molina" />} />
             <Route path="pagos" element={<AtletaPagos />} />
+            <Route path="rendimiento" element={<RendimientoAtleta />} />
             <Route path="perfil" element={<PerfilUsuario rol="atleta" />} />
             <Route path="*" element={<Proximamente />} />
           </Route>
