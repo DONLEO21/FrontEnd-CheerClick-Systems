@@ -74,7 +74,4 @@ body {
     opacity: 0; pointer-events: none; transition: opacity .25s ease, transform .25s ease;
     box-shadow: 0 6px 24px rgba(0,0,0,.22);
 }
-.aviso-toast.visible { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
-.aviso-toast.aviso-ok { background: #1d8348; }
-.aviso-toast.aviso-advertencia { background: #b7770d; }
-.aviso-toast.aviso-error { background: var(--color-primario); }
+.aviso-toast.visible { opacity: 1; transform: translateX(-50%)

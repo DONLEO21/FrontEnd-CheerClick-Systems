@@ -19,6 +19,7 @@ import DashboardAdmin from './pages/admin/Dashboard/DashboardAdmin.jsx';
 import SolicitudesCuentas from './pages/admin/Cuentas/SolicitudesCuentas.jsx';
 import AdminHorarios from './pages/admin/Horarios/Horarios.jsx';
 import AdminImplementos from './pages/admin/Implementos/Implementos';
+import AdminPQRS from './pages/admin/PQRS/PQRS.jsx';
 
 // Entrenador
 import DashboardEntrenador from './pages/entrenador/Dashboard/DashboardEntrenador.jsx';
@@ -28,6 +29,7 @@ import EntrenadorHorarios from './pages/entrenador/Horarios/Horarios.jsx';
 import DashboardAtleta from './pages/atleta/Dashboard/DashboardAtleta.jsx';
 import AtletaHorarios from './pages/atleta/Horarios/Horarios.jsx';
 import AtletaImplementos from './pages/atleta/Implementos/Implementos';
+import AtletaPQRS from './pages/atleta/PQRS/PQRS.jsx';
 
 // Compartido
 import PerfilUsuario from './pages/Perfil/PerfilUsuario.jsx';
@@ -53,6 +55,7 @@ export default function App() {
           <Route path="usuarios" element={<SolicitudesCuentas />} />
           <Route path="horarios" element={<AdminHorarios />} />
           <Route path="implementos" element={<AdminImplementos />} />
+          <Route path="pqrs" element={<AdminPQRS />} />
           <Route path="perfil" element={<PerfilUsuario rol="admin" />} />
 
           {/* Vista Entrenador del Admin: es entrenador de TODOS los niveles,
@@ -96,6 +99,9 @@ export default function App() {
           <Route index element={<DashboardAtleta />} />
           <Route path="horarios" element={<AtletaHorarios />} />
           <Route path="implementos" element={<AtletaImplementos />} />
+          {/* TODO: `remitente` debe salir de la sesión real (auth).
+              Por ahora simula al atleta con el que se prueban las PQRS. */}
+          <Route path="pqrs" element={<AtletaPQRS remitente="Leonardo Jara Molina" />} />
           <Route path="perfil" element={<PerfilUsuario rol="atleta" />} />
           <Route path="*" element={<Proximamente />} />
         </Route>
