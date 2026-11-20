@@ -1,47 +1,31 @@
 
 import "./PQRS.css";
-import React, { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect } from "react";
 
 import FiltrosSolicitudes from "./FiltrosSolicitudes";
 import SolicitudCard from "./SolicitudCard";
 import ModalNuevaPqrs from "./ModalNuevaPqrs";
 import ModalDetalle from "./ModalDetalle";
+import { useSesion } from "../../../context/SesionContext";
+import { listarPqrs, crearPqrs, sinSoporteBackend } from "../../../services/pqrsService";
 import AvisoToast from "../../../components/Compartidos/AvisoToast";
+import useAviso from "../../../hooks/useAviso";
 
 import {
   ESTADO_INICIAL_FORM,
   TIPOS_ARCHIVO,
   TAMANO_MAX_ARCHIVO,
   etiquetaTipo,
-  fechaHoy,
   radicadoDe,
 } from "./pqrsData";
-
-
-const API_URL = "http://localhost:3001";
-const jsonHeaders = { "Content-Type": "application/json" };
-
-async function manejarRespuesta(res) {
-  if (!res.ok) throw new Error(`Error ${res.status} al comunicarse con la API`);
-  return res.json();
-}
-
-const siguienteRadicado = () =>
-  fetch(`${API_URL}/pqrs`)
-    .then(manejarRespuesta)
-    .then((todas) => {
-      const mayor = todas.reduce(
-        (max, p) => Math.max(max, parseInt(String(radicadoDe(p)).replace(/\D/g, ""), 10) || 0),
-        0
-      );
-      return `PQ${String(mayor + 1).padStart(4, "0")}`;
-    });
 
 
 const normalizar = (texto) =>
   texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 
-export default function PQRS({ remitente = "Leonardo Jara Molina" }) {
+export default function PQRS() {
+  const { sesion } = useSesion();
+  const remitente = sesion.usuario?.id ?? "";
 
   const [pqrs, setPqrs] = useState([]);
   const [cargando, setCargando] = useState(true);
@@ -57,8 +41,8 @@ export default function PQRS({ remitente = "Leonardo Jara Molina" }) {
     setCargando(true);
     setError(null);
 
-    fetch(`${API_URL}/pqrs?remitente=${encodeURIComponent(remitente)}`)
-      .then(manejarRespuesta)
+    // el backend ya devuelve solo las PQRS del atleta autenticado
+    listarPqrs()
       .then((datos) => {
         if (!activo) return;
         setPqrs(datos);
@@ -71,17 +55,9 @@ export default function PQRS({ remitente = "Leonardo Jara Molina" }) {
     };
   }, [remitente]);
 
-  const [aviso, setAviso] = useState({ visible: false, mensaje: "", tipo: "ok" });
-
-  useEffect(() => {
-    if (!aviso.visible) return;
-    const id = setTimeout(() => setAviso((a) => ({ ...a, visible: false })), 3000);
-    return () => clearTimeout(id);
-  }, [aviso.visible, aviso.mensaje]);
-
-  const mostrarAviso = (mensaje, tipo = "ok") => setAviso({ visible: true, mensaje, tipo });
-  const avisoErrorApi = () =>
-    mostrarAviso("No se pudo conectar con la API (json-server). ¿Está corriendo?", "error");
+  const { aviso, mostrarAviso } = useAviso({ tipoPorDefecto: "ok" });
+  const avisoErrorApi = (err) =>
+    mostrarAviso(err?.message || "No se pudo completar la acción. Inténtalo de nuevo.", "error");
 
  
   const [modalNueva, setModalNueva] = useState({ abierto: false, editando: null });
@@ -169,12 +145,8 @@ export default function PQRS({ remitente = "Leonardo Jara Molina" }) {
     if (modalNueva.editando) {
       // UPDATE
       const { id } = modalNueva.editando;
-      fetch(`${API_URL}/pqrs/${id}`, {
-        method: "PATCH",
-        headers: jsonHeaders,
-        body: JSON.stringify(datos),
-      })
-        .then(manejarRespuesta)
+      // TODO(backend): el atleta no puede editar una PQRS ya radicada.
+      sinSoporteBackend("Editar una solicitud")
         .then((actualizada) => {
           setPqrs((prev) => prev.map((p) => (p.id === id ? actualizada : p)));
           mostrarAviso("Cambios guardados.", "ok");
@@ -184,26 +156,7 @@ export default function PQRS({ remitente = "Leonardo Jara Molina" }) {
         .finally(() => setEnviando(false));
     } else {
       // CREATE
-      siguienteRadicado()
-        .then((radicado) =>
-          fetch(`${API_URL}/pqrs`, {
-            method: "POST",
-            headers: jsonHeaders,
-            body: JSON.stringify({
-              radicado,
-              ...datos,
-              estado: "pendiente",
-              prioridad: "media",
-              fecha: fechaHoy(),
-              remitente,
-              respuesta: "",
-              fechaRespuesta: "",
-              seguimientos: [],
-              inhabilitada: false,
-            }),
-          })
-        )
-        .then(manejarRespuesta)
+      crearPqrs(datos)
         .then((creada) => {
           setPqrs((prev) => [creada, ...prev]);
           setBusqueda("");
@@ -232,15 +185,10 @@ export default function PQRS({ remitente = "Leonardo Jara Molina" }) {
     if (!texto) return mostrarAviso("Escribe la información adicional antes de enviarla.", "error");
 
     const { id } = seleccionada;
-    const seguimientos = [...(seleccionada.seguimientos ?? []), { fecha: fechaHoy(), texto }];
 
     setEnviando(true);
-    fetch(`${API_URL}/pqrs/${id}`, {
-      method: "PATCH",
-      headers: jsonHeaders,
-      body: JSON.stringify({ seguimientos }),
-    })
-      .then(manejarRespuesta)
+    // TODO(backend): no existe endpoint para agregar información adicional a una PQRS.
+    sinSoporteBackend("Enviar información adicional")
       .then((actualizada) => {
         setPqrs((prev) => prev.map((p) => (p.id === id ? actualizada : p)));
         setSeguimiento("");
@@ -254,7 +202,7 @@ export default function PQRS({ remitente = "Leonardo Jara Molina" }) {
 
   if (cargando) {
     return (
-      <main className="contenido container-fluid py-5 text-center text-secondary">
+      <main className="ui-contenido container-fluid py-5 text-center text-secondary">
         <div className="spinner-border text-danger mb-3" role="status" />
         <p>Cargando información…</p>
       </main>
@@ -263,17 +211,17 @@ export default function PQRS({ remitente = "Leonardo Jara Molina" }) {
 
   if (error) {
     return (
-      <main className="contenido container-fluid py-5 text-center text-danger">
+      <main className="ui-contenido container-fluid py-5 text-center text-danger">
         <p className="fw-semibold mb-2">No se pudo conectar con la API.</p>
         <p className="text-secondary small mb-0">
-          Verifica que json-server esté corriendo: <code>npx json-server db.json --port 3001</code>
+          Inténtalo de nuevo en unos minutos.
         </p>
       </main>
     );
   }
 
   return (
-    <main className="contenido container-fluid py-4 px-3 px-md-4 pqa-page">
+    <main className="ui-contenido container-fluid py-4 px-3 px-md-4 pqa-page">
       <header className="pqa-cabecera">
         <div>
           <h1 className="pqa-titulo-seccion">Mis Solicitudes PQRS</h1>

@@ -1,4 +1,4 @@
-// Iconos genéricos por método de pago (presencial / Nequi / Davivienda)
+// Iconos genéricos por método de pago (efectivo / Nequi / Davivienda)
 export default function IconoMetodoPago({ id, size = 22 }) {
   const comun = {
     xmlns: "http://www.w3.org/2000/svg",
@@ -37,8 +37,9 @@ export default function IconoMetodoPago({ id, size = 22 }) {
   }
   return (
     <svg {...comun}>
-      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-      <polyline points="9 22 9 12 15 12 15 22" />
+      <rect x="2" y="6" width="20" height="12" rx="2" />
+      <circle cx="12" cy="12" r="2.5" />
+      <path d="M6 12h.01M18 12h.01" />
     </svg>
   );
 }

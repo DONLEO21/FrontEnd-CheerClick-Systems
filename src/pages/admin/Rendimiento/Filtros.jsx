@@ -1,6 +1,7 @@
-function Filtros({ busqueda, setBusqueda, nivelSeleccionado, setNivelSeleccionado, onGestionarHabilidades }) {
+// niveles: nombres de los niveles que existen hoy (vienen del backend, no están fijos en el código)
+function Filtros({ busqueda, setBusqueda, nivelSeleccionado, setNivelSeleccionado, onGestionarHabilidades, niveles = [] }) {
   return (
-    <section id="filtros" className="container my-3">
+    <section className="container my-3 adm-rendimiento-filtros">
       <div className="row g-3 align-items-center">
         <div className="col-md-5">
           <input
@@ -20,23 +21,21 @@ function Filtros({ busqueda, setBusqueda, nivelSeleccionado, setNivelSeleccionad
             onChange={(e) => setNivelSeleccionado(e.target.value)}
           >
             <option value="">Todos los niveles</option>
-            <option value="Nivel Formativo King">Nivel Formativo King</option>
-            <option value="Nivel 3 Magic">Nivel 3 Magic</option>
-            <option value="Nivel 1 Princess">Nivel 1 Princess</option>
-            <option value="Nivel 4 Blood Tigers">Nivel 4 Blood Tigers</option>
-            <option value="Nivel 1 Queen">Nivel 1 Queen</option>
+            {niveles.map((n) => (
+              <option key={n} value={n}>{n}</option>
+            ))}
           </select>
         </div>
 
         <div className="col-md-4 text-md-end">
           {/* Se eliminó la etiqueta <a> y se agregó onClick al button */}
           <button 
-            id="btn-habil" 
-            className="btn btn-danger d-inline-flex align-items-center gap-2"
+            
+            className="btn btn-danger d-inline-flex align-items-center gap-2 adm-rendimiento-btn-habil"
             onClick={onGestionarHabilidades}
           >
             <svg
-              id="habil"
+              className="adm-rendimiento-habil"
               xmlns="http://www.w3.org/2000/svg"
               width="20"
               height="20"

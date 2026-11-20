@@ -1,5 +1,5 @@
 
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { CATEGORIAS, formatearFechaCorta } from "./horariosAtletaData";
 
 export default function ModalEntrenamientoAtleta({ sesion, onCerrar }) {

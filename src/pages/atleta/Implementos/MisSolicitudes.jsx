@@ -192,7 +192,7 @@ export default function MisSolicitudes({ onAviso }) {
             <article className="tarjeta-solicitud" key={s.id}>
               <div className="solicitud-cuerpo">
                 <img
-                  src={s.implementoImagen || "/img/placeholder.png"}
+                  src={s.implementoImagen || "/img/placeholder.svg"}
                   alt={s.implementoNombre}
                   className="img-solicitud"
                 />

@@ -1,5 +1,5 @@
 
-import React, { useEffect, useId } from "react";
+import { useEffect, useId } from "react";
 
 export default function ModalBase({
   titulo,

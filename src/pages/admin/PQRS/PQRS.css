@@ -1,4 +1,32 @@
-@import url("https://fonts.googleapis.com/css2?family=Arimo:wght@400;500;600;700&family=Varela+Round&display=swap");
+/* ── Estilos de otros módulos que ya afectaban a este (copiados para conservar el aspecto; ver README) ── */
+
+:where(.pqrs-page) select {
+    border: 1px solid #d4d4d4;
+    color: #333333;
+    font-size: 14px;
+    padding: 10px;
+    border-radius: 10px;
+    height: 40px;
+    width: 100%;}
+:where(.pqrs-page) .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 30px;
+    border-radius: var(--radio-sm);
+    font-weight: 700;
+    font-size: var(--texto-sm);
+    transition: var(--transicion);}
+:where(.pqrs-page) .table-responsive {
+  background: white;
+  border-radius: 14px;
+  border: 1px solid #e8edf2;
+  padding: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05), 0 0 1px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+  overflow-x: auto;
+  width: 100%;}
 
 .pqrs-page {
   --pq-primario: var(--color-primario, #d71920);
@@ -14,7 +42,6 @@
   --pq-tramite-texto: #058001;
   --pq-resuelto: #025bc2;
   --pq-resuelto-texto: #025bc2;
-  font-family: "Arimo", "Segoe UI", Arial, sans-serif;
   color: var(--pq-texto);
 }
 
@@ -40,7 +67,6 @@
 }
 
 .pqrs-cabecera h1 {
-  font-family: "Varela Round", sans-serif;
   font-size: 2rem;
   font-weight: 400;
   margin-bottom: 6px;
@@ -99,7 +125,6 @@
 }
 
 .pqrs-resumen-cifra strong {
-  font-family: "Varela Round", sans-serif;
   font-size: 28px;
   line-height: 1;
   color: var(--acento-texto);
@@ -367,7 +392,6 @@
 
 .pqrs-modal .modal-title {
   margin: 0;
-  font-family: "Arimo", sans-serif;
   font-size: 18px;
   font-weight: 700;
   line-height: 1.3;
@@ -497,3 +521,48 @@
     animation: none;
   }
 }
+
+/* ── Estilos de otros módulos que ya afectaban a este (copiados para conservar el aspecto; ver README) ── */
+
+:where(.pqrs-page) select {
+    border: 1px solid #d4d4d4;
+    color: #333333;
+    font-size: 14px;
+    padding: 10px;
+    border-radius: 10px;
+    height: 40px;
+    width: 100%;}
+:where(.pqrs-page) .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--espacio-xs);
+  padding: 10px 24px;
+  border-radius: var(--radio-sm);
+  font-weight: 700;
+  font-size: var(--texto-sm);
+  transition: var(--transicion);}
+:where(.pqrs-page) .modal-header {
+    position: static;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid var(--gris-borde);
+    border-radius: 20px 20px 0 0;
+    flex-shrink: 0;
+    transition: background var(--trans), color var(--trans);}
+:where(.pqrs-page) .modal-header h3 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--carbon);
+    margin: 0;
+    flex-grow: 1;
+    letter-spacing: -0.02em;}
+:where(.pqrs-page) .modal-body {
+    padding: 20px 24px 24px;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;  
+    flex: 1;
+    gap: 24px;}

@@ -6,7 +6,7 @@ function FiltrosMensualidades({
   meses, planes,
 }) {
   return (
-    <section id="filtros" className="container my-3">
+    <section className="container my-3 adm-pagos-filtros">
       <div className="row g-3 align-items-center">
         <div className="col-md-4">
           <input

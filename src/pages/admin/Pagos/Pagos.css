@@ -1,70 +1,522 @@
-@import url('https://fonts.googleapis.com/css2?family=Varela+Round&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Arimo:wght@400;500;700&display=swap');
+/* ── Estilos de otros módulos que ya afectaban a este (copiados para conservar el aspecto; ver README) ── */
 
-:root {
+:where(.adm-pagos) .targe-ren {
+    background: #ffffff;
+    border: 1px solid #d4d4d4;
+    padding: 20px;
+    height: 120px;
+    border-radius: 15px;}
+:where(.adm-pagos) .titu-targe {
+    font-size: 20px;
+    margin-bottom:15px;}
+:where(.adm-pagos) .conte-targe {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0px 15px;
+    margin-right: 10px;}
+:where(.adm-pagos) .numero {
+    font-size: 27px;
+    font-weight: 700;}
+:where(.adm-pagos) .svg-ojo {
+    width: 23px;
+    height: 23px;}
+:where(.adm-pagos) .svg-de {
+    width: 23px;
+    height: 23px;}
+:where(.adm-pagos) .titu-targe {
+    font-size: 15px;
+    color: var(--texto-muted);}/* ── Estilos que este módulo usa y que antes vivían en el CSS de otros módulos (copiados para conservar el aspecto) ── */
 
-    --rojo: #d71920;
-    --rojo-hover: #b8141a;
-    --rojo-light: #fdeaea;
+.adm-pagos-titu-ren h3 {
+    font-size: 30px;
+    margin-top: 10px;
+    margin-bottom: 20px;}
+.adm-pagos-titu-ren p {
+    font-size: 15px;
+    color: #858585;}
+.adm-pagos-tabla td {
+    padding: 14px 10px;
+    border-bottom: 1px solid #e5e7eb;}
+.adm-pagos-tabla thead {
+    text-align: center;
+    height: 40px;
+    background: #e5e7eb;
+    border: 1px solid #e5e7eb;
+    font-weight: 600;}
+.adm-pagos-tabla tbody {
+    text-align: center;}
+.adm-pagos-menu-regis {
+    min-width: 470px;
+    background: #ffffff;
+    border: 2px solid #ffffff;
+    border-radius:15px ;}
+.adm-pagos-menu-regis[open] {
+    gap: 14px;}
+.adm-pagos-foto {
+    height: 100px;
+    width: 70px;
+    margin-right: 35px;
+    border-radius: 14px;
+    object-fit: cover;}
+.adm-pagos-cancelar {
+    border: 1px solid #E5E7EB;
+    background: #E5E7EB;
+    color: #696969;
+    font-size: 15px;
+    padding: 10px 16px;
+    border-radius: 10px;
+    height: 40px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform .2s ease;}
+.adm-pagos-cancelar:hover {
+    transform: translateY(-2px);}
+.adm-pagos-cancelar:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;}
+.adm-pagos-tabla td:nth-child(1) { width: 20%;}
+.adm-pagos-tabla td:nth-child(2) { width: 25%;}
+.adm-pagos-tabla td:nth-child(3) { width: 18%;}
+.adm-pagos-tabla td:nth-child(4) { width: 15%;}
+.adm-pagos-tabla td:nth-child(5) { width: 12%;}
+.adm-pagos-tabla td:nth-child(6) { width: 10%;}
+.adm-pagos-menu-regis {
+    min-width: 470px;
+    background: #ffffff;
+    border: 2px solid #ffffff;
+    border-radius:15px ;}
+.adm-pagos-menu-regis[open] {
+    gap: 14px;}
+.adm-pagos-infor-cabe {
+    display: flex;
+    align-items: center;
+    gap: 20px;}
+.adm-pagos-sim-menu {
+    color:#3b82f6 ;}
+.adm-pagos-sim-x {
+    height: 25px;
+    width: 25px ;
+    cursor: pointer;}
+.adm-pagos-res-pago {
+    display: flex;
+    gap: 10px;
+    padding: 25px;}
+.adm-pagos-conte-btn {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    border-top: 2px solid #d4d4d4;
+    padding: 25px;}
+.adm-pagos-cancelar {
+    border: 1px solid #818181;
+    background: #ffffff;
+    color: var(--texto-muted);
+    font-size: 16px;
+    padding: 10px;
+    border-radius: 10px;
+    height: 40px;
+    width: 120px;
+    font-weight: 900;
+    cursor: pointer;}
+.adm-pagos-registrar {
+    border: 1px solid var(--rojo-noso);
+    background: var(--rojo-noso);
+    color: #ffffff;
+    font-size: 16px;
+    padding: 10px;
+    border-radius: 10px;
+    height: 40px;
+    width: 150px;
+    font-weight: 900;}
+.adm-pagos-foto {
+    height: 100px;
+    width: 70px;
+    margin-right: 35px;
+    border-radius: 14px;
+    object-fit: cover;}
+.adm-pagos-cancelar {
+    border: 1px solid #E5E7EB;
+    background: #E5E7EB;
+    color: #696969;
+    font-size: 15px;
+    padding: 10px 16px;
+    border-radius: 10px;
+    height: 40px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform .2s ease;}
+.adm-pagos-cancelar:hover {
+    transform: translateY(-2px);}
+.adm-pagos-cancelar:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;}/* ── Estilos de otros módulos que ya afectaban a este (copiados para conservar el aspecto; ver README) ── */
 
+:where(.adm-pagos) .select {
+    border: 1px solid #d4d4d4;
+    color: #333333;
+    font-size: 15px;
+    padding: 5px 10px 5px 10px;
+    height: 35px;
+    margin: 0px 20px 0px 20px;}
+:where(.adm-pagos) .btn-nivel {
+    border:none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    height:27px;}
+:where(.adm-pagos) .barra-ren {
+    width: 160px;
+    height: 12px;
+    background: #e2e2e2;
+    border-radius: 99px;
+    display: inline-block;
+    vertical-align: middle;}
+:where(.adm-pagos) .barra-fill {
+    height: 100%;
+    background: #cc0000;
+    border-radius: 99px;}
+:where(.adm-pagos) .btn-ojo {
+    height: 35px;
+    width: 35px;
+    border-radius: 7px;
+    border: 1.5px solid #bfdbfe;
+    background: var(--azul-light);
+    color: var(--azul-oscuro);
+    cursor: pointer;}
+:where(.adm-pagos) .btn-ojo:hover {
+    background: var(--azul);
+    color: var(--blanco);
+    border-color: var(--azul);}
+:where(.adm-pagos) .btn-largo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0px 10px;
+    width: 110px;
+    height: 35px;
+    border: 2px solid #c2c2c3;
+    background: #ffffff;
+    border-radius:8px ;
+    cursor: pointer;}
+:where(.adm-pagos) .acti {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 35px;
+    height: 35px;
+    border: 2px solid #cc0000;
+    background: #cc0000;
+    border-radius:8px ;
+    font-size: 18px;
+    font-weight: 700;
+    color: #ffffff;
+    cursor: pointer;}
+:where(.adm-pagos) .desac {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 35px;
+    height: 35px;
+    border: 1px solid #cc0000;
+    background: #ffffff;
+    border-radius:8px ;
+    font-size: 18px;
+    font-weight: 500;
+    color: #000000;
+    cursor: pointer;}
+:where(.adm-pagos) .footer-cont {
+    display: flex;
+    justify-content: space-between;
+    margin: 20px 60px ;}
+:where(.adm-pagos) .btn-nivel {
+    border: none;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 4px 12px;}
+:where(.adm-pagos) .conte-input {
+    margin-top: 17px;
+    width: 100%;}
+:where(.adm-pagos) .barra-ren {
+    width: 100%;
+    height: 10px;
+    background: #e2e2e2;
+    border-radius: 99px;
+    display: inline-block;
+    vertical-align: middle;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    overflow: hidden;}
+:where(.adm-pagos) .barra-fill {
+    height: 100%;
+    background: var(--rojo-noso, #cc0000);
+    border-radius: 99px;
+    transition: width .3s ease;}
+:where(.adm-pagos) .select {
+    border: 1px solid #d4d4d4;
+    color: #333333;
+    font-size: 15px;
+    padding: 5px;
+    border-radius: 10px;
+    height: 35px;
+    width: 200px;
+    margin-left: 20px;}
+:where(.adm-pagos) .conte-input {
+    display:grid;
+    width: 50%;}
+:where(.adm-pagos) .label-titu {
+    font-size: 14px;
+    font-weight: 600;
+    color: #696969;
+    margin-bottom: 8px;}
+:where(.adm-pagos) .label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #696969;
+    margin-bottom: 8px;
+    margin-left: 25px;}
+:where(.adm-pagos) .conte-input input, :where(.adm-pagos) select {
+    border: 1px solid #d4d4d4;
+    color: #333333;
+    font-size: 14px;
+    padding: 10px;
+    border-radius: 10px;
+    height: 40px;
+    width: 100%;}
+:where(.adm-pagos) .btn-nivel {
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 4px 12px;}
+:where(.adm-pagos) .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 30px;
+    border-radius: var(--radio-sm);
+    font-weight: 700;
+    font-size: var(--texto-sm);
+    transition: var(--transicion);}
+:where(.adm-pagos) .tab-btn {
+    padding: 7px 18px;
+    border-radius: 6px;
+    font-size: var(--texto-sm);
+    font-weight: 600;
+    color: var(--texto-muted);
+    transition: var(--transicion);}
+:where(.adm-pagos) .tab-btn:hover { color: var(--texto-dark);}
+:where(.adm-pagos) .tab-btn--activo {
+    background: var(--rojo);
+    color: var(--blanco);}
+:where(.adm-pagos) .tab-btn--activo:hover { background: var(--rojo-hover);}
+:where(.adm-pagos) .tab-btn {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 0 0 10px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--gris-suave);
+  cursor: pointer;}/* Estilos que este módulo usa y que antes vivían en otros CSS (copiados para que no dependa de ellos) */
 
-    --verde: #1eaf52;
-    --verde-light: #e6f9ee;
-    --amarillo: #f59e0b;
-    --amarillo-light: #fef3c7;
-    --azul: #2f80ed;
-    --azul-light: #dbeafe;
-    --azul-oscuro: #1d4ed8;
-
-
-    --blanco: #ffffff;
-    --gris-fondo: #f5f5f5;
-    --gris-borde: #dcdcdc;
-    --gris-claro: #c9c9c9;
-    --gris-oscuro: #4d4d4d;
-
-
-    --texto-dark: #222222;
-    --texto-muted: #777777;
-
-    --color-primario: #d71920;
-    --rojo-noso: #cc0000;
-    --verde-noso: #1eaf52;
-    --amarillo-noso: #fad755;
-    --gris-noso: #dddddd;
-    --azul-noso: #3b82f6;
-    --text-texto: "Arimo", sans-serif;
-    --text-titulo: "Varela Round", sans-serif;
+.adm-pagos-titu-ren {
+    margin-left: 30px;
+    margin-top: 30px;
+}
+.adm-pagos-targetas {
+    display: flex;
+    margin-bottom: 20px;
+    gap: 30px;
+}
+.adm-pagos-filtros {
+    padding: 0px 30px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+:where(.adm-pagos) .select {
+    border: 1px solid #d4d4d4;
+    color: #333333;
+    font-size: 15px;
+    padding: 5px 10px 5px 10px;
+    height: 35px;
+    margin: 0px 20px 0px 20px;
+}
+.adm-pagos-panel {
+    background: #ffffff;
+    padding: 30px;
+    height: auto;
+    border-radius: 15px;
+}
+.adm-pagos-tabla {
+    border-collapse: collapse;
+    border: 1px solid #e5e7eb;
+}
+.adm-pagos-con-acci {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+}
+:where(.adm-pagos) .btn-nivel {
+    border:none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    height:27px;
+}
+:where(.adm-pagos) .barra-ren {
+    width: 160px;
+    height: 12px;
+    background: #e2e2e2;
+    border-radius: 99px;
+    display: inline-block;
+    vertical-align: middle;
+}
+:where(.adm-pagos) .barra-fill {
+    height: 100%;
+    background: #cc0000;
+    border-radius: 99px;
+}
+:where(.adm-pagos) .btn-ojo {
+    height: 35px;
+    width: 35px;
+    border-radius: 7px;
+    border: 1.5px solid #bfdbfe;
+    background: var(--azul-light);
+    color: var(--azul-oscuro);
+    cursor: pointer;
+}
+:where(.adm-pagos) .btn-ojo:hover {
+    background: var(--azul);
+    color: var(--blanco);
+    border-color: var(--azul);
+}
+.adm-pagos-botones {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+:where(.adm-pagos) .btn-largo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0px 10px;
+    width: 110px;
+    height: 35px;
+    border: 2px solid #c2c2c3;
+    background: #ffffff;
+    border-radius:8px ;
+    cursor: pointer;
+}
+:where(.adm-pagos) .acti {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 35px;
+    height: 35px;
+    border: 2px solid #cc0000;
+    background: #cc0000;
+    border-radius:8px ;
+    font-size: 18px;
+    font-weight: 700;
+    color: #ffffff;
+    cursor: pointer;
+}
+:where(.adm-pagos) .desac {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 35px;
+    height: 35px;
+    border: 1px solid #cc0000;
+    background: #ffffff;
+    border-radius:8px ;
+    font-size: 18px;
+    font-weight: 500;
+    color: #000000;
+    cursor: pointer;
+}
+:where(.adm-pagos) .footer-cont {
+    display: flex;
+    justify-content: space-between;
+    margin: 20px 60px ;
+}
+:where(.adm-pagos) .btn-nivel {
+    border: none;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 4px 12px;
+}
+:where(.adm-pagos) .barra-ren {
+    width: 100%;
+    height: 10px;
+    background: #e2e2e2;
+    border-radius: 99px;
+    display: inline-block;
+    vertical-align: middle;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    overflow: hidden;
+}
+:where(.adm-pagos) .barra-fill {
+    height: 100%;
+    background: var(--rojo-noso, #cc0000);
+    border-radius: 99px;
+    transition: width .3s ease;
+}
+:where(.adm-pagos) .select {
+    border: 1px solid #d4d4d4;
+    color: #333333;
+    font-size: 15px;
+    padding: 5px;
+    border-radius: 10px;
+    height: 35px;
+    width: 200px;
+    margin-left: 20px;
+}
+.adm-pagos-con-acci {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+}
+:where(.adm-pagos) .btn-nivel {
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 4px 12px;
 }
 
-
-.tabs-pagos {
+:where(.adm-pagos) .tabs-pagos {
     margin: 0 30px 20px;
     border-bottom: 2px solid #7777771b;
 }
 
-.tab-btn {
+:where(.adm-pagos) .tab-btn {
     padding: 10px 22px;
     border: none;
     background: transparent;
     cursor: pointer;
     font-weight: 600;
     font-size: 14px;
-    font-family: var(--text-titulo);
     color: #858585;
     border-bottom: 3px solid transparent;
     margin-bottom: -2px;
 }
 
-.tab-btn--activo {
+:where(.adm-pagos) .tab-btn--activo {
     color: var(--rojo-noso);
     border-bottom: 3px solid var(--rojo-noso);
 }
 
-.btn-registrar {
+:where(.adm-pagos) .btn-registrar {
     background: var(--verde-noso);
     color: #ffffff;
-    font-family: var(--text-titulo);
     font-weight: 600;
     font-size: 13px;
     border-radius: 8px;
@@ -74,30 +526,28 @@
     white-space: nowrap;
 }
 
-.sim-pago{
+:where(.adm-pagos) .sim-pago {
     margin-right: 10px;
 }
 
-.sim-targe{
+:where(.adm-pagos) .sim-targe {
     height: 13px;
     width: 13px;
     margin-right: 8px;
     margin-left: 3px;
 }
 
-.pill-registrado {
+:where(.adm-pagos) .pill-registrado {
     display: inline-flex;
     align-items: center;
     gap: 6px;
     font-size: 13px;
     color: #9f9f9f;
-    font-family: var(--text-texto);
     padding: 4px 10px;
     margin-left: 24px;
 }
 
-
-.chip-modal {
+:where(.adm-pagos) .chip-modal {
     display: inline-flex;
     justify-content: center;
     align-items: center;
@@ -111,29 +561,26 @@
     margin-bottom: 8px;
 }
 
+:where(.adm-pagos) .seccion-campe { margin-top: 25px; }
 
-.seccion-campe { margin-top: 25px; }
-
-.titu-campe-nivel {
-    font-family: var(--text-titulo);
+:where(.adm-pagos) .titu-campe-nivel {
     font-size: 22px;
 }
 
-.infor-adicional {
+:where(.adm-pagos) .infor-adicional {
     font-size: 13px;
     color: #858585;
-    font-family: var(--text-texto);
     font-weight: 600;
 }
 
-.detalle-lin {
+:where(.adm-pagos) .detalle-lin {
     margin: 10px 0 5px;
     height: 2px;
     background: #9a9a9a37;
     border-radius: 99px;
 }
 
-.targe-campe {
+:where(.adm-pagos) .targe-campe {
     background: #ffffff;
     border: 1px solid #d4d4d4;
     border-radius: 15px;
@@ -141,7 +588,7 @@
     height: 100%;
 }
 
-.portada-campe {
+:where(.adm-pagos) .portada-campe {
     height: 70px;
     background: linear-gradient(135deg, var(--rojo-noso), #7b2fff);
     display: flex;
@@ -150,14 +597,13 @@
     color: #ffffff;
 }
 
-.cuerpo-campe { padding: 14px 16px; }
+:where(.adm-pagos) .cuerpo-campe { padding: 14px 16px; }
 
-.titu-campe {
-    font-family: var(--text-titulo);
+:where(.adm-pagos) .titu-campe {
     font-size: 15px;
 }
 
-.fecha-campe {
+:where(.adm-pagos) .fecha-campe {
     background: #feeae9;
     color: var(--rojo-noso);
     font-size: 11px;
@@ -166,34 +612,30 @@
     white-space: nowrap;
 }
 
-.ubi-campe {
-    font-family: var(--text-texto);
+:where(.adm-pagos) .ubi-campe {
     font-size: 13px;
     color: #858585;
     margin-bottom: 6px;
 }
 
-.precio-campe {
-    font-family: var(--text-texto);
+:where(.adm-pagos) .precio-campe {
     font-size: 14px;
     font-weight: 700;
 }
 
-.cantidad-campe {
+:where(.adm-pagos) .cantidad-campe {
     font-size: 12px;
-    font-family: var(--text-titulo);
     color: #858585;
 }
 
-.porcentaje-campe {
+:where(.adm-pagos) .porcentaje-campe {
     font-size: 12px;
-    font-family: var(--text-titulo);
     background: #e8e8e8;
     padding: 2px 8px;
     border-radius: 5px;
 }
 
-.btn-ver-detalles {
+:where(.adm-pagos) .btn-ver-detalles {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -205,29 +647,27 @@
     border: 1px solid #9f9f9f;
     border-radius: 8px;
     font-size: 13px;
-    font-family: var(--text-titulo);
     cursor: pointer;
 }
 
-.btn-ver-detalles:hover { background: #f0f0f0; }
+:where(.adm-pagos) .btn-ver-detalles:hover { background: #f0f0f0; }
 
-
-#cabe-menu {
+.adm-pagos-cabe-menu {
     display: flex;
     justify-content: space-between;
     padding: 15px;
     border-bottom: 2px solid #d4d4d4;
 }
 
-#infor-cabe, #infor-tro { display: flex; align-items: center; gap: 15px; }
+.adm-pagos-infor-cabe, .adm-pagos-infor-tro { display: flex; align-items: center; gap: 15px; }
 
-#sim-menu, #sim-tro { color: var(--azul-noso); }
+.adm-pagos-sim-menu, .adm-pagos-sim-tro { color: var(--azul-noso); }
 
-#titu-menu { font-size: 18px; font-weight: 600; font-family: var(--text-titulo); }
+.adm-pagos-titu-menu { font-size: 18px; font-weight: 600; }
 
-#sim-x { height: 24px; width: 24px; cursor: pointer; }
+.adm-pagos-sim-x { height: 24px; width: 24px; cursor: pointer; }
 
-#btn-tro {
+.adm-pagos-btn-tro {
     background: #ae81fb5c;
     border: none;
     padding: 4px 14px;
@@ -236,7 +676,7 @@
     font-size: 13px;
 }
 
-#infor-usu {
+.adm-pagos-infor-usu {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -247,16 +687,16 @@
     padding: 0px 15px;
 }
 
-#conte-usu { display: flex;
+.adm-pagos-conte-usu { display: flex;
     align-items: center;
 }
 
-#foto{
+.adm-pagos-foto {
     display: flex;
     align-items: center;
 }
 
-#detalle-menu {
+.adm-pagos-detalle-menu {
     background: #ffffff;
     border: 2px solid #d4d4d4;
     border-radius: 100%;
@@ -264,17 +704,17 @@
     width: 40px;
 }
 
-.fondo-none{
+:where(.adm-pagos) .fondo-none {
     background: #fffbfb;
 }
 
-#id-usu { display: flex; }
+.adm-pagos-id-usu { display: flex; }
 
-#usu-tex h4 { font-family: var(--text-titulo); font-size: 15px; margin-bottom: 5px; }
+.adm-pagos-usu-tex h4 { font-size: 15px; margin-bottom: 5px; }
 
-#usu-tex h5 { font-family: var(--text-texto); font-weight: 700; color: #6e6b5f; font-size: 13px; }
+.adm-pagos-usu-tex h5 { font-weight: 700; color: #6e6b5f; font-size: 13px; }
 
-.fon-blanco, .fon-blan {
+:where(.adm-pagos) .fon-blanco, :where(.adm-pagos) .fon-blan {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -287,21 +727,20 @@
     font-size: 12px;
 }
 
-#mes-conte { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+.adm-pagos-mes-conte { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
 
-.dentro-menu {
-    font-family: var(--text-texto);
+:where(.adm-pagos) .dentro-menu {
     font-size: 14px;
     font-weight: 500;
     margin-left: 25px;
     color: #9b9b9b;
 }
 
-#targetas-cobro { padding: 15px 25px; }
+.adm-pagos-targetas-cobro { padding: 15px 25px; }
 
-.targe-a { display: flex; gap: 15px; margin-bottom: 10px; }
+:where(.adm-pagos) .targe-a { display: flex; gap: 15px; margin-bottom: 10px; }
 
-.targe-co {
+:where(.adm-pagos) .targe-co {
     background-color: #fffbfb;
     border-radius: 15px;
     border: 1px solid #d4d4d4;
@@ -309,29 +748,28 @@
     padding: 10px;
 }
 
-.targe-co h5 { color: #646464; font-size: 12px; font-family: var(--text-titulo); margin-bottom: 5px; }
+:where(.adm-pagos) .targe-co h5 { color: #646464; font-size: 12px; margin-bottom: 5px; }
 
-#gen { font-family: var(--text-texto); font-size: 15px; color: #252525; }
+.adm-pagos-gen { font-size: 15px; color: #252525; }
 
-#total { font-family: var(--text-texto); font-size: 18px; font-weight: 600; color: #252525; }
+.adm-pagos-total { font-size: 18px; font-weight: 600; color: #252525; }
 
-#linea { height: 2px; background: #d4d4d4; margin: 0 24px 15px; }
+.adm-pagos-linea { height: 2px; background: #d4d4d4; margin: 0 24px 15px; }
 
-#res-pago { display: flex; gap: 10px; padding: 0 25px 15px; }
+.adm-pagos-res-pago { display: flex; gap: 10px; padding: 0 25px 15px; }
 
-.conte-input { display: grid; width: 50%; }
+:where(.adm-pagos) .conte-input { display: grid; width: 50%; }
 
-.label-titu, .label {
+:where(.adm-pagos) .label-titu, :where(.adm-pagos) .label {
     font-size: 13px;
     font-weight: 600;
     color: #696969;
-    font-family: var(--text-texto);
     margin-bottom: 6px;
 }
 
-.label { margin-left: 25px; margin-top: 10px; display: block; }
+:where(.adm-pagos) .label { margin-left: 25px; margin-top: 10px; display: block; }
 
-.conte-input input, .conte-input select {
+:where(.adm-pagos) .conte-input input, :where(.adm-pagos) .conte-input select {
     border: 1px solid #d4d4d4;
     color: #333333;
     font-size: 14px;
@@ -339,10 +777,9 @@
     border-radius: 10px;
     height: 38px;
     width: 100%;
-    font-family: var(--text-texto);
 }
 
-#ob {
+.adm-pagos-ob {
     border: 1px solid #d4d4d4;
     color: #333333;
     font-size: 14px;
@@ -350,12 +787,11 @@
     border-radius: 10px;
     height: 55px;
     width: 89%;
-    font-family: var(--text-texto);
     margin: 8px 25px 15px;
     resize: vertical;
 }
 
-#conte-btn {
+.adm-pagos-conte-btn {
     display: flex;
     justify-content: flex-end;
     gap: 12px;
@@ -363,7 +799,7 @@
     padding: 18px 25px;
 }
 
-#cancelar {
+.adm-pagos-cancelar {
     border: none;
     background: var(--rojo-noso);
     color: #ffffff;
@@ -371,11 +807,10 @@
     padding: 8px 16px;
     border-radius: 10px;
     font-weight: 700;
-    font-family: var(--text-texto);
     cursor: pointer;
 }
 
-#registrar {
+.adm-pagos-registrar {
     border: none;
     background: var(--verde-noso);
     color: #ffffff;
@@ -383,21 +818,19 @@
     padding: 8px 16px;
     border-radius: 10px;
     font-weight: 700;
-    font-family: var(--text-texto);
     cursor: pointer;
 }
 
-#registrar:disabled { opacity: .6; cursor: not-allowed; }
+.adm-pagos-registrar:disabled { opacity: .6; cursor: not-allowed; }
 
-
-#conte-compro {
+.adm-pagos-conte-compro {
     background-color: #ffffff;
     border-radius: 15px;
     border: 1px solid #d4d4d4;
     margin: 20px 25px 0;
 }
 
-#docu-infor {
+.adm-pagos-docu-infor {
     display: flex;
     align-items: center;
     gap: 15px;
@@ -407,11 +840,11 @@
     border-radius: 15px 15px 0 0;
 }
 
-#docu-infor h4 { font-family: var(--text-titulo); font-size: 14px; }
+.adm-pagos-docu-infor h4 { font-size: 14px; }
 
-#docu-infor span { font-family: var(--text-texto); color: #8c8c8c; font-size: 12px; }
+.adm-pagos-docu-infor span { color: #8c8c8c; font-size: 12px; }
 
-#infor-pago {
+.adm-pagos-infor-pago {
     display: flex;
     justify-content: center;
     gap: 18px;
@@ -420,19 +853,18 @@
     font-size: 12px;
 }
 
-.informacion-pag {
+:where(.adm-pagos) .informacion-pag {
     display: flex;
     align-items: center;
-    font-family: var(--text-texto);
     font-weight: 400;
     font-size: 12px;
     color: #8c8c8c;
     margin: 0;
 }
 
-#btn-compro { padding: 18px 25px; display: flex; gap: 15px; }
+.adm-pagos-btn-compro { padding: 18px 25px; display: flex; gap: 15px; }
 
-.btn-accion-compro {
+:where(.adm-pagos) .btn-accion-compro {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -446,9 +878,9 @@
 }
 
 /* Detalle competencia */
-#targetas-tro { display: flex; padding: 15px 25px; gap: 12px; }
+.adm-pagos-targetas-tro { display: flex; padding: 15px 25px; gap: 12px; }
 
-.targe-tro {
+:where(.adm-pagos) .targe-tro {
     width: 33%;
     padding: 10px;
     background-color: #fffbfb;
@@ -456,13 +888,13 @@
     border: 1px solid #d4d4d4;
 }
 
-#titu-tro { font-size: 13px; font-family: var(--text-texto); color: #858585; margin-bottom: 5px; }
+.adm-pagos-titu-tro { font-size: 13px; color: #858585; margin-bottom: 5px; }
 
-#avlor-tro { font-size: 15px; font-family: var(--text-titulo); font-weight: 700; }
+.adm-pagos-avlor-tro { font-size: 15px; font-weight: 700; }
 
-#botones-tro { display: flex; gap: 10px; padding: 0 25px 15px; }
+.adm-pagos-botones-tro { display: flex; gap: 10px; padding: 0 25px 15px; }
 
-.btn-filt {
+:where(.adm-pagos) .btn-filt {
     background: #ae81fb5c;
     border: none;
     padding: 6px 16px;
@@ -471,7 +903,7 @@
     cursor: pointer;
 }
 
-.btn-fil {
+:where(.adm-pagos) .btn-fil {
     background-color: #fffbfb;
     border: 1px solid #d4d4d4;
     padding: 6px 14px;
@@ -479,9 +911,9 @@
     cursor: pointer;
 }
 
-#tro-atle { padding: 15px 25px; max-height: 220px; overflow-y: auto; }
+.adm-pagos-tro-atle { padding: 15px 25px; max-height: 220px; overflow-y: auto; }
 
-#atle-targe {
+.adm-pagos-atle-targe {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -490,9 +922,9 @@
     padding-bottom: 8px;
 }
 
-#a-t { display: flex; align-items: center; gap: 12px; }
+.adm-pagos-a-t { display: flex; align-items: center; gap: 12px; }
 
-#deta-fto {
+.adm-pagos-deta-fto {
     height: 36px;
     width: 36px;
     border-radius: 100%;
@@ -500,16 +932,15 @@
     border: 2px solid #d4d4d4;
 }
 
-#nombre-atl { font-family: var(--text-titulo); font-size: 14px; }
+.adm-pagos-nombre-atl { font-size: 14px; }
 
-#ID-fecha { font-family: var(--text-texto); font-size: 12px; font-weight: 700; color: #858585; }
+.adm-pagos-ID-fecha { font-size: 12px; font-weight: 700; color: #858585; }
 
-#acci-a { display: flex; align-items: center; gap: 10px; }
+.adm-pagos-acci-a { display: flex; align-items: center; gap: 10px; }
 
-.regi {
+:where(.adm-pagos) .regi {
     background-color: var(--verde-noso);
     color: #ffffff;
-    font-family: var(--text-titulo);
     font-size: 13px;
     border-radius: 8px;
     border: none;
@@ -519,30 +950,677 @@
 }
 
 /* ── Modales: tres tamaños distintos ── */
-#menu-regis {
-    top: 50%; left: 50%; transform: translate(-50%, -50%);
+.adm-pagos-menu-regis {
     min-width: 470px;
     background: #ffffff;
     border: none;
     border-radius: 15px;
 }
-#menu-regis::backdrop { background: #00000062; backdrop-filter: blur(2px); }
+.adm-pagos-menu-regis::backdrop { background: #00000062; backdrop-filter: blur(2px); }
 
-#menu-regis2 {
-    top: 30%; left: 35%; transform: translate(-35%, -35%);
+.adm-pagos-menu-regis2 {
     min-width: 470px;
     background: #ffffff;
     border: none;
     border-radius: 15px;
 }
-#menu-regis2::backdrop { background: #00000062; backdrop-filter: blur(2px); }
+.adm-pagos-menu-regis2::backdrop { background: #00000062; backdrop-filter: blur(2px); }
 
-#menu-regis3 {
-    top: 35%; left: 35%; transform: translate(-50%, -50%);
+.adm-pagos-menu-regis3 {
     min-width: 470px;
     max-width: 520px;
     background: #ffffff;
     border: none;
     border-radius: 15px;
 }
-#menu-regis3::backdrop { background: #00000062; backdrop-filter: blur(2px); }
+.adm-pagos-menu-regis3::backdrop { background: #00000062; backdrop-filter: blur(2px); }
+:where(.adm-pagos) .btn-nivel {
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 4px 12px;
+}
+:where(.adm-pagos) .btn-nivel {
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 4px 12px;
+}
+:where(.adm-pagos) .select {
+    border: 1px solid #d4d4d4;
+    color: #333333;
+    font-size: 15px;
+    padding: 5px;
+    border-radius: 10px;
+    height: 35px;
+    width: 200px;
+    margin-left: 20px;
+}
+.adm-pagos-con-acci {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+}
+:where(.adm-pagos) .btn-nivel {
+    border: none;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 4px 12px;
+}
+:where(.adm-pagos) .barra-ren {
+    width: 100%;
+    height: 10px;
+    background: #e2e2e2;
+    border-radius: 99px;
+    display: inline-block;
+    vertical-align: middle;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    overflow: hidden;
+}
+:where(.adm-pagos) .barra-fill {
+    height: 100%;
+    background: var(--rojo-noso, #cc0000);
+    border-radius: 99px;
+    transition: width .3s ease;
+}
+.adm-pagos-titu-ren {
+    margin-left: 30px;
+    margin-top: 30px;
+}
+.adm-pagos-targetas {
+    display: flex;
+    margin-bottom: 20px;
+    gap: 30px;
+}
+.adm-pagos-filtros {
+    padding: 0px 30px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+:where(.adm-pagos) .select {
+    border: 1px solid #d4d4d4;
+    color: #333333;
+    font-size: 15px;
+    padding: 5px 10px 5px 10px;
+    height: 35px;
+    margin: 0px 20px 0px 20px;
+}
+.adm-pagos-panel {
+    background: #ffffff;
+    padding: 30px;
+    height: auto;
+    border-radius: 15px;
+}
+.adm-pagos-tabla {
+    border-collapse: collapse;
+    border: 1px solid #e5e7eb;
+}
+.adm-pagos-con-acci {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+}
+:where(.adm-pagos) .btn-nivel {
+    border:none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    height:27px;
+}
+:where(.adm-pagos) .barra-ren {
+    width: 160px;
+    height: 12px;
+    background: #e2e2e2;
+    border-radius: 99px;
+    display: inline-block;
+    vertical-align: middle;
+}
+:where(.adm-pagos) .barra-fill {
+    height: 100%;
+    background: #cc0000;
+    border-radius: 99px;
+}
+:where(.adm-pagos) .btn-ojo {
+    height: 35px;
+    width: 35px;
+    border-radius: 7px;
+    border: 1.5px solid #bfdbfe;
+    background: var(--azul-light);
+    color: var(--azul-oscuro);
+    cursor: pointer;
+}
+:where(.adm-pagos) .btn-ojo:hover {
+    background: var(--azul);
+    color: var(--blanco);
+    border-color: var(--azul);
+}
+.adm-pagos-botones {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+:where(.adm-pagos) .btn-largo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0px 10px;
+    width: 110px;
+    height: 35px;
+    border: 2px solid #c2c2c3;
+    background: #ffffff;
+    border-radius:8px ;
+    cursor: pointer;
+}
+:where(.adm-pagos) .acti {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 35px;
+    height: 35px;
+    border: 2px solid #cc0000;
+    background: #cc0000;
+    border-radius:8px ;
+    font-size: 18px;
+    font-weight: 700;
+    color: #ffffff;
+    cursor: pointer;
+}
+:where(.adm-pagos) .desac {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 35px;
+    height: 35px;
+    border: 1px solid #cc0000;
+    background: #ffffff;
+    border-radius:8px ;
+    font-size: 18px;
+    font-weight: 500;
+    color: #000000;
+    cursor: pointer;
+}
+:where(.adm-pagos) .footer-cont {
+    display: flex;
+    justify-content: space-between;
+    margin: 20px 60px ;
+}
+
+/* ── Estilos de otros módulos que ya afectaban a este (copiados para conservar el aspecto; ver README) ── */
+
+:where(.adm-pagos) .tab-btn {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #666;
+    cursor: pointer;
+    border: none;
+    background: none;
+    border-bottom: 2.5px solid transparent;
+    margin-bottom: -1.5px;
+    transition: color 0.2s, border-color 0.2s;
+    white-space: nowrap;}
+:where(.adm-pagos) .tab-btn:hover {
+    color: var(--color-primario);}
+:where(.adm-pagos) .select {
+    border: 1px solid #d4d4d4;
+    color: #333333;
+    font-size: 15px;
+    padding: 5px 10px 5px 10px;
+    height: 35px;
+    margin: 0px 20px 0px 20px;}
+:where(.adm-pagos) .btn-nivel {
+    border:none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    height:27px;}
+:where(.adm-pagos) .barra-ren {
+    width: 160px;
+    height: 12px;
+    background: #e2e2e2;
+    border-radius: 99px;
+    display: inline-block;
+    vertical-align: middle;}
+:where(.adm-pagos) .barra-fill {
+    height: 100%;
+    background: #cc0000;
+    border-radius: 99px;}
+:where(.adm-pagos) .btn-ojo {
+    height: 35px;
+    width: 35px;
+    border-radius: 7px;
+    border: 1.5px solid #bfdbfe;
+    background: var(--azul-light);
+    color: var(--azul-oscuro);
+    cursor: pointer;}
+:where(.adm-pagos) .btn-ojo:hover {
+    background: var(--azul);
+    color: var(--blanco);
+    border-color: var(--azul);}
+:where(.adm-pagos) .btn-largo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0px 10px;
+    width: 110px;
+    height: 35px;
+    border: 2px solid #c2c2c3;
+    background: #ffffff;
+    border-radius:8px ;
+    cursor: pointer;}
+:where(.adm-pagos) .acti {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 35px;
+    height: 35px;
+    border: 2px solid #cc0000;
+    background: #cc0000;
+    border-radius:8px ;
+    font-size: 18px;
+    font-weight: 700;
+    color: #ffffff;
+    cursor: pointer;}
+:where(.adm-pagos) .desac {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 35px;
+    height: 35px;
+    border: 1px solid #cc0000;
+    background: #ffffff;
+    border-radius:8px ;
+    font-size: 18px;
+    font-weight: 500;
+    color: #000000;
+    cursor: pointer;}
+:where(.adm-pagos) .footer-cont {
+    display: flex;
+    justify-content: space-between;
+    margin: 20px 60px ;}
+:where(.adm-pagos) .btn-nivel {
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 4px 12px;}
+:where(.adm-pagos) .btn-nivel {
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 4px 12px;}
+:where(.adm-pagos) .btn-nivel {
+    border: none;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 4px 12px;}
+:where(.adm-pagos) .conte-input {
+    margin-top: 17px;
+    width: 100%;}
+:where(.adm-pagos) .barra-ren {
+    width: 100%;
+    height: 10px;
+    background: #e2e2e2;
+    border-radius: 99px;
+    display: inline-block;
+    vertical-align: middle;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    overflow: hidden;}
+:where(.adm-pagos) .barra-fill {
+    height: 100%;
+    background: var(--rojo-noso, #cc0000);
+    border-radius: 99px;
+    transition: width .3s ease;}
+:where(.adm-pagos) .select {
+    border: 1px solid #d4d4d4;
+    color: #333333;
+    font-size: 15px;
+    padding: 5px;
+    border-radius: 10px;
+    height: 35px;
+    width: 200px;
+    margin-left: 20px;}
+:where(.adm-pagos) .conte-input {
+    display:grid;
+    width: 50%;}
+:where(.adm-pagos) .label-titu {
+    font-size: 14px;
+    font-weight: 600;
+    color: #696969;
+    margin-bottom: 8px;}
+:where(.adm-pagos) .label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #696969;
+    margin-bottom: 8px;
+    margin-left: 25px;}
+:where(.adm-pagos) .conte-input input, :where(.adm-pagos) select {
+    border: 1px solid #d4d4d4;
+    color: #333333;
+    font-size: 14px;
+    padding: 10px;
+    border-radius: 10px;
+    height: 40px;
+    width: 100%;}
+:where(.adm-pagos) .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--espacio-xs);
+  padding: 10px 24px;
+  border-radius: var(--radio-sm);
+  font-weight: 700;
+  font-size: var(--texto-sm);
+  transition: var(--transicion);}
+:where(.adm-pagos) .tab-btn {
+    position: relative;
+    padding: 11px 22px 13px;
+    background: transparent;
+    border: none;
+    color: var(--gris-texto);
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: color var(--trans);
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;}
+:where(.adm-pagos) .tab-btn:hover {
+    color: var(--carbon);}
+
+/* ── Estilos que este módulo usa y que antes vivían en el CSS de otros módulos (copiados para conservar el aspecto) ── */
+
+.adm-pagos-titu-ren h3 {
+    font-size: 30px;
+    margin-top: 10px;
+    margin-bottom: 20px;}
+.adm-pagos-titu-ren p {
+    font-size: 15px;
+    color: #858585;}
+.adm-pagos-tabla td {
+    padding: 14px 10px;
+    border-bottom: 1px solid #e5e7eb;}
+.adm-pagos-tabla thead {
+    text-align: center;
+    height: 40px;
+    background: #e5e7eb;
+    border: 1px solid #e5e7eb;
+    font-weight: 600;}
+.adm-pagos-tabla tbody {
+    text-align: center;}
+.adm-pagos-menu-regis {
+    min-width: 470px;
+    background: #ffffff;
+    border: 2px solid #ffffff;
+    border-radius:15px ;}
+.adm-pagos-menu-regis[open] {
+    gap: 14px;}
+.adm-pagos-foto {
+    height: 100px;
+    width: 70px;
+    margin-right: 35px;
+    border-radius: 14px;
+    object-fit: cover;}
+.adm-pagos-foto {
+    height: 100px;
+    width: 70px;
+    margin-right: 35px;
+    border-radius: 14px;
+    object-fit: cover;}
+.adm-pagos-cancelar {
+    border: 1px solid #E5E7EB;
+    background: #E5E7EB;
+    color: #696969;
+    font-size: 15px;
+    padding: 10px 16px;
+    border-radius: 10px;
+    height: 40px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform .2s ease;}
+.adm-pagos-cancelar:hover {
+    transform: translateY(-2px);}
+.adm-pagos-cancelar:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;}
+.adm-pagos-foto {
+    height: 100px;
+    width: 70px;
+    margin-right: 35px;
+    border-radius: 14px;
+    object-fit: cover;}
+.adm-pagos-cancelar {
+    border: 1px solid #E5E7EB;
+    background: #E5E7EB;
+    color: #696969;
+    font-size: 15px;
+    padding: 10px 16px;
+    border-radius: 10px;
+    height: 40px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform .2s ease;}
+.adm-pagos-cancelar:hover {
+    transform: translateY(-2px);}
+.adm-pagos-cancelar:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;}
+.adm-pagos-tabla td:nth-child(1) { width: 20%;}
+.adm-pagos-tabla td:nth-child(2) { width: 25%;}
+.adm-pagos-tabla td:nth-child(3) { width: 18%;}
+.adm-pagos-tabla td:nth-child(4) { width: 15%;}
+.adm-pagos-tabla td:nth-child(5) { width: 12%;}
+.adm-pagos-tabla td:nth-child(6) { width: 10%;}
+.adm-pagos-menu-regis {
+    min-width: 470px;
+    background: #ffffff;
+    border: 2px solid #ffffff;
+    border-radius:15px ;}
+.adm-pagos-menu-regis[open] {
+    gap: 14px;}
+.adm-pagos-infor-cabe {
+    display: flex;
+    align-items: center;
+    gap: 20px;}
+.adm-pagos-sim-menu {
+    color:#3b82f6 ;}
+.adm-pagos-sim-x {
+    height: 25px;
+    width: 25px ;
+    cursor: pointer;}
+.adm-pagos-res-pago {
+    display: flex;
+    gap: 10px;
+    padding: 25px;}
+.adm-pagos-conte-btn {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    border-top: 2px solid #d4d4d4;
+    padding: 25px;}
+.adm-pagos-cancelar {
+    border: 1px solid #818181;
+    background: #ffffff;
+    color: var(--texto-muted);
+    font-size: 16px;
+    padding: 10px;
+    border-radius: 10px;
+    height: 40px;
+    width: 120px;
+    font-weight: 900;
+    cursor: pointer;}
+.adm-pagos-registrar {
+    border: 1px solid var(--rojo-noso);
+    background: var(--rojo-noso);
+    color: #ffffff;
+    font-size: 16px;
+    padding: 10px;
+    border-radius: 10px;
+    height: 40px;
+    width: 150px;
+    font-weight: 900;}
+
+/* ── Estilos de otros módulos que ya afectaban a este (copiados para conservar el aspecto; ver README) ── */
+
+:where(.adm-pagos) .targe-ren {
+    background: #ffffff;
+    border: 1px solid #d4d4d4;
+    padding: 20px;
+    height: 120px;
+    border-radius: 15px;}
+:where(.adm-pagos) .titu-targe {
+    font-size: 20px;
+    margin-bottom:15px;}
+:where(.adm-pagos) .conte-targe {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0px 15px;
+    margin-right: 10px;}
+:where(.adm-pagos) .numero {
+    font-size: 27px;
+    font-weight: 700;}
+:where(.adm-pagos) .svg-ojo {
+    width: 23px;
+    height: 23px;}
+:where(.adm-pagos) .svg-de {
+    width: 23px;
+    height: 23px;}
+:where(.adm-pagos) .conte-targe {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;}
+:where(.adm-pagos) .titu-targe {
+    font-size: 15px;
+    color: var(--texto-muted);}
+
+
+/* Las pestañas usan el componente global .ui-tabs */
+:where(.adm-pagos) .tabs-pagos {
+  border-bottom: none;
+}
+
+/* ── Modales de Pagos: centrados, dentro de la pantalla y sin espacios de más (bloque 6.3) ── */
+.adm-pagos-menu-regis,
+.adm-pagos-menu-regis2,
+.adm-pagos-menu-regis3 {
+    padding: 0;
+    width: min(520px, calc(100vw - 24px));
+    min-width: 0;
+}
+.adm-pagos-menu-regis[open],
+.adm-pagos-menu-regis2[open],
+.adm-pagos-menu-regis3[open] {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+.adm-pagos-menu-regis .adm-pagos-res-pago { padding: 6px 25px 4px; }
+.adm-pagos-menu-regis .conte-input { margin-top: 0; }
+.adm-pagos-menu-regis .label { margin: 10px 25px 0; }
+.adm-pagos-menu-regis .dentro-menu { margin: 6px 25px 8px; }
+.adm-pagos-menu-regis .adm-pagos-ob { width: calc(100% - 50px); margin: 6px 25px 12px; }
+.adm-pagos-menu-regis .adm-pagos-conte-btn { padding: 16px 25px; }
+
+.adm-pagos-vista-compro { margin-top: 12px !important; display: flex; justify-content: center; margin: 0 25px; padding: 8px; border: 1px solid #d4d4d4; border-radius: 12px; background: #fafafa; }
+.adm-pagos-vista-compro img { max-width: 100%; max-height: 280px; object-fit: contain; border-radius: 8px; cursor: zoom-in; }
+.adm-pagos-btn-compro { display: flex; gap: 10px; flex-wrap: wrap; padding: 16px 25px; }
+.adm-pagos-btn-compro .btn-accion-compro { flex: 1; min-width: 120px; display: inline-flex; align-items: center; justify-content: center; text-decoration: none; }
+.adm-pagos-sin-archivo { color: #777; font-size: 14px; }
+
+/* ── Pestaña "Métodos de pago" (diseño propio) ───────────────────────────── */
+.adm-met { margin-top: 22px; padding: 0 26px; }
+.adm-met__cabecera { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 18px; }
+.adm-met__titulo { margin: 0 0 4px; font-size: 20px; }
+.adm-met__sub { margin: 0; color: var(--texto-muted); font-size: 14px; }
+.adm-met__nuevo {
+    display: inline-flex; align-items: center; gap: 6px; padding: 10px 18px; border: none; border-radius: 10px;
+    background: var(--rojo); color: var(--blanco); font-size: 14px; font-weight: 700; cursor: pointer; transition: background .2s;
+}
+.adm-met__nuevo:hover { background: #a30000; }
+
+.adm-met__lista { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
+.adm-met__tarjeta {
+    display: flex; align-items: center; gap: 14px; padding: 16px; background: var(--blanco);
+    border: 1px solid var(--gris-borde); border-top: 3px solid var(--rojo); border-radius: 14px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, .05);
+}
+.adm-met__icono { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; background: var(--rojo-light); color: var(--rojo); flex-shrink: 0; }
+.adm-met__info { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.adm-met__nombre { font-size: 16px; overflow-wrap: anywhere; }
+.adm-met__estado { font-size: 12px; color: #1a9a4b; font-weight: 600; }
+.adm-met__acciones { display: flex; gap: 6px; }
+.adm-met__btn {
+    display: grid; place-items: center; width: 34px; height: 34px; border: 1px solid var(--gris-borde); border-radius: 9px;
+    background: var(--blanco); color: var(--texto-dark); cursor: pointer; transition: background .15s, color .15s;
+}
+.adm-met__btn:hover { background: var(--gris-fondo); }
+.adm-met__btn--peligro { color: var(--rojo); }
+.adm-met__btn--peligro:hover { background: var(--rojo-light); }
+.adm-met__vacio { padding: 28px; text-align: center; color: var(--texto-muted); background: var(--blanco); border: 1px dashed var(--gris-borde); border-radius: 14px; }
+
+.adm-met__modal { width: min(420px, calc(100vw - 24px)); padding: 0; border: none; border-radius: 16px; }
+.adm-met__modal::backdrop { background: #00000062; backdrop-filter: blur(2px); }
+.adm-met__modal-cabeza { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--gris-borde); }
+.adm-met__modal-cabeza h5 { margin: 0; font-size: 17px; }
+.adm-met__cerrar { display: grid; place-items: center; border: none; background: transparent; cursor: pointer; padding: 4px; border-radius: 8px; }
+.adm-met__cerrar:hover { background: var(--gris-fondo); }
+.adm-met__modal-cuerpo { display: flex; flex-direction: column; gap: 8px; padding: 18px 20px 6px; }
+.adm-met__modal-cuerpo label { font-size: 13px; font-weight: 700; color: #555; }
+.adm-met__modal-cuerpo input { height: 42px; padding: 0 12px; border: 1px solid #d4d4d4; border-radius: 10px; font-size: 14px; }
+.adm-met__modal-cuerpo input:focus { outline: 2px solid var(--rojo); outline-offset: 1px; }
+.adm-met__texto { margin: 0; font-size: 14px; line-height: 1.5; }
+.adm-met__error { margin: 0; padding: 8px 12px; border-radius: 8px; background: var(--rojo-light); color: var(--rojo); font-size: 13px; font-weight: 600; }
+.adm-met__modal-pie { display: flex; justify-content: flex-end; gap: 10px; padding: 16px 20px 18px; }
+.adm-met__sec, .adm-met__pri { padding: 10px 18px; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; }
+.adm-met__sec { border: 1px solid var(--gris-borde); background: var(--blanco); color: var(--texto-dark); }
+.adm-met__pri { border: 1px solid var(--rojo); background: var(--rojo); color: var(--blanco); }
+.adm-met__pri--peligro { background: #a30000; border-color: #a30000; }
+.adm-met__pri:disabled, .adm-met__sec:disabled { opacity: .6; cursor: not-allowed; }
+
+/* ── Pestaña "Planes asociados" ──────────────────────────────────────────── */
+.adm-plan__tabla-wrap { background: var(--blanco); border: 1px solid var(--gris-borde); border-radius: 14px; overflow-x: auto; }
+.adm-plan__tabla { width: 100%; border-collapse: collapse; min-width: 640px; }
+.adm-plan__tabla th, .adm-plan__tabla td { padding: 14px 16px; text-align: center; border-bottom: 1px solid var(--gris-borde); font-size: 14px; }
+.adm-plan__tabla tbody tr:last-child td { border-bottom: none; }
+.adm-plan__desc { color: var(--texto-muted); max-width: 320px; overflow-wrap: anywhere; }
+.adm-plan__vacio { text-align: center; color: var(--texto-muted); padding: 26px !important; }
+.adm-plan__fila--inactiva td { opacity: .6; }
+.adm-plan__fila--inactiva td:last-child { opacity: 1; }
+.adm-plan__estado { display: inline-block; padding: 3px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+.adm-plan__estado--on { background: #e3f7ea; color: #1a9a4b; }
+.adm-plan__estado--off { background: #eceef2; color: #6b7280; }
+.adm-plan__acciones { justify-content: center; }
+.adm-plan__btn-on { color: #1a9a4b; }
+.adm-plan__btn-on:hover { background: #e3f7ea; }
+.adm-plan__fila { display: flex; gap: 12px; }
+.adm-plan__campo { display: flex; flex-direction: column; gap: 8px; flex: 1; min-width: 0; }
+.adm-met__modal-cuerpo textarea, .adm-met__modal-cuerpo select {
+    padding: 10px 12px; border: 1px solid #d4d4d4; border-radius: 10px; font-size: 14px; font-family: inherit; width: 100%;
+}
+.adm-met__modal-cuerpo select { height: 42px; padding: 0 12px; }
+.adm-met__modal-cuerpo textarea:focus, .adm-met__modal-cuerpo select:focus { outline: 2px solid var(--rojo); outline-offset: 1px; }
+.adm-met__modal-cuerpo textarea { resize: vertical; }
+
+/* ── Bloque 7: pestañas alineadas al borde del contenido (el espaciado lo da .ui-contenido) ── */
+.adm-pagos.ui-pagina .tabs-pagos {
+    margin: 0;
+}
+
+/* ── 4.3: QR opcional del método de pago ── */
+.adm-met__qr { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
+.adm-met__qr-etiqueta { font-weight: 600; }
+.adm-met__qr-etiqueta small { font-weight: 400; color: var(--texto-muted); }
+.adm-met__qr-vista { display: flex; align-items: center; gap: 14px; }
+.adm-met__qr-vista img { width: 96px; height: 96px; object-fit: contain; border: 1px solid #e5e7eb; border-radius: 10px; background: #fff; }
+.adm-met__qr-subir { display: inline-flex; align-items: center; gap: 8px; align-self: flex-start; padding: 9px 16px; border: 1.5px dashed #cbd5e1; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 14px; }
+.adm-met__qr-subir:hover { border-color: var(--rojo); color: var(--rojo); }

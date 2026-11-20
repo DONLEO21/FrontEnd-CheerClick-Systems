@@ -100,12 +100,14 @@ export default function ResenasImplementos() {
     const lista = resenas.filter((r) => {
       const coincideTexto =
         !texto ||
+        // calificación: "5" o "5 estrellas" coincide con las reseñas de 5 estrellas
+        (/^[1-5]s*(★|estrellas?)?$/.test(texto) && r.calificacion === Number(texto[0])) ||
         r.implementoNombre?.toLowerCase().includes(texto) ||
         r.atleta?.toLowerCase().includes(texto) ||
         r.comentario?.toLowerCase().includes(texto);
       const coincideProducto = filtroProducto === "todos" || r.implementoId === filtroProducto;
       const coincideCalificacion =
-        filtroCalificacion === "todas" || r.calificacion === Number(filtroCalificacion);
+        filtroCalificacion === "todas" || Number(r.calificacion) === Number(filtroCalificacion);
       return coincideTexto && coincideProducto && coincideCalificacion;
     });
     return lista.sort((a, b) => {
@@ -145,7 +147,9 @@ export default function ResenasImplementos() {
           </svg>
           <input
             type="search"
-            placeholder="Buscar reseña..."
+            placeholder="Buscar por producto, atleta, calificación o comentario"
+            title="Puedes buscar por nombre del producto, nombre del atleta, calificación (1 a 5) o texto del comentario"
+            aria-label="Buscar reseñas por producto, atleta, calificación o comentario"
             value={busqueda}
             onChange={(e) => setBusqueda(e.target.value)}
           />
@@ -170,6 +174,7 @@ export default function ResenasImplementos() {
 
           <FiltroSelect
             label="Orden"
+            alinearDerecha
             value={orden}
             onChange={setOrden}
             options={[
@@ -206,7 +211,7 @@ export default function ResenasImplementos() {
                   <td>
                     <div className="celda-productos">
                       <img
-                        src={imagenes[r.implementoId] }
+                        src={imagenes[r.implementoId] || "/img/placeholder.svg"}
                         alt={r.implementoNombre}
                         className="img-producto"
                       />

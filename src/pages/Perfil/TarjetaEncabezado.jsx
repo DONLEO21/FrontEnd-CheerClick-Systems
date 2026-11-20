@@ -1,5 +1,6 @@
 import { Pencil, Save, FileText } from 'lucide-react';
 import { ETIQUETA_ROL } from './perfilData.js';
+import { URL_POLIZA } from '../../config/enlaces.js';
 
 export default function TarjetaEncabezado({
   rol, esAtleta, fotoUrl, inicialesUsuario, nombreCompleto, apellido,
@@ -32,10 +33,20 @@ export default function TarjetaEncabezado({
             <span className="insignia-rol">{ETIQUETA_ROL[rol]}</span>
 
             {esAtleta && (
-              <a href="#" className="poliza-link" title="Ver mi póliza">
-                <FileText size={13} />
-                Mi póliza
-              </a>
+              URL_POLIZA ? (
+                <a
+                  href={URL_POLIZA} target="_blank" rel="noopener noreferrer"
+                  className="poliza-link" title="Ver mi póliza (se abre en una pestaña nueva)"
+                >
+                  <FileText size={13} />
+                  Mi póliza
+                </a>
+              ) : (
+                <span className="poliza-link poliza-link--inactivo" title="El enlace de la póliza aún no está configurado">
+                  <FileText size={13} />
+                  Mi póliza
+                </span>
+              )
             )}
           </div>
         </div>

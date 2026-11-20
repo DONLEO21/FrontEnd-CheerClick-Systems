@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
-import { supabase } from '../../../services/supabase'
 import {
-  USAR_DATOS_DEMO, DEMO_SI_NO_HAY_NIVEL, DEMO_BASE,
+  USAR_DATOS_DEMO, DEMO_SI_NO_HAY_NIVEL, DEMO_BASE, BASE_VACIA,
   iso, dia10, cargarBase, obtenerEntrenos, calcularMetricas,
 } from './dashboardEntrenadorData.js'
 
@@ -9,7 +8,7 @@ export default function useDashboardEntrenador(mostrarAviso) {
   const hoy = iso(new Date())
 
   /* ── datos base ── */
-  const [base, setBase] = useState({ niveles: [], atletas: [], evals: [], asist: [], errores: [] })
+  const [base, setBase] = useState(BASE_VACIA)
   const [cargando, setCargando] = useState(true)
   const [demo, setDemo] = useState(USAR_DATOS_DEMO)
 
@@ -19,10 +18,7 @@ export default function useDashboardEntrenador(mostrarAviso) {
 
     const cargar = async () => {
       if (USAR_DATOS_DEMO) return DEMO_BASE
-      const { data } = await supabase.auth.getUser()
-      const uid = data?.user?.id
-      if (!uid) throw new Error('No hay una sesión activa.')
-      return cargarBase(uid)
+      return cargarBase()
     }
 
     cargar()
@@ -99,7 +95,7 @@ export default function useDashboardEntrenador(mostrarAviso) {
   }, [cargando, clavesNivel, demo])
 
   /* ── métricas ── */
-  const metricas = useMemo(() => calcularMetricas(base.evals, base.asist), [base.evals, base.asist])
+  const metricas = useMemo(() => calcularMetricas(base.evals, base.asist, demo), [base.evals, base.asist, demo])
   const atletasActivos = base.atletas.filter((a) => a.activo).length
 
   return {

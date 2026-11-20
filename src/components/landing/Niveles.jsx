@@ -8,7 +8,7 @@ const niveles = [
 
 function Niveles() {
   return (
-    <section id="niveles">
+    <section id="niveles" className="landing-niveles">
       <div className="contenedor">
         <div className="contenido-niveles">
           <div className="seccion-titulo">

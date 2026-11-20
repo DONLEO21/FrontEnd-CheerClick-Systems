@@ -9,7 +9,8 @@ const CLASE_ESTADO = {
 function TarjetaMensualidad({ mensualidad, onSubir, onVer }) {
   const estado = ESTADOS[mensualidad.estado] ?? ESTADOS.pendiente;
   const claseEstado = CLASE_ESTADO[mensualidad.estado] ?? CLASE_ESTADO.pendiente;
-  const tieneComprobante = !!mensualidad.comprobante;
+  // Hay comprobante cuando el atleta ya subió un archivo, o cuando el club ya validó el pago.
+  const tieneComprobante = mensualidad.comprobante.startsWith("data:") || (mensualidad.estado === "pagado" && !!mensualidad.comprobante);
 
   return (
     <div className="atl-tar-infor">
@@ -39,7 +40,7 @@ function TarjetaMensualidad({ mensualidad, onSubir, onVer }) {
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
             <path d="m7 10 5 5 5-5" />
           </svg>
-          Subir comprobante
+          Pagar mensualidad
         </button>
       )}
     </div>

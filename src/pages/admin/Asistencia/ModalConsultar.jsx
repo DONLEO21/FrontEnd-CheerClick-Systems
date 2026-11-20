@@ -1,5 +1,6 @@
 import { forwardRef, useEffect, useMemo, useState } from "react";
 import { obtenerRegistrosRango, calcularResumen } from "../../../services/asistenciaService";
+import { abrirReporteAsistencia } from "./exportarAsistencia";
 import { diasDeSesion, horarioDiasUnicos, nombreMes, hoy } from "../../../services/data";
 
 const IconoPorEstado = {
@@ -123,6 +124,19 @@ const ModalConsultar = forwardRef(function ModalConsultar({ nivel, atletas }, re
     [registros, atletas]
   );
 
+  const [avisoExport, setAvisoExport] = useState("");
+  const exportarDocumento = () => {
+    const abierto = abrirReporteAsistencia({
+      nivel,
+      mesLabel: `${nombreMes(mesIndex)} ${anio}`,
+      dias,
+      atletas: atletasFiltrados,
+      historial,
+      resumen: resumenTotales,
+    });
+    setAvisoExport(abierto ? "" : "El navegador bloqueó la ventana del documento. Permite las ventanas emergentes e inténtalo de nuevo.");
+  };
+
   const esMesActual = anio === ahora.getFullYear() && mesIndex === ahora.getMonth();
   const diaHoyNum = ahora.getDate();
 
@@ -145,7 +159,7 @@ const ModalConsultar = forwardRef(function ModalConsultar({ nivel, atletas }, re
   };
 
   return (
-    <dialog ref={ref} id="modal-consultar">
+    <dialog ref={ref} className="adm-asistencia-modal-consultar">
       <div className="modal-consultar-contenido">
         <div className="modal-consultar-header d-flex align-items-center">
           <h2>Asistencia</h2>
@@ -280,7 +294,7 @@ const ModalConsultar = forwardRef(function ModalConsultar({ nivel, atletas }, re
             </svg>
           </span> Presente</span>
           <span className="leyenda-item"><span className="ico-inpuntual">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clock" viewBox="0 0 16 16">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-clock" viewBox="0 0 16 16">
               <path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71z" />
               <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0" />
             </svg></span> Inpuntual</span>
@@ -294,9 +308,13 @@ const ModalConsultar = forwardRef(function ModalConsultar({ nivel, atletas }, re
 
           <button
             type="button"
-            className="btn-exportar ms-auto"
+            className="btn-exportar btn-exportar--sec ms-auto"
+            title="Descargar en CSV (Excel)"
             onClick={() => exportarCSV(nivel, `${nombreMes(mesIndex)}_${anio}`, dias, atletasFiltrados, historial)}
           >
+            CSV
+          </button>
+          <button type="button" className="btn-exportar" title="Documento listo para imprimir o guardar como PDF" onClick={exportarDocumento}>
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
               <polyline points="7 10 12 15 17 10" /><line x1="12" x2="12" y1="15" y2="3" />
@@ -304,6 +322,7 @@ const ModalConsultar = forwardRef(function ModalConsultar({ nivel, atletas }, re
             Exportar
           </button>
         </div>
+        {avisoExport && <p className="asist-error" role="alert">{avisoExport}</p>}
       </div>
     </dialog>
   );

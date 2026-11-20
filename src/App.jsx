@@ -1,7 +1,4 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import './styles.css';
-import './App.css';
 
 import { SesionProvider } from './context/SesionContext';
 
@@ -23,6 +20,7 @@ import SolicitudesCuentas from './pages/admin/Cuentas/SolicitudesCuentas.jsx';
 import AdminHorarios from './pages/admin/Horarios/Horarios.jsx';
 import AdminImplementos from './pages/admin/Implementos/Implementos';
 import AdminPQRS from './pages/admin/PQRS/PQRS.jsx';
+import EntrenadorPQRS from './pages/entrenador/PQRS/PQRS.jsx';
 import AdminPagos from './pages/admin/Pagos/Pagos';
 import AdminAsistencia from './pages/admin/Asistencia/Asistencia';
 import RendimientoAdmin from './pages/admin/Rendimiento/Rendimiento.jsx';
@@ -89,14 +87,12 @@ export default function App() {
             }
           >
             <Route index element={<DashboardEntrenador />} />
-            {/* TODO: esAdmin y nivelIdEntrenador deben salir de la sesión real
-                (auth). Por ahora, esAdmin=false simula un entrenador normal
-                viendo solo su propio nivel (id 3 = Magic). */}
-            <Route
-              path="horarios"
-              element={<EntrenadorHorarios esAdmin={false} nivelIdEntrenador={3} />}
-            />
+            {/* El backend devuelve solo los niveles del entrenador autenticado */}
+            <Route path="horarios" element={<EntrenadorHorarios esAdmin={false} />} />
             <Route path="asistencia" element={<EntreAsistencia />} />
+            <Route path="rendimiento" element={<RendimientoAdmin esEntrenador />} />
+            {/* El entrenador solo ENVÍA PQRS; ver y responder es del administrador */}
+            <Route path="pqrs" element={<EntrenadorPQRS />} />
             <Route path="perfil" element={<PerfilUsuario rol="entrenador" />} />
             <Route path="*" element={<Proximamente />} />
           </Route>
@@ -113,9 +109,7 @@ export default function App() {
             <Route index element={<DashboardAtleta />} />
             <Route path="horarios" element={<AtletaHorarios />} />
             <Route path="implementos" element={<AtletaImplementos />} />
-            {/* TODO: `remitente` debe salir de la sesión real (auth).
-                Por ahora simula al atleta con el que se prueban las PQRS. */}
-            <Route path="pqrs" element={<AtletaPQRS remitente="Leonardo Jara Molina" />} />
+            <Route path="pqrs" element={<AtletaPQRS />} />
             <Route path="pagos" element={<AtletaPagos />} />
             <Route path="rendimiento" element={<RendimientoAtleta />} />
             <Route path="perfil" element={<PerfilUsuario rol="atleta" />} />

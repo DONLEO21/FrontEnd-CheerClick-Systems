@@ -1,5 +1,4 @@
 
-import React from "react";
 import { formatearFechaCorta, formatearMoneda } from "./horariosData";
 
 export default function CompetenciaCard({ torneo, onModificar, onInhabilitar, delay = 0 }) {

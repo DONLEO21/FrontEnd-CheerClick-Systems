@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
-import { supabase } from '../../../services/supabase';
+import { almacenSesion } from '../../../api/client';
 import {
-  USAR_DATOS_DEMO, DEMO_SI_FALLA, DEMO_BASE,
+  USAR_DATOS_DEMO, DEMO_SI_FALLA, DEMO_BASE, BASE_VACIA,
   iso, dia10, cargarBase, obtenerEntrenos,
   calcularMetricas, resumirPqrs, resumirPagos,
 } from './dashboardAtletaData.js';
@@ -14,7 +14,7 @@ export default function useDashboardAtleta(mostrarAviso) {
   const hoy = iso(new Date());
 
   /* ── datos base ── */
-  const [base, setBase] = useState(DEMO_BASE);
+  const [base, setBase] = useState(BASE_VACIA);
   const [cargando, setCargando] = useState(true);
   const [demo, setDemo] = useState(USAR_DATOS_DEMO);
 
@@ -24,8 +24,7 @@ export default function useDashboardAtleta(mostrarAviso) {
 
     const cargar = async () => {
       if (USAR_DATOS_DEMO) return DEMO_BASE;
-      const { data } = await supabase.auth.getUser();
-      const uid = data?.user?.id;
+      const uid = almacenSesion.usuario()?.id;
       if (!uid) throw new Error('No hay una sesión activa.');
       return cargarBase(uid);
     };

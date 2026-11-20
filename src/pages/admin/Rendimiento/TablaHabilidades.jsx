@@ -1,5 +1,5 @@
+import { Power } from "lucide-react";
 import {
-  obtenerClaseNivelHabilidad,
   obtenerClaseTipoHabilidad,
   etiquetaTipoHabilidad,
 } from "../../../components/utils/nivelEstilosHabilidad";
@@ -7,17 +7,15 @@ import {
 function TablaHabilidades({
   habilidades,
   onEditar,
-  onEliminar,
   onCambiarEstado,
 }) {
   return (
-    <section id="panel-h" className="container">
-      <table id="tabla-h" className="table align-middle">
+    <section className="container adm-rendimiento-panel-h">
+      <table className="table align-middle adm-rendimiento-tabla-h">
         <thead>
           <tr>
             <td>ID</td>
             <td>Habilidad</td>
-            <td>Nivel</td>
             <td>Tipo</td>
             <td>Estado</td>
             <td>Acciones</td>
@@ -28,16 +26,10 @@ function TablaHabilidades({
             habilidades.map((h) => (
               <tr key={h.id}>
                 <td>
-                  <span>{h.id}</span>
+                  <span>{h.codigo ?? h.id}</span>
                 </td>
 
                 <td className="edad-ne">{h.texto}</td>
-
-                <td>
-                  <button className={obtenerClaseNivelHabilidad(h.nivel)}>
-                    {h.nivel}
-                  </button>
-                </td>
 
                 <td>
                   <button className={obtenerClaseTipoHabilidad(h.categoria)}>
@@ -48,12 +40,12 @@ function TablaHabilidades({
                 <td>
                   {h.estado === "inhabilitada" ? (
                     <button
-                      id="btn-desa"
+                      className="adm-rendimiento-btn-desa"
                       onClick={() => onCambiarEstado(h)}
-                      title="Click para activar"
+                      title="Click para habilitar"
                     >
                       <svg
-                        id="sim-desa"
+                        className="adm-rendimiento-sim-desa"
                         xmlns="http://www.w3.org/2000/svg"
                         width="24"
                         height="24"
@@ -67,16 +59,16 @@ function TablaHabilidades({
                         <circle cx="12" cy="12" r="10" />
                         <path d="M4.929 4.929 19.07 19.071" />
                       </svg>{" "}
-                      Inhabilitada
+                      Deshabilitada
                     </button>
                   ) : (
                     <button
-                      id="btn-activ"
+                      className="adm-rendimiento-btn-activ"
                       onClick={() => onCambiarEstado(h)}
-                      title="Click para inhabilitar"
+                      title="Click para deshabilitar"
                     >
                       <svg
-                        id="sim-acti"
+                        className="adm-rendimiento-sim-acti"
                         xmlns="http://www.w3.org/2000/svg"
                         width="24"
                         height="24"
@@ -96,16 +88,19 @@ function TablaHabilidades({
                 </td>
 
                 <td>
-                  <div id="con-acci">
-                    <button className="btn-lapiz" onClick={() => onEditar(h)}>
-                      <i class="svg-de bi bi-pencil"></i>
+                  <div className="adm-rendimiento-con-acci">
+                    <button className="btn-lapiz" title="Editar" aria-label={`Editar ${h.texto}`} onClick={() => onEditar(h)}>
+                      <i className="svg-de bi bi-pencil"></i>
                     </button>
 
                     <button
-                      className="btn-basura"
-                      onClick={() => onEliminar(h)}
+                      type="button"
+                      className={"btn-estado" + (h.estado === "inhabilitada" ? " btn-estado--habilitar" : "")}
+                      title={h.estado === "inhabilitada" ? "Habilitar" : "Deshabilitar"}
+                      aria-label={(h.estado === "inhabilitada" ? "Habilitar " : "Deshabilitar ") + h.texto}
+                      onClick={() => onCambiarEstado(h)}
                     >
-                      <i class="svg-de bi bi-trash"></i>
+                      <Power size={16} />
                     </button>
                   </div>
                 </td>
@@ -113,7 +108,7 @@ function TablaHabilidades({
             ))
           ) : (
             <tr>
-              <td colSpan="6" className="text-center py-4 text-muted">
+              <td colSpan="5" className="text-center py-4 text-muted">
                 No se encontraron habilidades que coincidan con la búsqueda.
               </td>
             </tr>

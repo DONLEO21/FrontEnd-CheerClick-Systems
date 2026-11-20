@@ -1,4 +1,3 @@
-import React from "react";
 export default function Proximamente() {
   return (
     <div className="container-fluid py-5 text-center text-secondary">

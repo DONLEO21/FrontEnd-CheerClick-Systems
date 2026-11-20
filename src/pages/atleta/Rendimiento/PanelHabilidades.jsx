@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 
-// `key` coincide con `categoria` en db.json
+// `key` coincide con la categoría (tipo de habilidad) que devuelve el backend
 const NIVELES = [
   { key: "apropiada", label: "Apropiadas", icon: "bi-stars" },
   { key: "avanzada", label: "Avanzadas", icon: "bi-arrow-up-right" },

@@ -2,7 +2,7 @@ const COLORES = { ok: "#1eaf52", aviso: "#fad755", alerta: "#cc0000" };
 
 function NotificacionesPagos({ notificaciones }) {
   return (
-    <section id="noti-final-atl">
+    <section className="atl-pagos-noti-final-atl">
       <h3 className="atl-titu-final">Notificaciones recientes</h3>
       <h5 className="atl-sub-final">Alertas sobre tu mensualidad</h5>
       {notificaciones.map((n) => (

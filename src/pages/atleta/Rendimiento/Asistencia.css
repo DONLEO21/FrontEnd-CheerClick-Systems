@@ -66,7 +66,6 @@
     flex-shrink: 0;
     background: var(--rojo-light);
     color: var(--rojo);
-    font-family: 'Varela Round', sans-serif;
     font-weight: 700;
     font-size: 1.3rem;
 }
@@ -362,7 +361,6 @@
     border-radius: 6px;
     font-size: .78rem;
     font-weight: 700;
-    font-family: 'Arimo', sans-serif;
     cursor: pointer;
     transition: all .2s;
 }
@@ -493,7 +491,6 @@
 .rend-just__dia {
     font-size: 1.1rem;
     font-weight: 700;
-    font-family: 'Varela Round', sans-serif;
     color: var(--rojo);
     line-height: 1;
 }
@@ -793,7 +790,6 @@ button.rend-cal-dia {
 }
 
 .rend-modal__titulo {
-    font-family: 'Varela Round', sans-serif;
     font-size: 1.1rem;
     margin: 0;
 }
@@ -834,7 +830,6 @@ button.rend-cal-dia {
 .rend-modal__fecha {
     font-size: 1.15rem;
     font-weight: 700;
-    font-family: 'Varela Round', sans-serif;
     margin-bottom: 6px;
 }
 
@@ -873,7 +868,6 @@ button.rend-cal-dia {
     padding: 11px 14px;
     border: 1.5px solid var(--gris-borde);
     border-radius: 8px;
-    font-family: 'Arimo', sans-serif;
     font-size: .9rem;
     color: var(--texto-dark);
     resize: vertical;
@@ -930,7 +924,6 @@ button.rend-cal-dia {
     color: white;
     border: none;
     border-radius: 8px;
-    font-family: 'Arimo', sans-serif;
     font-size: .88rem;
     font-weight: 700;
     cursor: pointer;
@@ -946,7 +939,6 @@ button.rend-cal-dia {
     border: 1.5px solid var(--gris-borde);
     background: none;
     border-radius: 8px;
-    font-family: 'Arimo', sans-serif;
     font-size: .88rem;
     font-weight: 600;
     color: var(--texto-muted);
@@ -965,7 +957,6 @@ button.rend-cal-dia {
     color: white;
     border: none;
     border-radius: 8px;
-    font-family: 'Arimo', sans-serif;
     font-size: .88rem;
     font-weight: 700;
     cursor: pointer;
@@ -980,7 +971,6 @@ button.rend-cal-dia {
     background: #ccc;
     cursor: not-allowed;
 }
-
 
 @media (max-width: 575.98px) {
 

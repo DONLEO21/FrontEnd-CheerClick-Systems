@@ -1,20 +1,31 @@
-const API_URL = "http://localhost:3001/metodosPago";
+import { metodosPagoApi } from '../api/metodos_pago.api'
+import { esMetodoEfectivo, esMetodoPresencial } from '../utils/metodosPago'
+// Métodos de pago. Backend: /api/metodo-pago  (modelo: nombre + qr opcional; "Efectivo" nunca lleva QR)
 
-// Cada método: { id, nombre, activo, titular, llave, qr }
-// El atleta solo LEE (getMetodosPago) y muestra los activos con su QR y llave al pagar.
-// La pantalla de admin para editarlos usará actualizarMetodoPago.
+// Cada método: { id, nombre, activo, qr }
+// TODO(backend): titular y llave/cuenta del método aún no existen en el modelo.
+const aMetodo = (m) => ({ id: m._id, nombre: m.nombre, activo: true, titular: '', llave: '', qr: m.qr ?? '' })
+
 export async function getMetodosPago() {
-  const res = await fetch(API_URL);
-  if (!res.ok) throw new Error("No se pudieron cargar los métodos de pago.");
-  return res.json();
+  const { data } = await metodosPagoApi.list()
+  // El antiguo "Pago presencial" ya no es un método (se reemplazó por Efectivo)
+  return (data ?? []).filter((m) => !esMetodoPresencial(m.nombre)).map(aMetodo)
+}
+
+// Crear / editar / eliminar (solo administrador). `qr` es opcional y se omite para Efectivo.
+export async function crearMetodoPago(datos) {
+  const cuerpo = { nombre: datos.nombre }
+  if (datos.qr && !esMetodoEfectivo(datos.nombre)) cuerpo.qr = datos.qr
+  const { data } = await metodosPagoApi.create(cuerpo)
+  return aMetodo(data)
+}
+
+export async function eliminarMetodoPago(id) {
+  await metodosPagoApi.remove(id)
 }
 
 export async function actualizarMetodoPago(id, datos) {
-  const res = await fetch(`${API_URL}/${id}`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(datos),
-  });
-  if (!res.ok) throw new Error("No se pudo guardar el método de pago.");
-  return res.json();
+  const cuerpo = { nombre: datos.nombre, qr: esMetodoEfectivo(datos.nombre) ? '' : (datos.qr ?? '') }
+  const { data } = await metodosPagoApi.update(id, cuerpo)
+  return aMetodo(data)
 }

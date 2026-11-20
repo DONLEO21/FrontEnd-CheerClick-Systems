@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react'
+import { enviarCodigoRecuperacion, verificarCodigoRecuperacion } from '../../services/sesion'
 
-function RecuperarCodigo({ irA, correo }) {
+function RecuperarCodigo({ irA, correo, setCodigo: guardarCodigo }) {
   const [codigo, setCodigo] = useState(['', '', '', '', '', ''])
   const [mensaje, setMensaje] = useState('')
   const [tipoMensaje, setTipoMensaje] = useState('')
@@ -21,14 +22,20 @@ function RecuperarCodigo({ irA, correo }) {
     }
   }
 
-  const reenviarCodigo = () => {
+  const reenviarCodigo = async () => {
     setCodigo(['', '', '', '', '', ''])
-    setTipoMensaje('exito')
-    setMensaje('Código reenviado')
+    try {
+      await enviarCodigoRecuperacion(correo)
+      setTipoMensaje('exito')
+      setMensaje('Código reenviado')
+    } catch (err) {
+      setTipoMensaje('error')
+      setMensaje(err.message)
+    }
     inputsRef.current[0]?.focus()
   }
 
-  const verificarCodigo = (e) => {
+  const verificarCodigo = async (e) => {
     e.preventDefault()
     const ingresado = codigo.join('')
 
@@ -38,6 +45,15 @@ function RecuperarCodigo({ irA, correo }) {
       return
     }
 
+    try {
+      await verificarCodigoRecuperacion(correo, ingresado)
+    } catch (err) {
+      setTipoMensaje('error')
+      setMensaje(err.message)
+      return
+    }
+
+    guardarCodigo(ingresado)
     setTipoMensaje('exito')
     setMensaje('¡Código correcto!')
     setTimeout(() => irA('recuperar-clave'), 800)

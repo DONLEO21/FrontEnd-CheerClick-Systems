@@ -1,18 +1,24 @@
 import { useState } from 'react'
 import CampoClave from './CampoClave'
+import { restablecerClave } from '../../services/sesion'
 
-function RecuperarClave({ irA }) {
+function RecuperarClave({ irA, correo, codigo }) {
   const [clave, setClave] = useState('')
   const [confirmar, setConfirmar] = useState('')
   const [mensaje, setMensaje] = useState('')
 
-  const guardarClave = (e) => {
+  const guardarClave = async (e) => {
     e.preventDefault()
     setMensaje('')
 
-    if (!clave || clave.length < 6) return setMensaje('La contraseña debe tener mínimo 6 caracteres.')
+    if (!clave || clave.length < 8) return setMensaje('La contraseña debe tener mínimo 8 caracteres.')
     if (clave !== confirmar) return setMensaje('Las contraseñas no coinciden.')
 
+    try {
+      await restablecerClave(correo, codigo, clave, confirmar)
+    } catch (err) {
+      return setMensaje(err.message)
+    }
     irA('recuperar-exito')
   }
 
@@ -32,7 +38,7 @@ function RecuperarClave({ irA }) {
         <label className="etiqueta" htmlFor="clave-nueva">Nueva contraseña</label>
         <CampoClave
           id="clave-nueva"
-          placeholder="Mínimo 6 caracteres"
+          placeholder="Mínimo 8 caracteres"
           value={clave}
           onChange={(e) => setClave(e.target.value)}
         />

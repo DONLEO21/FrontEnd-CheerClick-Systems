@@ -1,96 +1,30 @@
-@import url('https://fonts.googleapis.com/css2?family=Varela+Round&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Arimo:wght@400;500;700&display=swap');
-
-/* ── Variables globales ───────────────────────────────────── */
-:root {
-
-    --rojo: #d71920;
-    --rojo-hover: #b8141a;
-    --rojo-light: #fdeaea;
-
-
-    --verde: #1eaf52;
-    --verde-light: #e6f9ee;
-    --amarillo: #f59e0b;
-    --amarillo-light: #fef3c7;
-    --azul: #2f80ed;
-    --azul-light: #dbeafe;
-    --azul-oscuro: #1d4ed8;
-
-
-    --blanco: #ffffff;
-    --gris-fondo: #f5f5f5;
-    --gris-borde: #dcdcdc;
-    --gris-claro: #c9c9c9;
-    --gris-oscuro: #4d4d4d;
-
-
-    --texto-dark: #222222;
-    --texto-muted: #777777;
-
-    /* ── Colores principales ── */
-    --color-primario:         #d71920;
-    --color-primario-oscuro:  #b8141a;
-    --color-primario-claro:   #fdeaea;
-
-    --color-blanco:    #ffffff;
-    --color-fondo:     #f5f5f5;
-    --color-borde:     #dcdcdc;
-    --color-texto:     #222222;
-    --color-texto-suave: #777777;
-
-    --ancho-barra:     56px;
-    --alto-encabezado: 55px;
-    --radio-enlace:    6px;
-    --radio-boton:     5px;
-
-    --sombra-tarjeta: 0 2px 10px rgba(0,0,0,.07);
-    --sombra-boton:   0 2px 8px rgba(215,25,32,.25);
-
-    /* Colores nuestros */
-
-    --rojo-noso: #cc0000;
-    --verde-noso: #1eaf52;
-    --amarillo-noso: #fad755;
-    --gris-noso: #dddddd;
-    --azul-noso: #3b82f6;
-
-    /* Tipografia */
-
-    --text-texto: "Arimo", sans-serif;
-    --text-titulo: "Varela Round", sans-serif;
-}
-
-#hiper{
+.adm-rendimiento-hiper {
     text-decoration: none;
 }
 
-
-#titu-ren{
+.adm-rendimiento-titu-ren {
     margin-left: 30px;
     margin-top: 30px;
 }
 
-#titu-ren h3{
-    font-family: var(--text-titulo);
+.adm-rendimiento-titu-ren h3 {
     font-size: 30px;
     margin-top: 10px;
     margin-bottom: 20px;
 }
 
-#titu-ren p{
-    font-family: var(--text-texto);
+.adm-rendimiento-titu-ren p {
     font-size: 15px;
     color: #858585;
 }
 
-#targetas{
+.adm-rendimiento-targetas {
     display: flex;
     margin-bottom: 20px;
     gap: 30px;
 }
 
-.targe-ren{
+:where(.adm-rendimiento) .targe-ren {
     background: #ffffff;
     border: 1px solid #d4d4d4;
     padding: 20px;
@@ -98,13 +32,12 @@
     border-radius: 15px;
 }
 
-.titu-targe{
+:where(.adm-rendimiento) .titu-targe {
     font-size: 20px;
-    font-family: var(--text-texto);
     margin-bottom:15px;
 }
 
-.conte-targe{
+:where(.adm-rendimiento) .conte-targe {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -112,35 +45,31 @@
     margin-right: 10px;
 }
 
-.numero{
+:where(.adm-rendimiento) .numero {
     font-size: 27px;
-    font-family: var(--text-texto);
     font-weight: 700;
 }
 
-.search-input{
+:where(.adm-rendimiento) .search-input {
     border: 1px solid #d4d4d4;
     color: #333333;
     font-size: 15px;
     padding: 10px 36px;
     border-radius: 10px;
     height: 35px;
-    font-family:var(--text-texto) ;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: 12px center;
     margin-bottom: 20px;
 }
 
-#filtros{
+.adm-rendimiento-filtros {
     padding: 0px 30px;
     margin-top: 20px;
     margin-bottom: 20px;
 }
 
-
-
-#btn-habil{
+.adm-rendimiento-btn-habil {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -150,116 +79,105 @@
     width: 250px;
     border-radius: 10px;
     color: #ffffff;
-    font-family: var(--text-titulo);
     font-size: 15px;
     cursor: pointer;
 }
 
-#habil{
+.adm-rendimiento-habil {
     height: 18px;
     width: 18px;
     margin-right: 7px;
 }
 
-
-.select{
+:where(.adm-rendimiento) .select {
     border: 1px solid #d4d4d4;
     color: #333333;
     font-size: 15px;
     padding: 5px 10px 5px 10px;
     height: 35px;
-    font-family:var(--text-texto) ;
     margin: 0px 20px 0px 20px;
 }
 
-#panel{
+.adm-rendimiento-panel {
     background: #ffffff;
     padding: 30px;
     height: auto;
     border-radius: 15px;
 }
 
-#tabla{
+.adm-rendimiento-tabla {
     border-collapse: collapse;
     border: 1px solid #e5e7eb;
 }
 
-#tabla td{
+.adm-rendimiento-tabla td {
     padding: 14px 10px;
     border-bottom: 1px solid #e5e7eb;
 }
 
-
-#tabla thead{
+.adm-rendimiento-tabla thead {
     text-align: center;
     height: 40px;
     background: #e5e7eb;
     border: 1px solid #e5e7eb;
-    font-family: var(--text-titulo);
     font-weight: 600;
 }
 
-#tabla tbody{
+.adm-rendimiento-tabla tbody {
     text-align: center;
 }
 
-.conte-a{
+:where(.adm-rendimiento) .conte-a {
     display: flex;
 }
 
-.conte-inforUsu{
+:where(.adm-rendimiento) .conte-inforUsu {
     display: flex;
     justify-content: space-between;
     align-items: center;
     width: 40%;
 }
 
-.conte-nombre{
+:where(.adm-rendimiento) .conte-nombre {
     display: flex;
     justify-content: space-between;
     align-items: center;
     width: 60%;
 }
 
-
-#con-hiper{
+.adm-rendimiento-con-hiper {
     width: 100%;
     display: flex;
     justify-content: center;
     gap: 12px;
 }
 
-
-
-#con-acci{
+.adm-rendimiento-con-acci {
     width: 100%;
     display: flex;
     justify-content: center;
     gap: 12px;
 }
 
-.hiper{
+:where(.adm-rendimiento) .hiper {
     margin: 0;
 }
 
-.img-tabla{
+:where(.adm-rendimiento) .img-tabla {
     height: 50px;
     width: 50px;
     border-radius: 100%;
     margin-left: 20px;
 }
-.btn-nivel{
+:where(.adm-rendimiento) .btn-nivel {
     border:none;
-    font-family: var(--text-texto);
     border-radius: 8px;
     font-size: 14px;
     font-weight: 600;
     height:27px;
 }
 
-
-
-.barra-ren {
+:where(.adm-rendimiento) .barra-ren {
     width: 160px;
     height: 12px;
     background: #e2e2e2;
@@ -268,13 +186,13 @@
     vertical-align: middle;
 }
 
-.barra-fill {
+:where(.adm-rendimiento) .barra-fill {
     height: 100%;
     background: #cc0000;
     border-radius: 99px;
 }
 
-.btn-ojo{
+:where(.adm-rendimiento) .btn-ojo {
     height: 35px;
     width: 35px;
     border-radius: 7px;
@@ -284,32 +202,30 @@
     cursor: pointer;
 }
 
-.btn-ojo:hover {
+:where(.adm-rendimiento) .btn-ojo:hover {
     background: var(--azul);
     color: var(--blanco);
     border-color: var(--azul);
 }
 
-.btn-lapiz:hover {
+:where(.adm-rendimiento) .btn-lapiz:hover {
     background: var(--amarillo);
     color: var(--blanco);
     border-color: var(--amarillo);
 }
 
-.btn-archivo:hover {
+:where(.adm-rendimiento) .btn-archivo:hover {
     background: var(--verde);
     color: var(--blanco);
     border-color: var(--verde);
 }
-.btn-basura:hover {
+:where(.adm-rendimiento) .btn-basura:hover {
     background: var(--rojo);
     color: var(--blanco);
     border-color: var(--rojo);
 }
 
-
-
-.btn-lapiz{
+:where(.adm-rendimiento) .btn-lapiz {
     height: 35px;
     width: 35px;
     border-radius: 7px;
@@ -319,17 +235,17 @@
     color: var(--amarillo);
 }
 
-.btn-archivo{
+:where(.adm-rendimiento) .btn-archivo {
     height: 35px;
     width: 35px;
     border-radius: 7px;
-    border: 1.5px solirgb(101, 160, 255)f6;
+    border: 1.5px solid #bbf7d0;
     background: var(--verde-light);
     cursor: pointer;
     color: var(--verde);
 }
 
-.btn-basura{
+:where(.adm-rendimiento) .btn-basura {
     height: 35px;
     width: 35px;
     border-radius: 7px;
@@ -339,34 +255,32 @@
     color: var(--rojo);
 }
 
-.svg-ojo{
+:where(.adm-rendimiento) .svg-ojo {
     width: 23px;
     height: 23px;
 }
 
-.svg-de{
+:where(.adm-rendimiento) .svg-de {
     width: 23px;
     height: 23px;
 }
 
-.svg-dee{
+:where(.adm-rendimiento) .svg-dee {
     width: 23px;
     height: 23px;
 }
-.svg-deee{
+:where(.adm-rendimiento) .svg-deee {
     width: 23px;
     height: 23px;
 }
 
-
-#botones{
+.adm-rendimiento-botones {
     display: flex;
     align-items: center;
     gap: 15px;
 }
 
-
-.btn-largo{
+:where(.adm-rendimiento) .btn-largo {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -379,7 +293,7 @@
     cursor: pointer;
 }
 
-.acti{
+:where(.adm-rendimiento) .acti {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -394,7 +308,7 @@
     cursor: pointer;
 }
 
-.desac{
+:where(.adm-rendimiento) .desac {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -409,7 +323,7 @@
     cursor: pointer;
 }
 
-.footer-cont{
+:where(.adm-rendimiento) .footer-cont {
     display: flex;
     justify-content: space-between;
     margin: 20px 60px ;
@@ -417,7 +331,7 @@
 
 /* MENSAJE DIALOG */
 
-#menu-regis{
+.adm-rendimiento-menu-regis {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -428,11 +342,76 @@
     border-radius:15px ;
     
 }
-#menu-regis[open] {
+.adm-rendimiento-menu-regis[open] {
     gap: 30px;
 }
 
-#menu-regis::backdrop{
+.adm-rendimiento-menu-regis::backdrop {
     background: #00000062;
     backdrop-filter: blur(2px);
+}
+
+/* ── Bloque 7: rendimiento promedio por nivel (datos reales, ver RendimientoPorNivel.jsx) ── */
+.adm-rendimiento-niveles {
+    background: #ffffff;
+    border: 1px solid #d4d4d4;
+    border-radius: 15px;
+    padding: 20px 24px;
+    margin-bottom: 20px;
+}
+
+.adm-rendimiento-niveles__cabeza h4 {
+    font-size: 18px;
+    margin: 0 0 4px;
+}
+
+.adm-rendimiento-niveles__cabeza p {
+    margin: 0 0 16px;
+    font-size: 14px;
+    color: var(--texto-muted);
+}
+
+.adm-rendimiento-niveles__lista {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px 32px;
+}
+
+.adm-rendimiento-niveles__fila {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 6px;
+    font-size: 14px;
+}
+
+.adm-rendimiento-niveles__nombre {
+    font-weight: 600;
+}
+
+.adm-rendimiento-niveles__meta {
+    white-space: nowrap;
+    color: var(--texto-muted);
+}
+
+.adm-rendimiento-niveles__meta strong {
+    color: inherit;
+}
+
+.adm-rendimiento-niveles__barra {
+    height: 10px;
+    border-radius: 99px;
+    background: #e2e2e2;
+    overflow: hidden;
+}
+
+.adm-rendimiento-niveles__relleno {
+    height: 100%;
+    border-radius: 99px;
+    background: #cc0000;
+    transition: width .3s ease;
 }

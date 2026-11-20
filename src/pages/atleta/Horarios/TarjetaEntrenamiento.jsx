@@ -1,5 +1,4 @@
 
-import React from "react";
 import { CATEGORIAS, formatearFechaLarga, obtenerInsignia, esPasada, a12h } from "./horariosAtletaData";
 
 export default function TarjetaEntrenamiento({ sesion, onVerDetalles }) {

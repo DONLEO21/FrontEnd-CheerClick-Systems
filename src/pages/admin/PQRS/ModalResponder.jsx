@@ -1,5 +1,4 @@
 
-import React from "react";
 import ModalBase from "./ModalBase";
 import { ESTADOS, radicadoDe } from "./pqrsData";
 

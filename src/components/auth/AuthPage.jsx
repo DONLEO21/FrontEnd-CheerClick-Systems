@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { supabase } from "../../services/supabase";
+import { haySesion, usuarioActual, RUTA_INICIO } from "../../services/sesion";
 import Login from "./Login";
 import Registro from "./Registro";
 import CuentaPendiente from "./CuentaPendiente";
@@ -10,46 +10,28 @@ import RecuperarClave from "./RecuperarClave";
 import RecuperarExito from "./RecuperarExito";
 import "./auth.css";
 
-const INICIO = {
-  administrador: "/admin",
-  entrenador: "/entrenador",
-  atleta: "/atleta",
-};
-
 function AuthPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const vista = searchParams.get("view");
+  // view=recuperar: llega desde "Cambiar contraseña" del perfil (usa el flujo de recuperación existente)
   const vistaInicial =
-    searchParams.get("view") === "registro" ? "registro" : "login";
+    vista === "registro" ? "registro" : vista === "recuperar" ? "recuperar-correo" : "login";
 
   const [pantalla, setPantalla] = useState(vistaInicial);
-  const [correoRecuperacion, setCorreoRecuperacion] = useState("");
+  const [correoRecuperacion, setCorreoRecuperacion] = useState(
+    () => (vista === "recuperar" && haySesion() ? usuarioActual()?.email ?? "" : "")
+  );
+  const [codigoRecuperacion, setCodigoRecuperacion] = useState("");
   const [nombreRegistrado, setNombreRegistrado] = useState("");
 
+  // Si ya hay una sesión iniciada, se va directo a su panel
   useEffect(() => {
     if (pantalla.startsWith("recuperar")) return;
-
-    let activo = true;
-
-    supabase.auth.getUser().then(({ data }) => {
-      const u = data?.user;
-      if (!activo || !u) return;
-
-      const esAdmin = u.app_metadata?.rol_admin === true;
-      const aprobada = u.app_metadata?.estado === "aprobada";
-      const desactivada = u.app_metadata?.activo === false;
-      const rol = esAdmin
-        ? "administrador"
-        : (u.app_metadata?.rol ?? "atleta");
-
-      if ((esAdmin || (aprobada && !desactivada)) && INICIO[rol]) {
-        navigate(INICIO[rol], { replace: true });
-      }
-    });
-
-    return () => {
-      activo = false;
-    };
+    if (haySesion()) {
+      const destino = RUTA_INICIO[usuarioActual().rol];
+      if (destino) navigate(destino, { replace: true });
+    }
   }, [navigate, pantalla]);
 
   return (
@@ -68,13 +50,24 @@ function AuthPage() {
         {pantalla === "recuperar-correo" && (
           <RecuperarCorreo
             irA={setPantalla}
+            correoInicial={correoRecuperacion}
             setCorreo={setCorreoRecuperacion}
           />
         )}
         {pantalla === "recuperar-codigo" && (
-          <RecuperarCodigo irA={setPantalla} correo={correoRecuperacion} />
+          <RecuperarCodigo
+            irA={setPantalla}
+            correo={correoRecuperacion}
+            setCodigo={setCodigoRecuperacion}
+          />
         )}
-        {pantalla === "recuperar-clave" && <RecuperarClave irA={setPantalla} />}
+        {pantalla === "recuperar-clave" && (
+          <RecuperarClave
+            irA={setPantalla}
+            correo={correoRecuperacion}
+            codigo={codigoRecuperacion}
+          />
+        )}
         {pantalla === "recuperar-exito" && <RecuperarExito irA={setPantalla} />}
       </div>
     </div>

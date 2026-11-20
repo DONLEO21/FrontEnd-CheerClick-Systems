@@ -1,69 +1,77 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Varela+Round&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Arimo:ital,wght@0,400..700;1,400..700&display=swap');
+/* ── Estilos de otros módulos que ya afectaban a este (copiados para conservar el aspecto; ver README) ── */
 
-:root {
-  --rojo: #cc0000;
-  --rojo-oscuro: #a80000;
-  --dorado: #fad755;
-  --dorado-oscuro: #d4aa00;
-  --carbon: #1a1a1a;
-  --gris-hielo: #f4f6f8;
-  --gris-borde: #e2e8f0;
-  --gris-texto: #64748b;
-  --verde: #16a34a;
-  --verde-claro: #dcfce7;
-  --azul-info: #3b82f6;
-  --azul-info-bg: #eff6ff;
-  --blanco: #ffffff;
-  --sombra-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
-  --sombra-md: 0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
-  --radio: 12px;
-  --radio-sm: 8px;
-  --radio-pill: 999px;
-  --font: "Inter", system-ui, sans-serif;
-  --trans: 0.2s ease;
-  --bs-danger: #d71920;
-  --bs-danger-rgb: 215, 25, 32;
-
-  --gris-suave: #94a3b8;
-  --carbon-oscuro: #1a202c;
-  --gris-texto-oscuro: #475569;
-  --gris-texto-tenue: #6f7783;
-  --gris-borde-claro: #e5e7eb;
-  --gris-borde-suave: #edf2f7;
-  --gris-borde-input: #dcdcdc;
-  --gris-borde-caja: #eef2f6;
-  --gris-fondo-claro: #f8fafc;
-  --gris-fondo-suave: #f1f5f9;
-  --rojo-bootstrap: #dc3545;
-  --rojo-bootstrap-bg: #fdecea;
-  --rojo-hover-bg: #fffafa;
-  --rojo-hover-bg-suave: #fff8f8;
-  --ambar: #d97706;
-  --ambar-bg: #fef3c7;
-  --ambar-bg-suave: #fffbeb;
-  --ambar-disabled: #fbe3ba;
-  --naranja: #f5a623;
-  --azul-visualizar: #067fe2;
-  --verde-bg-suave: #eafaf1;
-
-  --verde-light: #e6f9ee;
-  --amarillo: #f59e0b;
-  --amarillo-light: #fef3c7;
-  --azul: #2f80ed;
-  --azul-light: #dbeafe;
-  --azul-oscuro: #1d4ed8;
-}
-
-.tabs-implementos {
+:where(.adm-implementos) select {
+    border: 1px solid #d4d4d4;
+    color: #333333;
+    font-size: 14px;
+    padding: 10px;
+    border-radius: 10px;
+    height: 40px;
+    width: 100%;}
+:where(.adm-implementos) .acciones-barra {
+    opacity: 0;
+    animation: entradaAbajo 1.1s ease .18s forwards;}
+@media (prefers-reduced-motion: reduce) {
+:where(.adm-implementos) .acciones-barra {
+        animation: none;
+        opacity: 1;}}
+:where(.adm-implementos) .acciones-barra {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--espacio-sm);
+    flex-wrap: wrap;}
+:where(.adm-implementos) .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 30px;
+    border-radius: var(--radio-sm);
+    font-weight: 700;
+    font-size: var(--texto-sm);
+    transition: var(--transicion);}
+:where(.adm-implementos) .tab-btn {
+    padding: 7px 18px;
+    border-radius: 6px;
+    font-size: var(--texto-sm);
+    font-weight: 600;
+    color: var(--texto-muted);
+    transition: var(--transicion);}
+:where(.adm-implementos) .tab-btn:hover { color: var(--texto-dark);}
+:where(.adm-implementos) .btn-accion--ojo {
+    background: var(--azul-light);
+    color: var(--azul-oscuro);
+    border: 1.5px solid #bfdbfe;}
+:where(.adm-implementos) .btn-accion--ojo:hover {
+    background: var(--azul);
+    color: var(--blanco);
+    border-color: var(--azul);}
+:where(.adm-implementos) .btn-accion--check {
+    background: var(--verde-light);
+    color: var(--verde);
+    border: 1.5px solid #bbf7d0;}
+:where(.adm-implementos) .btn-accion--check:hover {
+    background: var(--verde);
+    color: var(--blanco);
+    border-color: var(--verde);}
+:where(.adm-implementos) .btn-accion--x {
+    background: var(--rojo-light);
+    color: var(--rojo);
+    border: 1.5px solid #fecaca;}
+:where(.adm-implementos) .btn-accion--x:hover {
+    background: var(--rojo);
+    color: var(--blanco);
+    border-color: var(--rojo);}
+@media (max-width: 480px) {
+:where(.adm-implementos) .acciones-barra { flex-direction: column; align-items: stretch;}}:where(.adm-implementos) .tabs-implementos {
   display: flex;
   gap: 28px;
   border-bottom: 1px solid var(--gris-borde-claro);
   margin-bottom: 20px;
 }
 
-.tab-btn {
+:where(.adm-implementos) .tab-btn {
   background: none;
   border: none;
   border-bottom: 2px solid transparent;
@@ -74,12 +82,12 @@
   cursor: pointer;
 }
 
-.tab-btn.activo {
+:where(.adm-implementos) .tab-btn.activo {
   color: var(--bs-danger);
   border-bottom-color: var(--bs-danger);
 }
 
-.search-box {
+:where(.adm-implementos) .search-box {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -91,14 +99,14 @@
   color: var(--gris-suave);
 }
 
-.search-box input {
+:where(.adm-implementos) .search-box input {
   border: none;
   outline: none;
   flex: 1;
   font-size: 0.85rem;
 }
 
-.btn-agregar {
+:where(.adm-implementos) .btn-agregar {
   gap: 8px;
   border-radius: 8px;
   padding: 4px 12px;
@@ -106,7 +114,7 @@
 }
 
 /* Caja del filtro */
-.filtro-caja-custom {
+:where(.adm-implementos) .filtro-caja-custom {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -117,21 +125,20 @@
   position: relative;
 }
 
-.filtro-label {
+:where(.adm-implementos) .filtro-label {
   color: var(--gris-suave, #999999);
   font-size: 0.85rem;
   font-weight: 500;
   white-space: nowrap;
 }
 
-.custom-dropdown {
+:where(.adm-implementos) .custom-dropdown {
   position: relative;
 }
 
-.custom-dropdown-btn {
+:where(.adm-implementos) .custom-dropdown-btn {
   background: transparent;
   border: none;
-  font-family: 'Varela Round', sans-serif;
   font-size: 13px;
   font-weight: 600;
   color: var(--carbon-oscuro, #2b2b2b);
@@ -143,16 +150,16 @@
   outline: none;
 }
 
-.arrow-icon {
+:where(.adm-implementos) .arrow-icon {
   transition: transform 0.2s ease;
   color: #666;
 }
 
-.arrow-icon.open {
+:where(.adm-implementos) .arrow-icon.open {
   transform: rotate(180deg);
 }
 
-.custom-dropdown-menu {
+:where(.adm-implementos) .custom-dropdown-menu {
   position: absolute;
   top: calc(100% + 8px);
   left: 0;
@@ -180,28 +187,27 @@
   }
 }
 
-.custom-dropdown-item {
+:where(.adm-implementos) .custom-dropdown-item {
   padding: 8px 14px;
-  font-family: 'Varela Round', sans-serif;
   font-size: 13px;
   color: #444444;
   cursor: pointer;
   transition: background-color 0.15s ease, color 0.15s ease;
 }
 
-.custom-dropdown-item:hover {
+:where(.adm-implementos) .custom-dropdown-item:hover {
   background-color: #fdf2f2;
   color: #dc3545;
 }
 
-.custom-dropdown-item.active {
+:where(.adm-implementos) .custom-dropdown-item.active {
   font-weight: 700;
   color: #dc3545;
   background-color: #fdf2f2;
 }
 
 /* Tabla */
-.table-responsive {
+:where(.adm-implementos) .table-responsive {
   background: white;
   border-radius: 14px;
   border: 1px solid #e8edf2;
@@ -212,7 +218,7 @@
   width: 100%;
 }
 
-.tabla-implementos {
+:where(.adm-implementos) .tabla-implementos {
   width: 100%;
   border-collapse: collapse;
   text-align: center;
@@ -220,12 +226,12 @@
   min-width: 900px;
 }
 
-.tabla-implementos thead {
+:where(.adm-implementos) .tabla-implementos thead {
   background: var(--gris-fondo-claro);
   border-bottom: 2px solid var(--gris-borde-suave);
 }
 
-.tabla-implementos th {
+:where(.adm-implementos) .tabla-implementos th {
   color: var(--gris-texto) !important;
   font-weight: 700;
   padding: 14px 16px;
@@ -237,7 +243,7 @@
   white-space: nowrap;
 }
 
-.tabla-implementos thead th {
+:where(.adm-implementos) .tabla-implementos thead th {
   color: var(--gris-suave);
   font-size: 0.72rem;
   text-transform: uppercase;
@@ -245,21 +251,20 @@
   border-bottom: 1px solid var(--gris-borde-claro);
 }
 
-.tabla-implementos td {
+:where(.adm-implementos) .tabla-implementos td {
   border-bottom: 1px solid var(--gris-fondo-suave);
   vertical-align: middle;
   color: var(--carbon-oscuro);
 }
 
-.tabla-implementos td:nth-child(1) {
+:where(.adm-implementos) .tabla-implementos td:nth-child(1) {
   color: var(--gris-suave) !important;
   font-weight: 700;
   font-size: 12px;
   letter-spacing: 0.4px;
-  font-family: 'Arimo', monospace;
 }
 
-.tabla-implementos td:last-child .d-flex {
+:where(.adm-implementos) .tabla-implementos td:last-child .d-flex {
   justify-content: center !important;
 
   justify-content: center;
@@ -267,31 +272,31 @@
   width: 100%;
 }
 
-.tabla-implementos th:last-child,
-.tabla-implementos td:last-child {
+:where(.adm-implementos) .tabla-implementos th:last-child,
+:where(.adm-implementos) .tabla-implementos td:last-child {
   text-align: center !important;
 }
 
-.tabla-implementos tbody tr {
+:where(.adm-implementos) .tabla-implementos tbody tr {
   transition: background 0.15s ease;
   border-left: 3px solid transparent;
 }
 
-.tabla-implementos tbody tr:hover {
+:where(.adm-implementos) .tabla-implementos tbody tr:hover {
   background: #f8fafc;
   border-left-color: var(--color-primario);
 }
 
-.tabla-implementos tbody tr:hover {
+:where(.adm-implementos) .tabla-implementos tbody tr:hover {
   box-shadow: inset 3px 0 0 var(--bs-danger);
   background: var(--rojo-hover-bg);
 }
 
-.fila-no-disponible td {
+:where(.adm-implementos) .fila-no-disponible td {
   color: var(--gris-texto);
 }
 
-.img-producto {
+:where(.adm-implementos) .img-producto {
   width: 42px;
   height: 42px;
   object-fit: cover;
@@ -299,7 +304,7 @@
   background: var(--gris-fondo-suave);
 }
 
-.img-modal {
+:where(.adm-implementos) .img-modal {
   width: 100px;
   height: 100px;
   object-fit: contain;
@@ -309,7 +314,7 @@
   padding: 8px;
 }
 
-.badge-pastilla {
+:where(.adm-implementos) .badge-pastilla {
   display: inline-block;
   padding: 4px 14px;
   border-radius: 999px;
@@ -318,25 +323,25 @@
   border: 1px solid transparent;
 }
 
-.badge-verde {
+:where(.adm-implementos) .badge-verde {
   background: var(--verde-bg-suave);
   color: var(--verde);
   border-color: #16a34a33;
 }
 
-.badge-roja {
+:where(.adm-implementos) .badge-roja {
   background: var(--rojo-bootstrap-bg);
   color: var(--rojo-bootstrap);
   border-color: #dc354533;
 }
 
-.badge-amarilla {
+:where(.adm-implementos) .badge-amarilla {
   background: var(--ambar-bg-suave);
   color: var(--ambar);
   border-color: #d9770633;
 }
 
-.btn-accion-cuadrado {
+:where(.adm-implementos) .btn-accion-cuadrado {
   width: 32px;
   height: 32px;
   border: none;
@@ -348,73 +353,72 @@
   transition: opacity 0.15s;
 }
 
-.btn-accion-cuadrado:hover {
+:where(.adm-implementos) .btn-accion-cuadrado:hover {
   opacity: 0.85;
 }
 
-.btn-accion-cuadrado:disabled {
+:where(.adm-implementos) .btn-accion-cuadrado:disabled {
   background: var(--ambar-disabled) !important;
   cursor: not-allowed;
 }
 
-.btn-accion-editar {
+:where(.adm-implementos) .btn-accion-editar {
   background: var(--naranja);
 }
 
-.btn-accion-visualizar {
+:where(.adm-implementos) .btn-accion-visualizar {
   background: var(--azul-visualizar);
 }
 
-.btn-accion--ojo {
+:where(.adm-implementos) .btn-accion--ojo {
   background: var(--azul-light);
   color: var(--azul-oscuro);
   border: 1.5px solid #bfdbfe;
 }
 
-.btn-accion--ojo:hover {
+:where(.adm-implementos) .btn-accion--ojo:hover {
   background: var(--azul);
   color: var(--blanco);
   border-color: var(--azul);
 }
 
-.btn-accion--check {
+:where(.adm-implementos) .btn-accion--check {
   background: var(--verde-light);
   color: var(--verde);
   border: 1.5px solid #bbf7d0;
 }
 
-.btn-accion--check:hover {
+:where(.adm-implementos) .btn-accion--check:hover {
   background: var(--verde);
   color: var(--blanco);
   border-color: var(--verde);
 }
 
-.btn-accion--x {
+:where(.adm-implementos) .btn-accion--x {
   background: var(--rojo-light);
   color: var(--rojo);
   border: 1.5px solid #fecaca;
 }
 
-.btn-accion--x:hover {
+:where(.adm-implementos) .btn-accion--x:hover {
   background: var(--rojo);
   color: var(--blanco);
   border-color: var(--rojo);
 }
 
-.btn-accion-editar {
+:where(.adm-implementos) .btn-accion-editar {
   background: #fef9c3;
   color: var(--dorado-oscuro);
   border: 1.5px solid var(--dorado);
 }
 
-.btn-accion-editar:hover {
+:where(.adm-implementos) .btn-accion-editar:hover {
   background: var(--dorado);
   color: var(--blanco);
   border-color: var(--dorado);
 }
 
-
-.dialog-bootstrap {
+:where(.adm-implementos) .dialog-bootstrap {
   position: fixed;
   top: 50%;
   left: 50%;
@@ -427,11 +431,11 @@
   overflow-y: auto;
 }
 
-.dialog-bootstrap::backdrop {
+:where(.adm-implementos) .dialog-bootstrap::backdrop {
   background: rgba(0, 0, 0, 0.5);
 }
 
-.dialog-bootstrap .form-label {
+:where(.adm-implementos) .dialog-bootstrap .form-label {
   text-transform: uppercase;
   letter-spacing: 0.04em;
   font-size: 0.72rem;
@@ -440,19 +444,19 @@
   margin-bottom: 8px;
 }
 
-.dialog-bootstrap .modal-header {
+:where(.adm-implementos) .dialog-bootstrap .modal-header {
   padding: 24px 28px;
 }
 
-.dialog-bootstrap .modal-header small {
+:where(.adm-implementos) .dialog-bootstrap .modal-header small {
   font-size: 0.85rem;
 }
 
-.dialog-bootstrap .modal-footer {
+:where(.adm-implementos) .dialog-bootstrap .modal-footer {
   gap: 10px;
 }
 
-.dialog-bootstrap .form-section-label {
+:where(.adm-implementos) .dialog-bootstrap .form-section-label {
   font-size: 0.72rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -462,7 +466,7 @@
   padding-bottom: 12px;
 }
 
-.dropzone-foto {
+:where(.adm-implementos) .dropzone-foto {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -479,28 +483,28 @@
   margin-top: 4px;
 }
 
-.dropzone-foto:hover {
+:where(.adm-implementos) .dropzone-foto:hover {
   border-color: var(--bs-danger);
   background: var(--rojo-hover-bg-suave);
 }
 
-.dropzone-foto strong {
+:where(.adm-implementos) .dropzone-foto strong {
   color: var(--bs-danger);
   font-weight: 700;
 }
 
-.dropzone-foto input[type="file"] {
+:where(.adm-implementos) .dropzone-foto input[type="file"] {
   display: none;
 }
 
-.modal-detalle-pedido {
+:where(.adm-implementos) .modal-detalle-pedido {
   max-height: 88vh;
   display: flex;
   flex-direction: column;
   overflow: hidden;
 }
 
-.modal-header-detalle {
+:where(.adm-implementos) .modal-header-detalle {
   display: flex;
   align-items: flex-start;
   gap: 14px;
@@ -508,7 +512,7 @@
   border-bottom: 1px solid var(--gris-borde-claro);
 }
 
-.detalle-icono {
+:where(.adm-implementos) .detalle-icono {
   width: 42px;
   height: 42px;
   flex-shrink: 0;
@@ -521,19 +525,19 @@
   color: var(--bs-danger);
 }
 
-.detalle-titulo {
+:where(.adm-implementos) .detalle-titulo {
   font-size: 1.05rem;
   font-weight: 700;
   color: var(--carbon-oscuro);
 }
 
-.detalle-codigo {
+:where(.adm-implementos) .detalle-codigo {
   font-size: 0.78rem;
   color: var(--gris-texto-tenue);
   font-weight: 600;
 }
 
-.btn-cerrar-circular {
+:where(.adm-implementos) .btn-cerrar-circular {
   width: 32px;
   height: 32px;
   border-radius: 50%;
@@ -549,18 +553,18 @@
   flex-shrink: 0;
 }
 
-.btn-cerrar-circular:hover {
+:where(.adm-implementos) .btn-cerrar-circular:hover {
   background: var(--gris-fondo-suave);
 }
 
-.modal-detalle-pedido .modal-body {
+:where(.adm-implementos) .modal-detalle-pedido .modal-body {
   padding: 20px 24px;
   overflow-y: auto;
   flex: 1 1 auto;
   min-height: 0;
 }
 
-.seccion-detalle {
+:where(.adm-implementos) .seccion-detalle {
   font-size: 0.72rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -571,7 +575,7 @@
   padding-left: 14px;
 }
 
-.seccion-detalle::before {
+:where(.adm-implementos) .seccion-detalle::before {
   content: "";
   position: absolute;
   left: 0;
@@ -582,7 +586,7 @@
   background: var(--bs-danger);
 }
 
-.caja-gris {
+:where(.adm-implementos) .caja-gris {
   background: var(--gris-fondo-claro);
   border: 1px solid var(--gris-borde-caja);
   border-radius: 10px;
@@ -592,14 +596,14 @@
   height: 100%;
 }
 
-.caja-implemento {
+:where(.adm-implementos) .caja-implemento {
   display: flex;
   align-items: center;
   gap: 14px;
   border-left: 3px solid var(--bs-danger);
 }
 
-.dato-label {
+:where(.adm-implementos) .dato-label {
   display: block;
   color: var(--gris-suave);
   font-size: 0.68rem;
@@ -610,7 +614,7 @@
   margin-bottom: 4px;
 }
 
-.badge-estado {
+:where(.adm-implementos) .badge-estado {
   display: inline-block;
   padding: 3px 12px;
   border-radius: 999px;
@@ -618,22 +622,22 @@
   font-weight: 700;
 }
 
-.badge-estado-pendiente {
+:where(.adm-implementos) .badge-estado-pendiente {
   background: var(--ambar-bg);
   color: var(--ambar);
 }
 
-.badge-estado-aprobado {
+:where(.adm-implementos) .badge-estado-aprobado {
   background: var(--verde-claro);
   color: var(--verde);
 }
 
-.badge-estado-rechazado {
+:where(.adm-implementos) .badge-estado-rechazado {
   background: var(--rojo-bootstrap-bg);
   color: var(--rojo-bootstrap);
 }
 
-.caja-metodo-pago {
+:where(.adm-implementos) .caja-metodo-pago {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -645,7 +649,7 @@
   color: var(--carbon-oscuro);
 }
 
-.metodo-pago-icono-inline {
+:where(.adm-implementos) .metodo-pago-icono-inline {
   width: 32px;
   height: 32px;
   flex-shrink: 0;
@@ -657,7 +661,7 @@
   color: var(--bs-danger);
 }
 
-.check-metodo-pago {
+:where(.adm-implementos) .check-metodo-pago {
   margin-left: auto;
   width: 26px;
   height: 26px;
@@ -671,7 +675,7 @@
   font-size: 0.85rem;
 }
 
-.modal-footer-total {
+:where(.adm-implementos) .modal-footer-total {
   display: flex;
   justify-content: flex-end;
   align-items: center;
@@ -685,7 +689,7 @@
 }
 
 /*Imagen editable del modal Editar*/
-.foto-editable {
+:where(.adm-implementos) .foto-editable {
   position: relative;
   display: inline-block;
   cursor: pointer;
@@ -693,7 +697,7 @@
   line-height: 0;
 }
 
-.foto-editable .img-modal {
+:where(.adm-implementos) .foto-editable .img-modal {
   width: 80px;
   height: 80px;
   object-fit: cover;
@@ -702,12 +706,12 @@
   cursor: pointer;
 }
 
-.foto-editable:hover .img-modal {
+:where(.adm-implementos) .foto-editable:hover .img-modal {
   filter: brightness(0.65);
   border-color: var(--bs-danger);
 }
 
-.foto-editable::after {
+:where(.adm-implementos) .foto-editable::after {
   content: "Cambiar";
   position: absolute;
   inset: 0;
@@ -723,17 +727,17 @@
   pointer-events: none;
 }
 
-.foto-editable:hover::after,
-.foto-editable:focus-visible::after {
+:where(.adm-implementos) .foto-editable:hover::after,
+:where(.adm-implementos) .foto-editable:focus-visible::after {
   opacity: 1;
 }
 
-.foto-editable:focus-visible {
+:where(.adm-implementos) .foto-editable:focus-visible {
   outline: 2px solid var(--bs-danger);
   outline-offset: 3px;
 }
 
-.foto-editable .badge-editar-foto {
+:where(.adm-implementos) .foto-editable .badge-editar-foto {
   position: absolute;
   right: -4px;
   bottom: -4px;
@@ -750,48 +754,47 @@
   pointer-events: none;
 }
 
-.foto-editable .badge-editar-foto svg {
+:where(.adm-implementos) .foto-editable .badge-editar-foto svg {
   width: 12px;
   height: 12px;
 }
 
-.foto-editable input[type="file"] {
+:where(.adm-implementos) .foto-editable input[type="file"] {
   display: none;
 }
-
 
 /* ============================================================
    PEDIDOS (varios productos por pedido)
    ============================================================ */
-.tabs-implementos {
+:where(.adm-implementos) .tabs-implementos {
   flex-wrap: wrap;
   row-gap: 8px;
 }
 
-.tabla-pedidos {
+:where(.adm-implementos) .tabla-pedidos {
   min-width: 860px;
 }
 
-.celda-productos {
+:where(.adm-implementos) .celda-productos {
   display: flex;
   align-items: center;
   gap: 10px;
   text-align: left;
 }
 
-.celda-productos-texto {
+:where(.adm-implementos) .celda-productos-texto {
   display: flex;
   flex-direction: column;
   line-height: 1.25;
 }
 
-.celda-productos-mas {
+:where(.adm-implementos) .celda-productos-mas {
   font-size: 0.72rem;
   font-weight: 600;
   color: var(--gris-suave);
 }
 
-.celda-pago {
+:where(.adm-implementos) .celda-pago {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -799,35 +802,35 @@
   white-space: nowrap;
 }
 
-.celda-pago svg {
+:where(.adm-implementos) .celda-pago svg {
   color: var(--bs-danger);
 }
 
-.pedido-adm-items {
+:where(.adm-implementos) .pedido-adm-items {
   display: flex;
   flex-direction: column;
   gap: 8px;
   margin-bottom: 4px;
 }
 
-.pedido-adm-llave {
+:where(.adm-implementos) .pedido-adm-llave {
   margin: 8px 0 0;
   font-size: 0.82rem;
   color: var(--gris-texto);
 }
 
-.pedido-adm-llave strong {
+:where(.adm-implementos) .pedido-adm-llave strong {
   color: var(--carbon-oscuro);
 }
 
-.caja-comprobante {
+:where(.adm-implementos) .caja-comprobante {
   display: flex;
   align-items: center;
   gap: 12px;
   flex-wrap: wrap;
 }
 
-.comprobante-miniatura {
+:where(.adm-implementos) .comprobante-miniatura {
   padding: 0;
   border: 1px solid var(--gris-borde);
   border-radius: 10px;
@@ -837,7 +840,7 @@
   line-height: 0;
 }
 
-.comprobante-miniatura img {
+:where(.adm-implementos) .comprobante-miniatura img {
   width: 96px;
   height: 96px;
   object-fit: cover;
@@ -846,14 +849,14 @@
 /* ============================================================
    RESEÑAS
    ============================================================ */
-.resenas-resumen {
+:where(.adm-implementos) .resenas-resumen {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 14px;
   margin-bottom: 20px;
 }
 
-.resenas-stat {
+:where(.adm-implementos) .resenas-stat {
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -865,7 +868,7 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05), 0 0 1px rgba(0, 0, 0, 0.04);
 }
 
-.resenas-stat-label {
+:where(.adm-implementos) .resenas-stat-label {
   font-size: 0.7rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -873,51 +876,51 @@
   color: var(--gris-suave);
 }
 
-.resenas-stat-valor {
+:where(.adm-implementos) .resenas-stat-valor {
   font-size: 1.6rem;
   font-weight: 800;
   color: var(--carbon-oscuro);
 }
 
-.resenas-stat-estrella {
+:where(.adm-implementos) .resenas-stat-estrella {
   color: var(--dorado-oscuro);
   font-size: 1.2rem;
 }
 
-.tabla-resenas {
+:where(.adm-implementos) .tabla-resenas {
   min-width: 860px;
 }
 
-.tabla-resenas td:nth-child(1) {
+:where(.adm-implementos) .tabla-resenas td:nth-child(1) {
   color: var(--carbon-oscuro) !important;
   font-family: inherit;
   font-size: inherit;
   letter-spacing: normal;
 }
 
-.celda-comentario {
+:where(.adm-implementos) .celda-comentario {
   text-align: left !important;
   white-space: normal;
   color: var(--gris-texto-oscuro);
 }
 
-.comentario-resena {
+:where(.adm-implementos) .comentario-resena {
   position: relative;
   max-width: 360px; /* ancho para que la línea corte hacia "Me gustaría..." */
 }
 
-.comentario-resena-texto {
+:where(.adm-implementos) .comentario-resena-texto {
   margin: 0;
   line-height: 1.45;
   max-height: calc(1.45em * 2); /* 2 líneas */
   overflow: hidden;
 }
 
-.comentario-resena-texto.expandido {
+:where(.adm-implementos) .comentario-resena-texto.expandido {
   max-height: none;
 }
 
-.comentario-resena-mas {
+:where(.adm-implementos) .comentario-resena-mas {
   position: absolute;
   right: 0;
   bottom: 0;
@@ -932,14 +935,14 @@
   cursor: pointer;
 }
 
-.comentario-resena-mas:hover {
+:where(.adm-implementos) .comentario-resena-mas:hover {
   background: var(--bs-danger);
   border-color: var(--bs-danger);
   color: #fff;
 }
 
 /* Expandido: el botón pasa debajo como "Ver menos" */
-.comentario-resena-texto.expandido + .comentario-resena-mas {
+:where(.adm-implementos) .comentario-resena-texto.expandido + .comentario-resena-mas {
   position: static;
   display: block;
   margin-top: 4px;
@@ -951,55 +954,244 @@
   letter-spacing: 0;
 }
 
-.comentario-resena-texto.expandido + .comentario-resena-mas:hover {
+:where(.adm-implementos) .comentario-resena-texto.expandido + .comentario-resena-mas:hover {
   background: none;
   color: var(--bs-danger);
   text-decoration: underline;
 }
 
-.estrellas-tabla {
+:where(.adm-implementos) .estrellas-tabla {
   display: inline-flex;
   gap: 2px;
   font-size: 15px;
   white-space: nowrap;
 }
 
-.estrellas-tabla .estrella-llena {
+:where(.adm-implementos) .estrellas-tabla .estrella-llena {
   color: var(--dorado-oscuro);
   font-size: 15px;
 }
 
-.estrellas-tabla .estrella-vacia {
+:where(.adm-implementos) .estrellas-tabla .estrella-vacia {
   color: #d1d5db;
   font-size: 15px;
 }
 
 /* Aprobar / Rechazar deshabilitados: mantienen su color, solo se ven apagados */
-.btn-accion--check:disabled {
+:where(.adm-implementos) .btn-accion--check:disabled {
   background: var(--verde-light) !important;
 }
 
-.btn-accion--x:disabled {
+:where(.adm-implementos) .btn-accion--x:disabled {
   background: var(--rojo-light) !important;
 }
 
-.btn-accion--check:disabled,
-.btn-accion--x:disabled {
+:where(.adm-implementos) .btn-accion--check:disabled,
+:where(.adm-implementos) .btn-accion--x:disabled {
   opacity: 0.45;
   cursor: not-allowed;
 }
 
 /* Sin efecto hover cuando están deshabilitados */
-.btn-accion--check:disabled:hover {
+:where(.adm-implementos) .btn-accion--check:disabled:hover {
   background: var(--verde-light) !important;
   color: var(--verde);
   border-color: #bbf7d0;
   opacity: 0.45;
 }
 
-.btn-accion--x:disabled:hover {
+:where(.adm-implementos) .btn-accion--x:disabled:hover {
   background: var(--rojo-light) !important;
   color: var(--rojo);
   border-color: #fecaca;
   opacity: 0.45;
+}
+
+/* ── Estilos de otros módulos que ya afectaban a este (copiados para conservar el aspecto; ver README) ── */
+
+:where(.adm-implementos) .tab-btn {
+    padding: 10px 22px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    color: #858585;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;}
+:where(.adm-implementos) .tab-btn {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #666;
+    cursor: pointer;
+    border: none;
+    background: none;
+    border-bottom: 2.5px solid transparent;
+    margin-bottom: -1.5px;
+    transition: color 0.2s, border-color 0.2s;
+    white-space: nowrap;}
+:where(.adm-implementos) .tab-btn:hover {
+    color: var(--color-primario);}
+:where(.adm-implementos) .btn-cerrar-circular {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1.5px solid #ddd;
+    background: white;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-texto);
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;}
+:where(.adm-implementos) .btn-cerrar-circular:hover {
+    background: #f5f5f5;
+    border-color: #bbb;}
+:where(.adm-implementos) .valor {
+    font-size: 25px;
+    font-weight: 700;}
+:where(.adm-implementos) select {
+    border: 1px solid #d4d4d4;
+    color: #333333;
+    font-size: 14px;
+    padding: 10px;
+    border-radius: 10px;
+    height: 40px;
+    width: 100%;}
+:where(.adm-implementos) .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--espacio-xs);
+  padding: 10px 24px;
+  border-radius: var(--radio-sm);
+  font-weight: 700;
+  font-size: var(--texto-sm);
+  transition: var(--transicion);}
+:where(.adm-implementos) .tab-btn {
+    position: relative;
+    padding: 11px 22px 13px;
+    background: transparent;
+    border: none;
+    color: var(--gris-texto);
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: color var(--trans);
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;}
+:where(.adm-implementos) .tab-btn:hover {
+    color: var(--carbon);}
+:where(.adm-implementos) .estrella-llena {
+    color: var(--dorado-oscuro);
+    font-size: 13px;}
+:where(.adm-implementos) .estrella-vacia {
+    color: #d1d5db;
+    font-size: 13px;}
+:where(.adm-implementos) .modal-header {
+    position: static;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid var(--gris-borde);
+    border-radius: 20px 20px 0 0;
+    flex-shrink: 0;
+    transition: background var(--trans), color var(--trans);}
+:where(.adm-implementos) .modal-header h3 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--carbon);
+    margin: 0;
+    flex-grow: 1;
+    letter-spacing: -0.02em;}
+:where(.adm-implementos) .modal-body {
+    padding: 20px 24px 24px;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;  
+    flex: 1;
+    gap: 24px;}
+
+/* ── Ajustes (bloque 6.1) ───────────────────────────────────────────────── */
+/* Botón "Agregar nuevo Implemento": mismo rojo del sistema (antes rosado de Bootstrap) */
+:where(.adm-implementos) .btn-agregar,
+:where(.adm-implementos) .btn-agregar:focus {
+  background-color: var(--rojo);
+  border-color: var(--rojo);
+  color: var(--blanco);
+  font-weight: 700;
+}
+:where(.adm-implementos) .btn-agregar:hover {
+  background-color: #a30000;
+  border-color: #a30000;
+}
+
+/* El menú del último filtro (Cantidad) se abre hacia la izquierda: no se sale de la pantalla ni crea scroll */
+:where(.adm-implementos) .custom-dropdown-menu--derecha {
+  left: auto;
+  right: 0;
+}
+:where(.adm-implementos) .custom-dropdown-menu {
+  max-height: none;
+  overflow: visible;
+}
+
+/* Modales de implementos: encabezado y pie fijos, el cuerpo se desplaza si la pantalla es baja */
+:where(.adm-implementos) .dialog-bootstrap {
+  overflow: visible;
+}
+:where(.adm-implementos) .dialog-bootstrap .modal-content {
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100dvh - 24px);
+}
+:where(.adm-implementos) .dialog-bootstrap .modal-content > form {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1 1 auto;
+}
+:where(.adm-implementos) .dialog-bootstrap .modal-body {
+  overflow-y: auto;
+  min-height: 0;
+}
+:where(.adm-implementos) .dialog-bootstrap .modal-header,
+:where(.adm-implementos) .dialog-bootstrap .modal-footer {
+  flex-shrink: 0;
+}
+/* Foto del modal "Editar": centrada en su columna */
+:where(.adm-implementos) .foto-editable {
+  margin: 0 auto;
+}
+:where(.adm-implementos) .btn-danger {
+  --bs-btn-bg: var(--rojo);
+  --bs-btn-border-color: var(--rojo);
+  --bs-btn-hover-bg: #a30000;
+  --bs-btn-hover-border-color: #a30000;
+  --bs-btn-active-bg: #a30000;
+  --bs-btn-active-border-color: #a30000;
+  --bs-btn-disabled-bg: var(--rojo);
+  --bs-btn-disabled-border-color: var(--rojo);
+}
+
+/* Reseñas: buscador más ancho (el texto de ayuda es largo) y contenido de la tabla centrado */
+:where(.adm-implementos) .tabla-resenas th,
+:where(.adm-implementos) .tabla-resenas td {
+  text-align: center;
+  vertical-align: middle;
+}
+:where(.adm-implementos) .tabla-resenas .celda-productos,
+:where(.adm-implementos) .tabla-resenas .celda-comentario .comentario-resena {
+  justify-content: center;
+  text-align: center;
+}
+:where(.adm-implementos) .tabla-resenas .celda-comentario {
+  text-align: center !important;
+}
+:where(.adm-implementos) .search-box:has(input[placeholder^="Buscar por producto"]) {
+  flex: 1 1 340px;
+  max-width: 460px;
 }

@@ -23,6 +23,7 @@ export default function AsistenciaPanel({ niveles = [], subtitulo }) {
   const [menuAbierto, setMenuAbierto] = useState(null);
   const [pendienteJustificar, setPendienteJustificar] = useState(null);
   const [busqueda, setBusqueda] = useState("");
+  const [guardando, setGuardando] = useState(false);
  const { aviso, mostrarAviso } = useAviso();
 
   const modalGuardadoRef = useRef(null);
@@ -93,6 +94,8 @@ export default function AsistenciaPanel({ niveles = [], subtitulo }) {
     setMenuAbierto(null);
   };
 
+  // TODO: sin modal de justificación conectado todavía
+  // eslint-disable-next-line no-unused-vars
   const confirmarJustificacion = (motivo) => {
     if (pendienteJustificar == null) return;
     setEstados((prev) => ({ ...prev, [pendienteJustificar]: { estado: "justificado", motivo } }));
@@ -103,7 +106,18 @@ export default function AsistenciaPanel({ niveles = [], subtitulo }) {
     setMenuAbierto((actual) => (actual === atletaId ? null : atletaId));
   };
 
-  const handleGuardar = () => modalGuardadoRef.current?.showModal();
+  // CAUSA RAÍZ del bug del toast: antes el modal "registrada correctamente" se abría ANTES de llamar al backend
+  // y el guardado real ocurría al pulsar "Aceptar". Si fallaba, el usuario ya había visto el éxito y luego el error.
+  // Ahora se guarda primero y el modal de éxito solo se abre cuando el backend respondió bien.
+  const handleGuardar = async () => {
+    if (guardando) return;
+    setGuardando(true);
+    try {
+      await confirmarGuardado();
+    } finally {
+      setGuardando(false);
+    }
+  };
 
   const confirmarGuardado = async () => {
     const sinMarcar = atletas.filter((a) => !estados[a.id]?.estado).length;
@@ -112,24 +126,35 @@ export default function AsistenciaPanel({ niveles = [], subtitulo }) {
       estado: estados[a.id]?.estado ?? "falta",
       motivo: estados[a.id]?.motivo ?? "",
     }));
+    // 1) Guardar: solo esta llamada decide si el toast es de éxito o de error
+    let resultado;
     try {
-      await guardarAsistenciaDia(nivelActivoIdEfectivo, fechaHoy, registros);
-      setGuardada(true);
-      if (sinMarcar > 0) {
-        mostrarAviso(
-          `Guardado. ${sinMarcar} sin marcar ${sinMarcar === 1 ? "quedó" : "quedaron"} como falta.`,
-          "advertencia"
-        );
-      } else {
-        mostrarAviso("Asistencia guardada correctamente.", "ok");
-      }
-    } catch {
-      mostrarAviso("No se pudo guardar la asistencia. Intenta de nuevo.", "error");
+      resultado = await guardarAsistenciaDia(nivelActivoIdEfectivo, fechaHoy, registros);
+    } catch (error) {
+      // Se muestra el mensaje real del backend (p. ej. "No se puede registrar asistencia de una fecha futura")
+      mostrarAviso(error?.message || "No se pudo guardar la asistencia. Intenta de nuevo.", "error");
+      return;
+    }
+
+    // 2) Ya quedó guardada: lo que siga (avisos, estado visual) no puede convertirse en un error de guardado
+    setGuardada(true);
+    modalGuardadoRef.current?.showModal();
+    const { advertencias } = resultado;
+    if (advertencias.length > 0) {
+      mostrarAviso(`Asistencia guardada, con observaciones: ${advertencias[0]}`, "advertencia");
+    } else if (sinMarcar > 0) {
+      mostrarAviso(
+        `Guardado. ${sinMarcar} sin marcar ${sinMarcar === 1 ? "quedó" : "quedaron"} como falta.`,
+        "advertencia"
+      );
+    } else {
+      mostrarAviso("Asistencia guardada correctamente.", "ok");
     }
   };
 
   const handleEditar = () => setGuardada(false);
 
+  // eslint-disable-next-line no-unused-vars
   const atletaPendiente = atletas.find((a) => a.id === pendienteJustificar);
 
   if (!nivel) {
@@ -150,12 +175,14 @@ export default function AsistenciaPanel({ niveles = [], subtitulo }) {
         </div>
 
         <div className="asist-header__tabs-bloque">
-          <div className="tabla-contenido">
+          <div className="ui-tabs" role="tablist">
             {niveles.map((n) => (
               <button
                 key={n.id}
                 type="button"
-                className={`tab-btn${n.id === nivelActivoIdEfectivo ? " tab-btn-activo" : ""}`}
+                role="tab"
+                aria-selected={n.id === nivelActivoIdEfectivo}
+                className={`ui-tab${n.id === nivelActivoIdEfectivo ? " ui-tab--activa" : ""}`}
                 onClick={() => cambiarNivel(n.id)}
               >
                 {n.categoria}
@@ -243,7 +270,7 @@ export default function AsistenciaPanel({ niveles = [], subtitulo }) {
 
         <div className="asist-footer-bar">
           {!guardada ? (
-            <button type="button" className="btn-guardar btn-guardar-normal" onClick={handleGuardar} disabled={cargando || atletas.length === 0}>
+            <button type="button" className="btn-guardar btn-guardar-normal" onClick={handleGuardar} disabled={cargando || guardando || atletas.length === 0}>
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                 <polyline points="17 8 12 3 7 8" /><line x1="12" x2="12" y1="3" y2="15" />
@@ -282,7 +309,6 @@ export default function AsistenciaPanel({ niveles = [], subtitulo }) {
         ref={modalGuardadoRef}
         categoriaLabel={nivel.categoria}
         fecha={formatearFechaLarga(fechaHoy)}
-        onAceptar={confirmarGuardado}
       />
       <ModalConsultar
         ref={modalConsultarRef}

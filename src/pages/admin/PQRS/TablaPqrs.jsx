@@ -1,5 +1,4 @@
 
-import React from "react";
 import FilaPqrs from "./FilaPqrs";
 
 const COLUMNAS = ["ID", "ASUNTO", "ESTADO", "PRIORIDAD", "FECHA", "REMITENTE", "ACCIONES"];

@@ -1,6 +1,6 @@
 
 import "./PQRS.css";
-import React, { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect } from "react";
 
 import ResumenCard from "./ResumenCard";
 import FiltrosPqrs from "./FiltrosPqrs";
@@ -8,16 +8,10 @@ import TablaPqrs from "./TablaPqrs";
 import ModalResponder from "./ModalResponder";
 import ModalModificar from "./ModalModificar";
 import AvisoToast from "../../../components/Compartidos/AvisoToast";
+import useAviso from "../../../hooks/useAviso";
 
 import { FILTROS_INICIALES, radicadoDe } from "./pqrsData";
-
-const API_URL = "http://localhost:3001";
-const jsonHeaders = { "Content-Type": "application/json" };
-
-async function manejarRespuesta(res) {
-  if (!res.ok) throw new Error(`Error ${res.status} al comunicarse con la API`);
-  return res.json();
-}
+import { listarPqrs, responderPqrs, modificarPqrs, alternarPqrs } from "../../../services/pqrsService";
 
 const ESTADO_INICIAL_RESPUESTA = { respuesta: "", estado: "tramite" };
 
@@ -29,11 +23,6 @@ const ESTADO_INICIAL_MODIFICAR = {
   prioridad: "",
 };
 
-const fechaHoy = () => {
-  const h = new Date();
-  const dos = (n) => String(n).padStart(2, "0");
-  return `${h.getFullYear()}-${dos(h.getMonth() + 1)}-${dos(h.getDate())}`;
-};
 
 
 const normalizar = (texto) =>
@@ -52,8 +41,7 @@ export default function PQRS() {
     let activo = true;
     setCargando(true);
 
-    fetch(`${API_URL}/pqrs`)
-      .then(manejarRespuesta)
+    listarPqrs()
       .then((datos) => {
         if (!activo) return;
         setPqrs(datos);
@@ -67,17 +55,9 @@ export default function PQRS() {
   }, []);
 
   
-  const [aviso, setAviso] = useState({ visible: false, mensaje: "", tipo: "ok" });
-
-  useEffect(() => {
-    if (!aviso.visible) return;
-    const id = setTimeout(() => setAviso((a) => ({ ...a, visible: false })), 3000);
-    return () => clearTimeout(id);
-  }, [aviso.visible, aviso.mensaje]);
-
-  const mostrarAviso = (mensaje, tipo = "ok") => setAviso({ visible: true, mensaje, tipo });
-  const avisoErrorApi = () =>
-    mostrarAviso("No se pudo conectar con la API (json-server). ¿Está corriendo?", "error");
+  const { aviso, mostrarAviso } = useAviso({ tipoPorDefecto: "ok" });
+  const avisoErrorApi = (err) =>
+    mostrarAviso(err?.message || "No se pudo completar la acción. Inténtalo de nuevo.", "error");
 
 
   const [modalResponder, setModalResponder] = useState({ abierto: false, seleccionada: null });
@@ -135,12 +115,7 @@ export default function PQRS() {
 
     const { id } = modalResponder.seleccionada;
     setEnviando(true);
-    fetch(`${API_URL}/pqrs/${id}`, {
-      method: "PATCH",
-      headers: jsonHeaders,
-      body: JSON.stringify({ respuesta, estado: formResponder.estado, fechaRespuesta: fechaHoy() }),
-    })
-      .then(manejarRespuesta)
+    responderPqrs(id, { respuesta, estado: formResponder.estado })
       .then((actualizada) => {
         setPqrs((prev) => prev.map((p) => (p.id === id ? actualizada : p)));
         mostrarAviso("Respuesta enviada.", "ok");
@@ -170,12 +145,8 @@ export default function PQRS() {
 
     const { id } = modalModificar.seleccionada;
     setEnviando(true);
-    fetch(`${API_URL}/pqrs/${id}`, {
-      method: "PATCH",
-      headers: jsonHeaders,
-      body: JSON.stringify({ ...formModificar, asunto, descripcion }),
-    })
-      .then(manejarRespuesta)
+    // TODO(backend): solo se guardan estado y prioridad (tipo, asunto y descripción no se pueden modificar).
+    modificarPqrs(id, formModificar)
       .then((actualizada) => {
         setPqrs((prev) => prev.map((p) => (p.id === id ? actualizada : p)));
         mostrarAviso("Cambios guardados.", "ok");
@@ -190,12 +161,7 @@ export default function PQRS() {
   // UPDATE parcial
   const alternarPqrsHandler = (solicitud) => {
     const inhabilitada = !solicitud.inhabilitada;
-    fetch(`${API_URL}/pqrs/${solicitud.id}`, {
-      method: "PATCH",
-      headers: jsonHeaders,
-      body: JSON.stringify({ inhabilitada }),
-    })
-      .then(manejarRespuesta)
+    alternarPqrs(solicitud)
       .then((actualizada) => {
         setPqrs((prev) => prev.map((p) => (p.id === solicitud.id ? actualizada : p)));
         mostrarAviso(
@@ -209,7 +175,7 @@ export default function PQRS() {
 
   if (cargando) {
     return (
-      <main className="contenido container-fluid py-5 text-center text-secondary">
+      <main className="ui-contenido container-fluid py-5 text-center text-secondary">
         <div className="spinner-border text-danger mb-3" role="status" />
         <p>Cargando información…</p>
       </main>
@@ -218,17 +184,17 @@ export default function PQRS() {
 
   if (error) {
     return (
-      <main className="contenido container-fluid py-5 text-center text-danger">
+      <main className="ui-contenido container-fluid py-5 text-center text-danger">
         <p className="fw-semibold mb-2">No se pudo conectar con la API.</p>
         <p className="text-secondary small mb-0">
-          Verifica que json-server esté corriendo: <code>npx json-server db.json --port 3001</code>
+          Inténtalo de nuevo en unos minutos.
         </p>
       </main>
     );
   }
 
   return (
-    <main className="contenido container-fluid py-4 px-3 px-md-4 pqrs-page">
+    <main className="ui-contenido container-fluid py-4 px-3 px-md-4 pqrs-page">
       <header className="pqrs-cabecera pqrs-entrada">
         <h1>PQRS</h1>
         <p>Gestiona las peticiones, quejas, reclamos y sugerencias de los miembros del club deportivo.</p>

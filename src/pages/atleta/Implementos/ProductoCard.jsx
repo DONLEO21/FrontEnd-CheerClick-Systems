@@ -6,7 +6,11 @@ export default function ProductoCard({ implemento, onAgregar }) {
   return (
     <article className="tarjeta-producto">
       <div className="producto-imagen">
-        <img src={implemento.imagen} alt={implemento.nombre} />
+        {implemento.imagen ? (
+          <img src={implemento.imagen} alt={implemento.nombre} />
+        ) : (
+          <span className="producto-sin-imagen">Sin imagen</span>
+        )}
       </div>
       <div className="producto-info">
         <h4>{implemento.nombre}</h4>

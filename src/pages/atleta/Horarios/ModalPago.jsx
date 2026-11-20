@@ -1,5 +1,5 @@
 
-import React, { useState, useRef } from "react";
+import { useState, useRef } from "react";
 import { formatearMoneda } from "./horariosAtletaData";
 
 const CAMPOS_VACIOS = { metodo: "", referencia: "", fecha: "" };
@@ -9,7 +9,7 @@ const METODOS = [
   { valor: "daviplata", texto: "Daviplata" },
 ];
 
-export default function ModalPago({ torneo, onCerrar, onEnviar }) {
+export default function ModalPago({ torneo, onCerrar, onEnviar, onAviso }) {
   const [campos, setCampos] = useState(CAMPOS_VACIOS);
   const [errores, setErrores] = useState({});
   const [archivo, setArchivo] = useState(null);
@@ -31,7 +31,7 @@ export default function ModalPago({ torneo, onCerrar, onEnviar }) {
   const manejarArchivo = (file) => {
     if (!file) return;
     if (file.size > 5 * 1024 * 1024) {
-      alert("El archivo supera los 5 MB.");
+      onAviso?.("El archivo supera los 5 MB.", "error");
       return;
     }
     setArchivo({ nombre: file.name, tamañoKB: Math.round(file.size / 1024) });
@@ -57,7 +57,7 @@ export default function ModalPago({ torneo, onCerrar, onEnviar }) {
       estado: "pendiente",
     })
       .then(() => setEnviado(true))
-      .catch(() => alert("No se pudo enviar el comprobante. Intenta de nuevo."))
+      .catch(() => onAviso?.("No se pudo enviar el comprobante. Intenta de nuevo.", "error"))
       .finally(() => setEnviando(false));
   };
 
@@ -178,7 +178,7 @@ export default function ModalPago({ torneo, onCerrar, onEnviar }) {
                       id="archivo-comprobante"
                       type="file"
                       accept=".pdf,.jpg,.jpeg,.png"
-                      className="visualmente-oculto"
+                      className="ui-sr-only"
                       onChange={(e) => manejarArchivo(e.target.files[0])}
                     />
                   </label>

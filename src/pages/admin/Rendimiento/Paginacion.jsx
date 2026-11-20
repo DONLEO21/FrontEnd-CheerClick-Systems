@@ -1,4 +1,3 @@
-import React from "react";
 
 function Paginacion({ paginaActual, setPaginaActual, totalItems, itemsPorPagina, etiqueta = "atletas" }) {
   const totalPaginas = Math.ceil(totalItems / itemsPorPagina);
@@ -29,7 +28,7 @@ function Paginacion({ paginaActual, setPaginaActual, totalItems, itemsPorPagina,
         Mostrando {finMostrado - inicioMostrado + 1} de {totalItems} {etiqueta}
       </p>
 
-      <div id="botones">
+      <div className="adm-rendimiento-botones">
         <button
           className="btn-largo"
           onClick={() => setPaginaActual(paginaActual - 1)}

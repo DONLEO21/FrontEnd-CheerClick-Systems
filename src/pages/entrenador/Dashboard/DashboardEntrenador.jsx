@@ -1,14 +1,10 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom'
 import { SquarePen } from 'lucide-react'
-import Header from '../../../components/Header/Header.jsx'
-import Sidebar from '../../../components/Sidebar/Sidebar.jsx'
-import AvisoToast from '../../../components/AvisoToast'
-import menuEntrenador from '../../../data/menuEntrenador.js'
-import { supabase } from '../../../services/supabase'
+import AvisoToast from '../../../components/Compartidos/AvisoToast'
 import useUsuario from '../../../hooks/useUsuario'
 import useAviso from '../../../hooks/useAviso'
 
-import { RUTA_PERFIL, RUTA_ENTRENAMIENTOS, RUTA_INICIO_ENTRENADOR } from './dashboardEntrenadorData.js'
+import { RUTA_PERFIL, RUTA_ENTRENAMIENTOS } from './dashboardEntrenadorData.js'
 import useDashboardEntrenador from './useDashboardEntrenador.js'
 
 import TarjetaResumen from './TarjetaResumen.jsx'
@@ -17,14 +13,15 @@ import TarjetaAtletas from './TarjetaAtletas.jsx'
 import TarjetaCalendario from './TarjetaCalendario.jsx'
 import TarjetaRendimientoEquipo from './TarjetaRendimientoEquipo.jsx'
 
-import { cerrarSesion as cerrarSesionSistema } from '../../../services/sesion'
-
 import './DashboardEntrenador.css'
+import SaludoDashboard from '../../../components/Compartidos/SaludoDashboard'
 
 export default function DashboardEntrenador({
   nombreEntrenador = 'Entrenador',
-  onNavigate = (href) => { window.location.href = href },
+  onNavigate: onNavigateProp,
 }) {
+  const navegar = useNavigate()
+  const onNavigate = onNavigateProp ?? ((href) => navegar(href))
   const usuario = useUsuario()
   const nombreCompleto = usuario.nombre || (usuario.cargando ? '' : nombreEntrenador)
   const primerNombre = nombreCompleto.split(' ')[0]
@@ -35,27 +32,14 @@ export default function DashboardEntrenador({
     metricas, atletasActivos, entrenosHoy, calendario,
   } = useDashboardEntrenador(mostrarAviso)
 
-  const navigate = useNavigate()
-  const cerrarSesion = () => cerrarSesionSistema(navigate)
-  const irAInicio = () => { window.location.href = '/' }
-
   return (
-    <>
-      <Sidebar
-        items={menuEntrenador}
-        activeHref={RUTA_INICIO_ENTRENADOR}
-        onNavigate={(href) => (window.location.href = href)}
-      />
-      <Header rol="Entrenador" onCerrarSesion={cerrarSesion} onIrInicio={irAInicio} />
-
-      <main className="de-pagina">
+    <div className="de-pagina">
         <div className="de-grid">
-          <section className="de-tarjeta de-tarjeta--plana de-col-20 de-bienvenida" aria-labelledby="de-titulo">
-            <h1 id="de-titulo">Hola, {primerNombre} 👋</h1>
+          <SaludoDashboard nombre={primerNombre} className="de-col-20">
             <button type="button" className="de-btn-rojo" onClick={() => onNavigate(RUTA_PERFIL)}>
               <SquarePen size={22} strokeWidth={2} /> Perfil
             </button>
-          </section>
+          </SaludoDashboard>
 
           <TarjetaResumen
             cargando={cargando}
@@ -92,9 +76,7 @@ export default function DashboardEntrenador({
             esDemo={metricas.esDemo}
           />
         </div>
-      </main>
-
       <AvisoToast aviso={aviso} />
-    </>
+    </div>
   )
 }

@@ -1,4 +1,65 @@
-@import url("https://fonts.googleapis.com/css2?family=Arimo:wght@400;500;600;700&family=Varela+Round&display=swap");
+/* ── Estilos de otros módulos que ya afectaban a este (copiados para conservar el aspecto; ver README) ── */
+
+:where(.pqa-page) select {
+    border: 1px solid #d4d4d4;
+    color: #333333;
+    font-size: 14px;
+    padding: 10px;
+    border-radius: 10px;
+    height: 40px;
+    width: 100%;}
+:where(.pqa-page) .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 30px;
+    border-radius: var(--radio-sm);
+    font-weight: 700;
+    font-size: var(--texto-sm);
+    transition: var(--transicion);}
+:where(.pqa-page) select {
+    border: 1px solid #d4d4d4;
+    color: #333333;
+    font-size: 14px;
+    padding: 10px;
+    border-radius: 10px;
+    height: 40px;
+    width: 100%;}
+:where(.pqa-page) .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--espacio-xs);
+  padding: 10px 24px;
+  border-radius: var(--radio-sm);
+  font-weight: 700;
+  font-size: var(--texto-sm);
+  transition: var(--transicion);}
+:where(.pqa-page) .modal-header {
+    position: static;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid var(--gris-borde);
+    border-radius: 20px 20px 0 0;
+    flex-shrink: 0;
+    transition: background var(--trans), color var(--trans);}
+:where(.pqa-page) .modal-header h3 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--carbon);
+    margin: 0;
+    flex-grow: 1;
+    letter-spacing: -0.02em;}
+:where(.pqa-page) .modal-body {
+    padding: 20px 24px 24px;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;  
+    flex: 1;
+    gap: 24px;}
 
 .pqa-page {
   --pqa-rojo: var(--color-primario, #d71920);
@@ -17,7 +78,6 @@
   --pqa-resuelto: #2563eb;
   --pqa-resuelto-fondo: #eff6ff;
   --pqa-resuelto-texto: #1e40af;
-  font-family: "Arimo", "Segoe UI", Arial, sans-serif;
   color: var(--pqa-texto);
 }
 
@@ -45,7 +105,6 @@
 
 .pqa-titulo-seccion {
   margin: 0 0 5px;
-  font-family: "Varela Round", sans-serif;
   font-size: 26px;
   font-weight: 800;
   letter-spacing: -0.3px;
@@ -377,7 +436,6 @@
 
 .pqa-titulo {
   margin: 0 0 5px;
-  font-family: "Varela Round", sans-serif;
   font-size: 16px;
   font-weight: 700;
   line-height: 1.3;
@@ -593,7 +651,6 @@
 
 .pqa-modal .modal-title {
   margin: 0 0 3px;
-  font-family: "Varela Round", sans-serif;
   font-size: 17px;
   font-weight: 800;
   line-height: 1.3;

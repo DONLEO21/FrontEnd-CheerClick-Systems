@@ -2,8 +2,8 @@ import { obtenerEstiloPlan, obtenerEstiloEstadoPago } from "../../../components/
 
 function TablaMensualidades({ pagos, onRegistrar, onVerComprobante }) {
   return (
-    <section id="panel" className="container mt-4">
-      <table id="tabla" className="table align-middle">
+    <section className="container mt-4 adm-pagos-panel">
+      <table className="table align-middle adm-pagos-tabla">
         <thead>
           <tr>
             <th>ID</th>
@@ -21,7 +21,7 @@ function TablaMensualidades({ pagos, onRegistrar, onVerComprobante }) {
               const estilo = obtenerEstiloEstadoPago(pago.estado);
               return (
                 <tr key={pago.id}>
-                  <td className="edad-ne">{pago.id}</td>
+                  <td className="edad-ne">{pago.codigo ?? pago.id}</td>
                   <td>
                     <span className="tex-tabla">{pago.atleta?.nombre ?? "Atleta no encontrado"}</span>
                   </td>
@@ -46,7 +46,7 @@ function TablaMensualidades({ pagos, onRegistrar, onVerComprobante }) {
                     {pago.valor.toLocaleString("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 })}
                   </td>
                   <td>
-                    <div id="con-acci" className="d-flex gap-1">
+                    <div className="d-flex gap-1 adm-pagos-con-acci">
                       {pago.registrado ? (
                         <span className="pill-registrado">
                           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

@@ -1,5 +1,4 @@
 
-import React from "react";
 import ModalBase from "./ModalBase";
 import { TIPOS, radicadoDe } from "./pqrsData";
 
@@ -11,6 +10,7 @@ export default function ModalNuevaPqrs({
   enviando,
   onCerrar,
   onGuardar,
+  subtituloNueva = "Cuéntanos qué necesitas. Tu entrenador y el equipo administrativo revisarán tu solicitud.",
 }) {
   if (!abierto) return null;
 
@@ -24,7 +24,7 @@ export default function ModalNuevaPqrs({
       subtitulo={
         editando
           ? `Actualiza los datos de tu solicitud ${radicadoDe(editando)}.`
-          : "Cuéntanos qué necesitas. Tu entrenador y el equipo administrativo revisarán tu solicitud."
+          : subtituloNueva
       }
       enviando={enviando}
       onCerrar={onCerrar}

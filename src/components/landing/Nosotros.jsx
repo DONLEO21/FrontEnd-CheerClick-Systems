@@ -7,7 +7,7 @@ const valores = [
 
 function Nosotros() {
   return (
-    <section id="nosotros">
+    <section id="nosotros" className="landing-nosotros">
       <div className="contenedor">
         <div className="seccion-titulo">
           <h1>¿QUIÉNES SOMOS?</h1>

@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 
-function Modal({ id, abierto, onCerrar, children }) {
+function Modal({ id, className, abierto, onCerrar, children }) {
   const ref = useRef(null);
 
   useEffect(() => {
@@ -13,6 +13,7 @@ function Modal({ id, abierto, onCerrar, children }) {
   return (
     <dialog
       id={id}
+      className={className}
       ref={ref}
       onClose={onCerrar}
       onCancel={onCerrar}

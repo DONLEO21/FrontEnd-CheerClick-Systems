@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
 // Select personalizado reutilizable (mismos estilos .filtro-caja-custom / .custom-dropdown)
-export default function FiltroSelect({ label, value, onChange, options }) {
+export default function FiltroSelect({ label, value, onChange, options, alinearDerecha = false }) {
   const [open, setOpen] = useState(false);
   const containerRef = useRef(null);
 
@@ -19,7 +19,7 @@ export default function FiltroSelect({ label, value, onChange, options }) {
     <div className="filtro-caja-custom" ref={containerRef}>
       <span className="filtro-label">{label}:</span>
       <div className="custom-dropdown">
-        <button type="button" className="custom-dropdown-btn" onClick={() => setOpen(!open)}>
+        <button type="button" className="custom-dropdown-btn" onMouseDown={(e) => e.preventDefault()} onClick={() => setOpen(!open)}>
           <span>{selectedOption.label}</span>
           <svg className={`arrow-icon ${open ? "open" : ""}`} width="10" height="6" viewBox="0 0 10 6" fill="none">
             <path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -27,7 +27,7 @@ export default function FiltroSelect({ label, value, onChange, options }) {
         </button>
 
         {open && (
-          <ul className="custom-dropdown-menu">
+          <ul className={`custom-dropdown-menu${alinearDerecha ? " custom-dropdown-menu--derecha" : ""}`}>
             {options.map((opt) => (
               <li
                 key={opt.value}

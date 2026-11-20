@@ -1,122 +1,114 @@
 import { useEffect, useRef, useState } from "react";
+import { Sparkles, X } from "lucide-react";
+import { listarTiposHabilidad } from "../../../services/rendimientoAdminService";
 
-const HABILIDAD_VACIA = { texto: "", nivel: "", categoria: "" };
+const sinTildes = (s) => (s ?? "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
+const VACIA = { texto: "", categoria: "", estado: "activa" };
+const MAX_NOMBRE = 80;
 
+/**
+ * Crear / editar una habilidad. El tipo sale de los tipos reales del backend (/tipo-habilidad).
+ * TODO(backend): la habilidad no guarda "nivel"; por eso el formulario ya no lo pide.
+ */
 function ModalHabilidad({ habilidad, onCerrar, onGuardar }) {
-  const modalRef = useRef(null);
-  const [form, setForm] = useState(HABILIDAD_VACIA);
-
+  const ref = useRef(null);
+  const [form, setForm] = useState(() => (habilidad ? { ...habilidad } : VACIA));
+  const [tipos, setTipos] = useState([]);
+  const [error, setError] = useState("");
+  const [guardando, setGuardando] = useState(false);
 
   useEffect(() => {
-    modalRef.current?.showModal();
+    const dialogo = ref.current;
+    if (dialogo && !dialogo.open) dialogo.showModal();
   }, []);
 
-
   useEffect(() => {
-    setForm(habilidad ? { ...habilidad } : HABILIDAD_VACIA);
-  }, [habilidad]);
+    let vivo = true;
+    listarTiposHabilidad()
+      .then((l) => vivo && setTipos(l.map((t) => ({ valor: sinTildes(t.nombre), etiqueta: t.nombre }))))
+      .catch(() => vivo && setTipos([]));
+    return () => { vivo = false; };
+  }, []);
 
   const cerrar = () => {
-    modalRef.current?.close();
+    if (guardando) return;
+    ref.current?.close();
     onCerrar();
   };
 
-  const handleChange = (campo) => (e) =>
-    setForm((prev) => ({ ...prev, [campo]: e.target.value }));
+  const cambiar = (campo) => (e) => setForm((prev) => ({ ...prev, [campo]: e.target.value }));
 
-  const handleGuardar = () => {
-    if (!form.texto.trim() || !form.nivel || !form.categoria) {
-      alert("Completa nombre, nivel y tipo de la habilidad.");
-      return;
+  const guardar = async (e) => {
+    e.preventDefault();
+    if (!form.texto.trim()) return setError("Escribe el nombre de la habilidad.");
+    if (!form.categoria) return setError("Selecciona el tipo de habilidad.");
+    setError("");
+    setGuardando(true);
+    try {
+      await onGuardar({ ...form, texto: form.texto.trim() });
+    } catch (err) {
+      setError(err?.message || "No se pudo guardar la habilidad.");
+    } finally {
+      setGuardando(false);
     }
-    onGuardar(form);
   };
 
-  const handleClickFuera = (e) => {
-    const rect = modalRef.current.getBoundingClientRect();
-    const clickFuera =
-      e.clientX < rect.left ||
-      e.clientX > rect.right ||
-      e.clientY < rect.top ||
-      e.clientY > rect.bottom;
-    if (clickFuera) cerrar();
-  };
+  const esEdicion = Boolean(habilidad);
 
   return (
-    <dialog id="menu-regis" ref={modalRef} onClick={handleClickFuera}>
-      <aside id="cabe-menu">
-        <div id="infor-cabe">
-          <span id="titu-menu">
-            {habilidad ? "Editar habilidad" : "Nueva habilidad"}
-          </span>
-        </div>
-        <div id="x-cabe">
-          <svg
-            id="sim-x"
-            onClick={cerrar}
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M18 6 6 18" />
-            <path d="m6 6 12 12" />
-          </svg>
-        </div>
-      </aside>
-
-      <section>
-        <div id="res-pag">
-          <div className="conte-inpu">
-            <label className="label-titu">Nombre de la habilidad</label>
-            <input
-              type="text"
-              placeholder="Ej: Invertida en nivel PREP"
-              value={form.texto}
-              onChange={handleChange("texto")}
-            />
+    <dialog
+      className="adm-rendimiento-hab-modal"
+      ref={ref}
+      onCancel={(e) => { e.preventDefault(); cerrar(); }}
+      onClick={(e) => { if (e.target === ref.current) cerrar(); }}
+    >
+      <form onSubmit={guardar} noValidate>
+        <header className="adm-rendimiento-hab-cabeza">
+          <span className="adm-rendimiento-hab-icono" aria-hidden="true"><Sparkles size={20} /></span>
+          <div className="adm-rendimiento-hab-titulos">
+            <h5>{esEdicion ? "Editar habilidad" : "Nueva habilidad"}</h5>
+            <p>{esEdicion ? "Modifica los datos de la habilidad." : "Se agregará al sistema de evaluación."}</p>
           </div>
+          <button type="button" className="adm-rendimiento-hab-cerrar" onClick={cerrar} aria-label="Cerrar">
+            <X size={18} />
+          </button>
+        </header>
+
+        <div className="adm-rendimiento-hab-cuerpo">
+          <label htmlFor="hab-nombre">Nombre de la habilidad</label>
+          <input
+            id="hab-nombre" type="text" autoFocus maxLength={MAX_NOMBRE}
+            placeholder="Ej: Invertida en nivel PREP"
+            value={form.texto} onChange={cambiar("texto")}
+          />
+          <small className="adm-rendimiento-hab-contador">{form.texto.length}/{MAX_NOMBRE}</small>
+
+          <label htmlFor="hab-tipo">Tipo</label>
+          <select id="hab-tipo" value={form.categoria} onChange={cambiar("categoria")}>
+            <option value="">{tipos.length ? "Selecciona un tipo" : "No hay tipos disponibles"}</option>
+            {tipos.map((t) => <option key={t.valor} value={t.valor}>{t.etiqueta}</option>)}
+          </select>
+
+          {esEdicion && (
+            <>
+              <label htmlFor="hab-estado">Estado</label>
+              <select id="hab-estado" value={form.estado} onChange={cambiar("estado")}>
+                <option value="activa">Activa</option>
+                <option value="inhabilitada">Deshabilitada</option>
+              </select>
+            </>
+          )}
+
+          {error && <p className="adm-rendimiento-hab-error" role="alert">{error}</p>}
         </div>
 
-        <div id="res-pago">
-          <div className="conte-input">
-            <label className="label-titu">Nivel</label>
-            <select value={form.nivel} onChange={handleChange("nivel")}>
-              <option value="">Nivel</option>
-              <option value="Nivel 1 Youth">Nivel 1 Youth</option>
-              <option value="Nivel 3 Open">Nivel 3 Open</option>
-              <option value="Nivel 4 Open Large">Nivel 4 Open Large</option>
-            </select>
-          </div>
-
-          <div className="conte-input">
-            <label className="label-titu">Tipo</label>
-            <select
-              value={form.categoria}
-              onChange={handleChange("categoria")}
-            >
-              <option value="">Tipo</option>
-              <option value="apropiada">Apropiada</option>
-              <option value="avanzada">Avanzada</option>
-              <option value="elite">Élite</option>
-            </select>
-          </div>
-        </div>
-      </section>
-
-      <section id="conte-btn">
-        <button onClick={cerrar} id="cancelar">
-          Cancelar
-        </button>
-        <button onClick={handleGuardar} id="registrar">
-          Guardar
-        </button>
-      </section>
+        <footer className="adm-rendimiento-hab-pie">
+          <button type="button" className="adm-rendimiento-hab-sec" onClick={cerrar} disabled={guardando}>Cancelar</button>
+          <button type="submit" className="adm-rendimiento-hab-pri" disabled={guardando}>
+            {guardando ? "Guardando…" : esEdicion ? "Guardar cambios" : "Crear habilidad"}
+          </button>
+        </footer>
+      </form>
     </dialog>
   );
 }

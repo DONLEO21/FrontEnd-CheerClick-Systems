@@ -1,5 +1,4 @@
 
-import React from "react";
 
 export default function SelectorNivel({ niveles, nivelActivoId, onCambiar }) {
   return (

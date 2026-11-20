@@ -1,5 +1,5 @@
 
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { formatearMoneda } from "./horariosAtletaData";
 
 export default function ModalCampeonatoAtleta({ torneo, nivelEtiqueta, onCerrar, onPagar }) {

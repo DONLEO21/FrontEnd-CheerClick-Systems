@@ -5,7 +5,8 @@ import { getMetodosPago } from "../../../services/MetodosPagoService";
 import { crearPedido } from "../../../services/PedidosService";
 import { ATLETA_ACTUAL } from "../../../services/AtletaActual";
 import { etiquetaTalla } from "../../../data/tallas";
-import { formatoCOP, hoyISO, METODO_PRESENCIAL } from "../../../data/pedidos";
+import { formatoCOP, hoyISO, METODO_EFECTIVO } from "../../../data/pedidos";
+import { esMetodoDigital } from "../../../utils/metodosPago";
 import { prepararComprobante } from "../../../utils/archivos";
 import IconoMetodoPago from "../../../components/Pagos/IconoMetodoPago";
 
@@ -23,7 +24,7 @@ const CarritoDrawer = forwardRef(function CarritoDrawer({ onPedidoCreado }, ref)
 
   const [paso, setPaso] = useState("carrito"); // "carrito" | "pago"
   const [metodosDigitales, setMetodosDigitales] = useState([]);
-  const [metodoId, setMetodoId] = useState(METODO_PRESENCIAL.id);
+  const [metodoId, setMetodoId] = useState(METODO_EFECTIVO.id);
   const [comprobante, setComprobante] = useState("");
   const [nombreArchivo, setNombreArchivo] = useState("");
   const [validando, setValidando] = useState(false);
@@ -36,7 +37,7 @@ const CarritoDrawer = forwardRef(function CarritoDrawer({ onPedidoCreado }, ref)
 
   const reiniciar = () => {
     setPaso("carrito");
-    setMetodoId(METODO_PRESENCIAL.id);
+    setMetodoId(METODO_EFECTIVO.id);
     setComprobante("");
     setNombreArchivo("");
     setCopiado(false);
@@ -72,14 +73,14 @@ const CarritoDrawer = forwardRef(function CarritoDrawer({ onPedidoCreado }, ref)
     try {
       const [problemas, metodos] = await Promise.all([
         verificarDisponibilidad(),
-        getMetodosPago().catch(() => []), // si falla, queda al menos el pago presencial
+        getMetodosPago().catch(() => []), // si falla, queda al menos el pago en efectivo
       ]);
       if (problemas.length > 0) {
         setError(problemas.join(" "));
         return;
       }
-      setMetodosDigitales(metodos.filter((m) => m.activo));
-      setMetodoId(METODO_PRESENCIAL.id);
+      setMetodosDigitales(metodos.filter((m) => m.activo && esMetodoDigital(m.nombre))); // Efectivo ya es una opción fija
+      setMetodoId(METODO_EFECTIVO.id);
       setPaso("pago");
     } catch (err) {
       setError(err.message);
@@ -144,8 +145,8 @@ const CarritoDrawer = forwardRef(function CarritoDrawer({ onPedidoCreado }, ref)
           resenaEnviada: false,
         })),
         total,
-        metodoPagoId: esDigital ? metodoDigital.id : METODO_PRESENCIAL.id,
-        metodoPago: esDigital ? metodoDigital.nombre : METODO_PRESENCIAL.nombre,
+        metodoPagoId: esDigital ? metodoDigital.id : METODO_EFECTIVO.id,
+        metodoPago: esDigital ? metodoDigital.nombre : METODO_EFECTIVO.nombre,
         llavePago: esDigital ? metodoDigital.llave : "",
         comprobante: esDigital ? comprobante : "",
       });
@@ -267,11 +268,11 @@ const CarritoDrawer = forwardRef(function CarritoDrawer({ onPedidoCreado }, ref)
               </p>
 
               <div className="opciones-pago-tarjetas opciones-pago-tarjetas--auto" role="radiogroup" aria-label="Método de pago">
-                <input type="radio" name="metodo-pago" id="pago-presencial"
-                  checked={metodoId === METODO_PRESENCIAL.id} onChange={() => elegirMetodo(METODO_PRESENCIAL.id)} />
-                <label htmlFor="pago-presencial" className="tarjeta-pago-label">
-                  <div className="pago-icono"><IconoMetodoPago id="presencial" /></div>
-                  <span className="pago-titulo">Pago presencial</span>
+                <input type="radio" name="metodo-pago" id="pago-efectivo"
+                  checked={metodoId === METODO_EFECTIVO.id} onChange={() => elegirMetodo(METODO_EFECTIVO.id)} />
+                <label htmlFor="pago-efectivo" className="tarjeta-pago-label">
+                  <div className="pago-icono"><IconoMetodoPago id="efectivo" /></div>
+                  <span className="pago-titulo">Efectivo</span>
                   <span className="pago-subtitulo">Al recoger en el club</span>
                 </label>
 

@@ -28,7 +28,7 @@ const horarios = [
 
 function Horarios() {
   return (
-    <section id="horarios">
+    <section id="horarios" className="landing-horarios">
       <div className="contenedor">
         <div className="horarios-contenido">
           <div className="seccion-titulo">

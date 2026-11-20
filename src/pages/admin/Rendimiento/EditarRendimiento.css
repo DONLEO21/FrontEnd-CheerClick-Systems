@@ -1,18 +1,17 @@
-#contenido-editar{
+.adm-rendimiento-contenido-editar {
     padding: 10px 0px 40px;
     margin: 30px;
 }
 
 /* Título principal */
-#titu-prin{
+.adm-rendimiento-titu-prin {
     font-size: 30px;
     margin-top: 15px;
     margin-bottom: 15px;
-    font-family: var(--text-titulo);
 }
 
 /* Card info del atleta */
-#conte-infor{
+.adm-rendimiento-conte-infor {
     background-color: #ffffff;
     border-radius: 15px;
     border: 1px solid #d4d4d4;
@@ -22,7 +21,7 @@
     margin-bottom: 15px;
 }
 
-#foto{
+.adm-rendimiento-foto {
     height: 100px;
     width: 70px;
     margin-right: 35px;
@@ -30,24 +29,21 @@
     object-fit: cover;
 }
 
-#conte-infor h3{
-    font-family: var(--text-titulo);
+.adm-rendimiento-conte-infor h3 {
     font-size: 25px;
     margin: 10px 0px;
 }
 
-#conte-infor h4{
-    font-family: var(--text-titulo);
+.adm-rendimiento-conte-infor h4 {
     font-size: 19px;
     margin: 7px 0px;
     color: #656565;
 }
 
-.input-con{
+:where(.adm-rendimiento) .input-con {
     text-align: left;
     vertical-align: top;
     line-height: 20px;
-    font-family: var(--text-texto);
     background-color: #ffffff;
     border-radius: 10px;
     border: 1px solid #d4d4d4;
@@ -58,8 +54,7 @@
     resize: vertical; 
 }
 
-#conte-infor h5{
-    font-family: var(--text-texto);
+.adm-rendimiento-conte-infor h5 {
     font-size: 14px;
     font-weight: 600;
     margin: 5px 0px;
@@ -69,9 +64,8 @@
     gap: 8px;
 }
 
-.btn-nivel{
+:where(.adm-rendimiento) .btn-nivel {
     border: none;
-    font-family: var(--text-texto);
     border-radius: 8px;
     font-size: 14px;
     font-weight: 600;
@@ -79,7 +73,7 @@
 }
 
 /* Panel de observaciones */
-#panel-input{
+.adm-rendimiento-panel-input {
     background-color: #ffffff;
     border-radius: 15px;
     border: 1px solid #d4d4d4;
@@ -87,38 +81,35 @@
     margin-bottom: 15px;
 }
 
-.titu-conte{
+:where(.adm-rendimiento) .titu-conte {
     font-size: 18px;
-    font-family: var(--text-titulo);
     color: #656565;
     margin-bottom: 5px;
 }
 
-#conte-input{
+.adm-rendimiento-conte-input {
     display: flex;
     gap: 30px;
     margin-top: 17px;
     flex-wrap: wrap;
 }
 
-.conte-ob{
+:where(.adm-rendimiento) .conte-ob {
     display: grid;
     flex: 1;
     min-width: 280px;
 }
 
-#titu-input{
+.adm-rendimiento-titu-input {
     font-size: 14px;
     font-weight: 600;
-    font-family: var(--text-titulo);
     margin-bottom: 10px;
 }
 
-.input-con{
+:where(.adm-rendimiento) .input-con {
     text-align: left;
     vertical-align: top;
     line-height: 20px;
-    font-family: var(--text-texto);
     background-color: #ffffff;
     border-radius: 10px;
     border: 1px solid #d4d4d4;
@@ -130,13 +121,13 @@
     font-size: 14px;
 }
 
-.input-con:focus{
+:where(.adm-rendimiento) .input-con:focus {
     outline: none;
     border-color: var(--rojo-noso, #cc0000);
 }
 
 /* Panel de métricas */
-#conte-targe{
+.adm-rendimiento-conte-targe {
     background-color: #ffffff;
     border-radius: 15px;
     border: 1px solid #d4d4d4;
@@ -144,7 +135,7 @@
     margin-bottom: 15px;
 }
 
-#fil-busque{
+.adm-rendimiento-fil-busque {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -153,7 +144,7 @@
     margin-top: 15px;
 }
 
-.search-input{
+:where(.adm-rendimiento) .search-input {
     border: 1px solid #d4d4d4;
     color: #333333;
     font-size: 15px;
@@ -162,19 +153,18 @@
     height: 35px;
     width: 40%;
     min-width: 220px;
-    font-family: var(--text-texto);
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: 12px center;
 }
 
-#bnt{
+.adm-rendimiento-bnt {
     display: flex;
     gap: 15px;
     flex-wrap: wrap;
 }
 
-.btn-pestana{
+:where(.adm-rendimiento) .btn-pestana {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -184,28 +174,27 @@
     padding: 0 20px;
     height: 35px;
     font-size: 15px;
-    font-family: var(--text-texto);
     cursor: pointer;
     transition: all .2s ease;
 }
 
-.btn-pestana.activo{
+:where(.adm-rendimiento) .btn-pestana.activo {
     background-color: var(--rojo-noso, #cc0000);
     border-color: var(--rojo-noso, #cc0000);
     color: #ffffff;
 }
 
-#habilidades{
+.adm-rendimiento-habilidades {
     margin-top: 20px;
 }
 
-.grid-habi{
+:where(.adm-rendimiento) .grid-habi {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 20px;
 }
 
-.targe-habi{
+:where(.adm-rendimiento) .targe-habi {
     background-color: #ffffff;
     border-radius: 15px;
     border: 1px solid #d4d4d4;
@@ -217,24 +206,23 @@
     transition: transform .22s ease, box-shadow .22s ease, background .2s ease;
 }
 
-.targe-habi:hover{
+:where(.adm-rendimiento) .targe-habi:hover {
     transform: translateY(-3px);
     box-shadow: 0 6px 18px rgba(0,0,0,.09);
     background: #fafafa;
 }
 
-.tex-habi{
-    font-family: var(--text-titulo);
+:where(.adm-rendimiento) .tex-habi {
     font-size: 14px;
 }
 
-.conte-btn-habi{
+:where(.adm-rendimiento) .conte-btn-habi {
     display: flex;
     justify-content: center;
     gap: 10px;
 }
 
-.btn-completado, .btn-completad{
+:where(.adm-rendimiento) .btn-completado, :where(.adm-rendimiento) .btn-completad {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -243,29 +231,28 @@
     height: 30px;
     padding: 0 12px;
     font-size: 13px;
-    font-family: var(--text-texto);
     cursor: pointer;
     background: #f1f1f1;
     color: #888888;
     transition: all .18s ease;
 }
 
-.btn-completado.activo{
+:where(.adm-rendimiento) .btn-completado.activo {
     background: var(--verde-noso, #1eaf52);
     color: #ffffff;
 }
 
-.btn-completad.activo{
+:where(.adm-rendimiento) .btn-completad.activo {
     background: var(--rojo-noso, #cc0000);
     color: #ffffff;
 }
 
-.btn-completado:hover, .btn-completad:hover{
+:where(.adm-rendimiento) .btn-completado:hover, :where(.adm-rendimiento) .btn-completad:hover {
     transform: scale(1.04);
 }
 
 /* Footer de guardar/cancelar */
-#guardar-cam{
+.adm-rendimiento-guardar-cam {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -278,16 +265,15 @@
     gap: 15px;
 }
 
-#conte-final{
+.adm-rendimiento-conte-final {
     display: flex;
     align-items: center;
     gap: 20px;
     color: #888888;
-    font-family: var(--text-titulo);
     font-size: 14px;
 }
 
-#cancelar{
+.adm-rendimiento-cancelar {
     border: 1px solid #E5E7EB;
     background: #E5E7EB;
     color: #696969;
@@ -296,16 +282,15 @@
     border-radius: 10px;
     height: 40px;
     font-weight: 700;
-    font-family: var(--text-texto);
     cursor: pointer;
     transition: transform .2s ease;
 }
 
-#cancelar:hover{
+.adm-rendimiento-cancelar:hover {
     transform: translateY(-2px);
 }
 
-#guardar{
+.adm-rendimiento-guardar {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -317,16 +302,15 @@
     border-radius: 10px;
     height: 40px;
     font-weight: 700;
-    font-family: var(--text-texto);
     cursor: pointer;
     transition: transform .2s ease;
 }
 
-#guardar:hover:not(:disabled){
+.adm-rendimiento-guardar:hover:not(:disabled) {
     transform: translateY(-2px);
 }
 
-#guardar:disabled, #cancelar:disabled{
+.adm-rendimiento-guardar:disabled, .adm-rendimiento-cancelar:disabled {
     opacity: 0.6;
     cursor: not-allowed;
 }

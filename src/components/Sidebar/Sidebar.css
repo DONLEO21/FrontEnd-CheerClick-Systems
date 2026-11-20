@@ -43,7 +43,7 @@
 }
 
 .boton-menu:hover .boton-menu__linea:first-child { transform: translateY(-2px); }
-.boton-menu:hover .boton-menu__linea:last-child  { transform: translateY(2px);  }
+.boton-menu:hover .boton-menu__linea:last-child { transform: translateY(2px);  }
 
 .menu-lateral {
     width: 100%;
@@ -70,7 +70,7 @@
 
 @keyframes aparecer {
     from { opacity: 0; transform: translateX(-18px); }
-    to   { opacity: 1; transform: translateX(0); }
+    to { opacity: 1; transform: translateX(0); }
 }
 
 .menu-lateral__enlace {
@@ -90,7 +90,6 @@
     filter: brightness(0) invert(1) opacity(0.45);   
     transition: filter .25s;
 }
-
 
 .menu-lateral__enlace:hover {
     background: transparent;
@@ -112,7 +111,6 @@
     padding: 5px 10px;
     border-radius: 6px;
     font-size: 12px;
-    font-family: 'Arimo', sans-serif;
     font-weight: 400;
     white-space: nowrap;
     opacity: 0;
@@ -146,7 +144,6 @@
     filter: brightness(0);   
 }
 
-
 .menu-lateral__elemento--activo .menu-lateral__enlace:hover {
     background: var(--color-blanco);
     transform: scale(1.12);
@@ -157,11 +154,11 @@
 }
 
 .barra-lateral {
-    --ancho-abierta: 230px;
+    --ancho-abierta: var(--ancho-menu-abierto);
     transition: width .3s cubic-bezier(.22, 1, .36, 1), box-shadow .3s;
 }
 
-.barra-lateral--abierta {
+.barra-lateral.barra-lateral--abierta {
     width: var(--ancho-abierta);
     box-shadow: 6px 0 24px rgba(0,0,0,.25);
 }
@@ -176,7 +173,6 @@
     overflow: hidden;
     opacity: 0;
     white-space: nowrap;
-    font-family: 'Arimo', sans-serif;
     font-size: 14px;
     font-weight: 600;
     color: #fff;
@@ -238,4 +234,58 @@
     .menu-lateral__texto {
         transition: none;
     }
+}
+
+/* ══ Reglas finales que antes estaban duplicadas en SolicitudCuentas.css (se conserva el orden de la cascada) ══ */
+
+/* ══════════════════════════════════════════════
+   BARRA LATERAL
+   ══════════════════════════════════════════════ */
+.barra-lateral {
+    position: fixed;
+    top: 0; left: 0;
+    width: var(--ancho-barra);
+    height: 100vh;
+    background-color: var(--color-primario);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 1000;
+    box-shadow: 3px 0 10px rgba(0,0,0,.15);
+}
+
+/* ── Botón hamburguesa ── */
+.boton-menu {
+    width: 100%;
+    height: var(--alto-encabezado);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+    transition: background .3s;
+    flex-shrink: 0;
+}
+
+.boton-menu:hover {
+    background: rgba(255,255,255,.15);
+}
+
+.boton-menu:hover .boton-menu__linea:first-child { transform: translateY(-2px); }
+.boton-menu:hover .boton-menu__linea:last-child { transform: translateY(2px);  }
+
+/* ── Lista de ítems ── */
+.menu-lateral {
+    width: 100%;
+    margin-top: 10px;
+    padding: 0;
+}
+
+@keyframes aparecer {
+    from { opacity: 0; transform: translateX(-18px); }
+    to { opacity: 1; transform: translateX(0); }
 }

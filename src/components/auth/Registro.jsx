@@ -1,7 +1,7 @@
-import { useState } from 'react'
-import { supabase } from '../../services/supabase'
+import { useEffect, useState } from 'react'
+import { registrar } from '../../services/sesion'
+import { listarNivelesPublicos, listarPlanesPublicos } from '../../services/catalogos'
 import CampoClave from './CampoClave'
-import { NIVELES, PLANES } from '../../pages/admin/Cuentas/cuentasData.js'
 
 function Registro({ irA, setNombreRegistrado }) {
   const [nombre, setNombre] = useState('')
@@ -10,6 +10,18 @@ function Registro({ irA, setNombreRegistrado }) {
   const [plan, setPlan] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  // Niveles y planes REALES del club (solo los activos que gestiona el administrador); nada va fijo en el código.
+  // TODO(backend): endpoints públicos /niveles/publico y /plan-asociado/publico (ver docs/backend-registro-publico).
+  const [NIVELES, setNiveles] = useState([])
+  const [PLANES, setPlanes] = useState([])
+  const [cargandoOpciones, setCargandoOpciones] = useState(true)
+  useEffect(() => {
+    Promise.all([
+      listarNivelesPublicos().then(setNiveles).catch(() => {}),
+      listarPlanesPublicos().then(setPlanes).catch(() => {}),
+    ]).finally(() => setCargandoOpciones(false))
+  }, [])
+  const textoVacio = (lista, singular) => (cargandoOpciones ? `Cargando ${singular}...` : lista.length ? 'Seleccionar...' : `No hay ${singular} disponibles`)
   const [mensaje, setMensaje] = useState('')
   const [cargando, setCargando] = useState(false)
 
@@ -24,27 +36,18 @@ function Registro({ irA, setNombreRegistrado }) {
     if (!apellidoLimpio) return setMensaje('Ingresa tu apellido.')
     if (!nivel) return setMensaje('Selecciona tu nivel.')
     if (!plan) return setMensaje('Selecciona tu plan asociado.')
-    if (password.length < 6) return setMensaje('La contraseña debe tener mínimo 6 caracteres.')
+    if (password.length < 8) return setMensaje('La contraseña debe tener mínimo 8 caracteres.')
 
     setCargando(true)
 
-    // El rol ya no se envía: todo registro nace como "atleta" (lo asigna la base de datos).
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: { nombre: nombreLimpio, apellido: apellidoLimpio, nivel, plan },
-      },
-    })
-
-    if (error) {
+    // El rol no se envía: todo registro nace como "atleta" pendiente de aprobación (lo asigna el backend).
+    try {
+      await registrar({ nombre: nombreLimpio, apellido: apellidoLimpio, email, contrasena: password, nivel, planAsociado: plan })
+    } catch (err) {
       setCargando(false)
-      setMensaje(error.message)
+      setMensaje(err.message)
       return
     }
-
-    // La cuenta NO entra al sistema hasta que el administrador la apruebe.
-    if (data.session) await supabase.auth.signOut()
 
     setCargando(false)
     setNombreRegistrado(nombreLimpio)
@@ -91,7 +94,7 @@ function Registro({ irA, setNombreRegistrado }) {
         <label className="etiqueta" htmlFor="registro-clave">Contraseña</label>
         <CampoClave
           id="registro-clave"
-          placeholder="Mínimo 6 caracteres"
+          placeholder="Mínimo 8 caracteres"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
@@ -102,8 +105,9 @@ function Registro({ irA, setNombreRegistrado }) {
           id="registro-nivel"
           value={nivel}
           onChange={(e) => setNivel(e.target.value)}
+          disabled={!NIVELES.length}
         >
-          <option value="" disabled hidden>Seleccionar...</option>
+          <option value="" disabled hidden>{textoVacio(NIVELES, 'niveles')}</option>
           {NIVELES.map(([v, t]) => (
             <option key={v} value={v}>{t}</option>
           ))}
@@ -115,8 +119,9 @@ function Registro({ irA, setNombreRegistrado }) {
           id="registro-plan"
           value={plan}
           onChange={(e) => setPlan(e.target.value)}
+          disabled={!PLANES.length}
         >
-          <option value="" disabled hidden>Seleccionar...</option>
+          <option value="" disabled hidden>{textoVacio(PLANES, 'planes')}</option>
           {PLANES.map(([v, t]) => (
             <option key={v} value={v}>{t}</option>
           ))}

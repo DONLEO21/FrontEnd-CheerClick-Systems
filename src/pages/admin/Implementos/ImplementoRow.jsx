@@ -30,11 +30,11 @@ export default function ImplementoRow({ implemento, onEditar, onPedirCambioEstad
 
   return (
     <tr className={!disponible ? "fila-no-disponible" : ""}>
-      <td>{implemento.id}</td>
+      <td>{implemento.codigo ?? implemento.id}</td>
       <td>
         <div className="d-flex align-items-center gap-2">
           <img
-            src={implemento.imagen || "/img/placeholder.png"}
+            src={implemento.imagen || "/img/placeholder.svg"}
             alt={implemento.nombre}
             className="img-producto"
           />
@@ -57,8 +57,8 @@ export default function ImplementoRow({ implemento, onEditar, onPedirCambioEstad
           <button
             type="button"
             className="btn-accion-cuadrado btn-accion-editar"
-            title="Editar"
-            disabled={!disponible}
+            title={!disponible && implemento.cantidad > 0 ? "Habilita el implemento para editarlo" : "Editar"}
+            disabled={!disponible && implemento.cantidad > 0}
             onClick={() => onEditar(implemento)}
           >
             <IconoEditar />
@@ -67,7 +67,8 @@ export default function ImplementoRow({ implemento, onEditar, onPedirCambioEstad
           <button
             type="button"
             className={`btn-accion-cuadrado ${disponible ? "btn-accion--x" : "btn-accion--check"}`}
-            title={disponible ? "Inhabilitar" : "Habilitar"}
+            title={disponible ? "Inhabilitar" : implemento.cantidad > 0 ? "Habilitar" : "Sin existencias: agrega stock desde Editar"}
+            disabled={!disponible && implemento.cantidad <= 0}
             onClick={() => onPedirCambioEstado(implemento)}
           >
             {disponible ? <IconoEliminar /> : <IconoHabilitar />}

@@ -1,5 +1,4 @@
 
-import React from "react";
 import { ESTADOS, etiquetaTipo, formatearFecha, radicadoDe } from "./pqrsData";
 
 export default function SolicitudCard({ solicitud, delay = 0, onEditar, onVerDetalle }) {

@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import CatalogoImplementos from "./CatalogoImplementos";
 import MisPedidos from "./MisPedidos";
 import CarritoDrawer from "./CarritoDrawer";
 import AvisoToast from "../../../components/Compartidos/AvisoToast";
+import useAviso from "../../../hooks/useAviso";
 import { CarritoProvider, useCarrito } from "../../../context/CarritoContext";
 import { ATLETA_ACTUAL } from "../../../services/AtletaActual";
 import "./Implementos.css";
@@ -12,15 +13,7 @@ function PaginaImplementos() {
   const carritoRef = useRef(null);
 
   // ── Aviso / toast ────────────────────────────────────────
-  const [aviso, setAviso] = useState({ visible: false, mensaje: "", tipo: "ok" });
-
-  useEffect(() => {
-    if (!aviso.visible) return;
-    const id = setTimeout(() => setAviso((a) => ({ ...a, visible: false })), 3000);
-    return () => clearTimeout(id);
-  }, [aviso.visible, aviso.mensaje]);
-
-  const mostrarAviso = (mensaje, tipo = "ok") => setAviso({ visible: true, mensaje, tipo });
+  const { aviso, mostrarAviso } = useAviso({ tipoPorDefecto: "ok" });
 
   const [pestana, setPestana] = useState("catalogo"); // "catalogo" | "pedidos"
   const [version, setVersion] = useState(0); // fuerza a "Mis Pedidos" a recargar tras un pedido nuevo
@@ -92,10 +85,19 @@ function PaginaImplementos() {
   );
 }
 
-export default function Implementos() {
+function ImplementosContenido() {
   return (
     <CarritoProvider storageKey={`cheerclick:carrito:${ATLETA_ACTUAL.nombre}`}>
       <PaginaImplementos />
     </CarritoProvider>
+  );
+}
+
+// Clase raíz del módulo: todos sus estilos viven bajo .atl-implementos
+export default function Implementos(props) {
+  return (
+    <div className="atl-implementos">
+      <ImplementosContenido {...props} />
+    </div>
   );
 }

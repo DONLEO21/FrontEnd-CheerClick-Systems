@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
+import { listarHabilidades, listarProgresoAtleta, guardarProgresoAtleta } from "../../../services/rendimientoAdminService";
 import imgusuario from "../../../assets/icons/usuarios.png";
 import { obtenerEstiloNivel } from "../../../components/utils/nivelEstilos";
 import "./RegistrarRendimiento.css";
 
-const API = "http://localhost:3001";
 
 const PESTANAS = [
   { key: "apropiada", label: "Apropiadas", icon: <i className="bi bi-stars"></i> },
@@ -19,7 +19,7 @@ function obtenerFechaHoy() {
   return `${year}-${month}-${day}`;
 }
 
-function RegistrarRendimiento({ atleta, onVolver }) {
+function RegistrarRendimiento({ atleta, onVolver, onAviso }) {
   const [habilidades, setHabilidades] = useState([]);
   const [progresoOriginal, setProgresoOriginal] = useState([]);
   const [progresoEditado, setProgresoEditado] = useState([]);
@@ -36,16 +36,11 @@ function RegistrarRendimiento({ atleta, onVolver }) {
     setCargando(true);
 
     Promise.all([
-      fetch(`${API}/habilidades`, { cache: "no-store" }).then((res) => res.json()),
-      fetch(`${API}/progresoHabilidades`, { cache: "no-store" }).then((res) => res.json()),
+      listarHabilidades(),
+      listarProgresoAtleta(atleta.id),
     ])
-      .then(([datosHabilidades, datosProgreso]) => {
-        // Se comparan como texto para que "1" y 1 cuenten como el mismo atleta
-        const progresoDelAtleta = Array.isArray(datosProgreso)
-          ? datosProgreso.filter((p) => String(p.atletaId) === String(atleta.id))
-          : [];
-
-        setHabilidades(Array.isArray(datosHabilidades) ? datosHabilidades : []);
+      .then(([datosHabilidades, progresoDelAtleta]) => {
+        setHabilidades(datosHabilidades);
         setProgresoOriginal(progresoDelAtleta);
         setProgresoEditado(progresoDelAtleta);
       })
@@ -130,49 +125,12 @@ function RegistrarRendimiento({ atleta, onVolver }) {
   const handleGuardar = async () => {
     setGuardando(true);
     try {
-      const peticiones = cambios.map((registro) => {
-        const existe = progresoOriginal.some((o) => o.id === registro.id);
+      await guardarProgresoAtleta(atleta.id, { fecha, cambios, nota: notaSesion.trim() });
 
-        return existe
-          ? fetch(`${API}/progresoHabilidades/${registro.id}`, {
-              method: "PATCH",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ completado: registro.completado }),
-            })
-          : fetch(`${API}/progresoHabilidades`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(registro),
-            });
-      });
-
-      if (notaSesion.trim() !== "") {
-        peticiones.push(
-          fetch(`${API}/notas`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              id: `n-${Date.now()}`,
-              atletaId: String(atleta.id),
-              fecha,
-              autor: "Entrenador",
-              texto: notaSesion.trim(),
-            }),
-          })
-        );
-      }
-
-      const respuestas = await Promise.all(peticiones);
-
-      // fetch no lanza error con respuestas 4xx/5xx, así que se revisan
-      if (respuestas.some((r) => !r.ok)) {
-        throw new Error("El servidor rechazó algunos cambios");
-      }
-
-      onVolver();
+      onVolver("Registro guardado correctamente");
     } catch (error) {
       console.error("Error al guardar el registro:", error);
-      alert("Hubo un error al guardar el registro. Intenta de nuevo.");
+      onAviso?.(error.message || "Hubo un error al guardar el registro. Intenta de nuevo.", "error");
     } finally {
       setGuardando(false);
     }
@@ -185,12 +143,12 @@ function RegistrarRendimiento({ atleta, onVolver }) {
   if (!atleta) return null;
 
   return (
-    <main id="contenido-registrar" className="mt-3">
-      <h3 id="titu-prin">Nuevo Registro de Rendimiento</h3>
+    <main className="mt-3 adm-rendimiento-contenido-registrar">
+      <h3 className="adm-rendimiento-titu-prin">Nuevo Registro de Rendimiento</h3>
 
-      <aside id="conte-infor">
+      <aside className="adm-rendimiento-conte-infor">
         <div>
-          <img id="foto" src={imgusuario} alt="Foto Atleta" />
+          <img className="adm-rendimiento-foto" src={imgusuario} alt="Foto Atleta" />
         </div>
         <div>
           <h3>Detalle del Atleta</h3>
@@ -204,22 +162,22 @@ function RegistrarRendimiento({ atleta, onVolver }) {
         </div>
       </aside>
 
-      <section id="panel-prin">
+      <section className="adm-rendimiento-panel-prin">
         <div className="conte-prin">
           <h4 className="titu-conte">Datos de Registro</h4>
 
-          <div id="targetas-ren">
+          <div className="adm-rendimiento-targetas-ren">
             <div className="tar">
-              <h5 id="ti-tar">ID rendimiento</h5>
-              <span id="va-tar">{`RE${String(atleta.id).padStart(3, "0")}`}</span>
+              <h5 className="adm-rendimiento-ti-tar">ID rendimiento</h5>
+              <span className="adm-rendimiento-va-tar">{`RE${String(atleta.id).padStart(3, "0")}`}</span>
             </div>
             <div className="tar">
-              <h5 id="ti-tar">ID usuario</h5>
-              <span id="va-tar">{atleta.id}</span>
+              <h5 className="adm-rendimiento-ti-tar">ID usuario</h5>
+              <span className="adm-rendimiento-va-tar">{atleta.id}</span>
             </div>
           </div>
 
-          <div id="detalle-linea"></div>
+          <div className="adm-rendimiento-detalle-linea"></div>
 
           <h4 className="titu-conte">Datos de la sesión</h4>
           <div className="conte-input">
@@ -228,7 +186,7 @@ function RegistrarRendimiento({ atleta, onVolver }) {
               Fecha
             </label>
             <input
-              id="fecha"
+              id="fecha" className="adm-rendimiento-fecha"
               type="date"
               value={fecha}
               onChange={(e) => setFecha(e.target.value)}
@@ -240,7 +198,7 @@ function RegistrarRendimiento({ atleta, onVolver }) {
               Notas de la sesión
             </label>
             <textarea
-              className="cua-ren"
+              className="cua-ren adm-rendimiento-nota-sesion"
               id="nota-sesion"
               value={notaSesion}
               onChange={(e) => setNotaSesion(e.target.value)}
@@ -253,8 +211,8 @@ function RegistrarRendimiento({ atleta, onVolver }) {
         <div className="conte-prin">
           <h4 className="titu-conte">Métricas de desempeño</h4>
 
-          <div id="conte-circu">
-            <button id="circulo" type="button">
+          <div className="adm-rendimiento-conte-circu">
+            <button className="adm-rendimiento-circulo" type="button">
               {puntaje}
               <br />
               Puntaje
@@ -262,8 +220,8 @@ function RegistrarRendimiento({ atleta, onVolver }) {
           </div>
 
           <div className="conte-barras">
-            <div id="targe-superior">
-              <span id="titu-barra">Apropiadas</span>
+            <div className="adm-rendimiento-targe-superior">
+              <span className="adm-rendimiento-titu-barra">Apropiadas</span>
               <p>
                 {conteoPorCategoria.apropiada.completadas}/{conteoPorCategoria.apropiada.total}
               </p>
@@ -285,8 +243,8 @@ function RegistrarRendimiento({ atleta, onVolver }) {
           </div>
 
           <div className="conte-barras">
-            <div id="targe-superior">
-              <span id="titu-barra">Avanzadas</span>
+            <div className="adm-rendimiento-targe-superior">
+              <span className="adm-rendimiento-titu-barra">Avanzadas</span>
               <p>
                 {conteoPorCategoria.avanzada.completadas}/{conteoPorCategoria.avanzada.total}
               </p>
@@ -308,8 +266,8 @@ function RegistrarRendimiento({ atleta, onVolver }) {
           </div>
 
           <div className="conte-barras">
-            <div id="targe-superior">
-              <span id="titu-barra">Élite</span>
+            <div className="adm-rendimiento-targe-superior">
+              <span className="adm-rendimiento-titu-barra">Élite</span>
               <p>
                 {conteoPorCategoria.elite.completadas}/{conteoPorCategoria.elite.total}
               </p>
@@ -329,19 +287,14 @@ function RegistrarRendimiento({ atleta, onVolver }) {
             </div>
           </div>
 
-          <section id="btn-habilidades">
+          <section className="adm-rendimiento-btn-habilidades">
             {PESTANAS.map((pestana) => (
               <button
                 key={pestana.key}
                 type="button"
-                id={
-                  pestana.key === "apropiada"
-                    ? "btn-a"
-                    : pestana.key === "avanzada"
-                    ? "btn-A"
-                    : "btn-E"
-                }
-                className={`btn-pestana ${nivelActivo === pestana.key ? "activo" : ""}`}
+                className={`btn-pestana adm-rendimiento-${
+                  pestana.key === "apropiada" ? "btn-a" : pestana.key === "avanzada" ? "btn-A" : "btn-E"
+                } ${nivelActivo === pestana.key ? "activo" : ""}`}
                 onClick={() => setNivelActivo(pestana.key)}
               >
                 {pestana.icon}
@@ -358,7 +311,7 @@ function RegistrarRendimiento({ atleta, onVolver }) {
             onChange={(e) => setBusquedaHabilidad(e.target.value)}
           />
 
-          <section id="habilidades">
+          <section className="adm-rendimiento-habilidades">
             {cargando ? (
               <p className="text-muted text-center py-4">Cargando habilidades...</p>
             ) : (
@@ -367,9 +320,9 @@ function RegistrarRendimiento({ atleta, onVolver }) {
                   habilidadesFiltradas.map((h) => (
                     <div className="targe-habi" key={h.id}>
                       <div>
-                        <span id="tex-habi">{h.texto}</span>
+                        <span className="adm-rendimiento-tex-habi">{h.texto}</span>
                       </div>
-                      <div id="conte-btn-habi">
+                      <div className="adm-rendimiento-conte-btn-habi">
                         <button
                           type="button"
                           className={h.completado ? "btn-completado activo" : "btn-completado"}
@@ -398,15 +351,15 @@ function RegistrarRendimiento({ atleta, onVolver }) {
         </div>
       </section>
 
-      <footer id="guardar-cam">
-        <div id="conte-final">
+      <footer className="adm-rendimiento-guardar-cam">
+        <div className="adm-rendimiento-conte-final">
           <span>Registro para {fecha}</span>
         </div>
-        <div id="conte-final">
-          <button type="button" id="cancelar" onClick={handleCancelar} disabled={guardando}>
+        <div className="adm-rendimiento-conte-final">
+          <button type="button" className="adm-rendimiento-cancelar" onClick={handleCancelar} disabled={guardando}>
             Cancelar
           </button>
-          <button type="button" id="guardar" onClick={handleGuardar} disabled={guardando}>
+          <button type="button" className="adm-rendimiento-guardar" onClick={handleGuardar} disabled={guardando}>
             {guardando ? "Guardando..." : "Guardar registro"}
           </button>
         </div>

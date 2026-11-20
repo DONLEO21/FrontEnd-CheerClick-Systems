@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { supabase } from '../../services/supabase'
+import { iniciarSesion as iniciarSesionApi, RUTA_INICIO } from '../../services/sesion'
 import CampoClave from './CampoClave'
 import logoClub from '../../assets/icons/Logo-Club.png'
 
@@ -36,55 +36,29 @@ function Login({ irA }) {
     setAlerta(null)
     setCargando(true)
 
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password })
-    setCargando(false)
-
-    if (error) {
-      return setAlerta({
-        tipo: 'error',
-        titulo: 'Error:',
-        texto: error.message.toLowerCase().includes('confirm')
-          ? 'Debes confirmar tu correo antes de iniciar sesión.'
-          : 'Correo o contraseña incorrectos.',
-      })
-    }
-
-    const u = data.user
-    const esAdmin = u.app_metadata?.rol_admin === true
-    const estado = u.app_metadata?.estado ?? 'pendiente' // solo el servidor puede escribirlo
-    const rol = u.app_metadata?.rol ?? 'atleta' // solo el servidor puede escribirlo
-
-    if (!esAdmin) {
-      if (estado === 'pendiente') {
-        await supabase.auth.signOut()
-        return setAlerta({
+    try {
+      const usuario = await iniciarSesionApi(email, password)
+      // "replace" sustituye la entrada de /acceso en el historial
+      navigate(RUTA_INICIO[usuario.rol] ?? '/atleta', { replace: true })
+    } catch (err) {
+      const texto = err.message ?? ''
+      if (err.status === 403 && /pendiente/i.test(texto)) {
+        setAlerta({
           tipo: 'advertencia',
           titulo: 'Atención:',
           texto: 'Tu cuenta está en proceso de revisión.\nTe notificaremos por correo cuando sea aprobada.',
         })
+      } else if (err.status === 403) {
+        // solicitud rechazada o cuenta desactivada: el backend envía el motivo
+        setAlerta({ tipo: 'error', titulo: 'Error:', texto })
+      } else if (err.status === 401 || err.status === 404) {
+        setAlerta({ tipo: 'error', titulo: 'Error:', texto: 'Correo o contraseña incorrectos.' })
+      } else {
+        setAlerta({ tipo: 'error', titulo: 'Error:', texto })
       }
-      if (estado === 'rechazada') {
-        await supabase.auth.signOut()
-        return setAlerta({
-          tipo: 'error',
-          titulo: 'Error:',
-          texto: 'Tu solicitud no fue aprobada. Contacta al club.',
-        })
-      }
-      if (u.app_metadata?.activo === false) {
-        await supabase.auth.signOut()
-        return setAlerta({
-          tipo: 'error',
-          titulo: 'Error:',
-          texto: 'Tu cuenta está desactivada. Contacta al club.',
-        })
-      }
+    } finally {
+      setCargando(false)
     }
-
-    // Aprobada → dashboard. "replace" sustituye la entrada de /acceso en el historial
-    if (esAdmin) navigate('/admin', { replace: true })
-    else if (rol === 'entrenador') navigate('/entrenador', { replace: true })
-    else navigate('/atleta', { replace: true })
   }
 
   return (

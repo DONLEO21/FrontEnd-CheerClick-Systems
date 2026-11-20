@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import AsistenciaJustificaciones from "../../../pages/admin/Asistencia/AsistenciaJustificaciones";
 import { obtenerNiveles } from "../../../services/asistenciaService";
-import { ENTRENADOR_ACTUAL } from "../../../services/AtletaActual";
 
 export default function Asistencia() {
   const [niveles, setNiveles] = useState([]);
@@ -11,13 +10,10 @@ export default function Asistencia() {
   useEffect(() => {
     obtenerNiveles()
       .then((data) =>
-        setNiveles(
-          data.filter((n) => !n.inhabilitado && n.entrenador === ENTRENADOR_ACTUAL.nombre)
-        )
+        // el backend ya devuelve solo los niveles del entrenador autenticado
+        setNiveles(data.filter((n) => !n.inhabilitado))
       )
-      .catch(() =>
-        setError("No se pudo conectar con el servidor de datos. Verifica que json-server esté corriendo (npm run server).")
-      )
+      .catch((e) => setError(e.message))
       .finally(() => setCargando(false));
   }, []);
 

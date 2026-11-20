@@ -21,8 +21,11 @@ function esRutaActiva(activeHref, href) {
   return actual === destino || actual.startsWith(destino + '/');
 }
 
-function Sidebar({ items, activeHref, onNavigate }) {
-  const [menuAbierto, setMenuAbierto] = useState(false);
+// `abierto` / `onCambiarAbierto` (opcionales): el layout controla el estado para desplazar header y contenido.
+function Sidebar({ items, activeHref, onNavigate, abierto, onCambiarAbierto }) {
+  const [abiertoInterno, setAbiertoInterno] = useState(false);
+  const menuAbierto = abierto ?? abiertoInterno;
+  const setMenuAbierto = onCambiarAbierto ?? setAbiertoInterno;
   const barraRef = useRef(null);
 
   useEffect(() => {
@@ -41,7 +44,7 @@ function Sidebar({ items, activeHref, onNavigate }) {
       document.removeEventListener('keydown', alPresionar);
       document.removeEventListener('mousedown', alHacerClic);
     };
-  }, [menuAbierto]);
+  }, [menuAbierto, setMenuAbierto]);
 
   return (
     <aside

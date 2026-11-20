@@ -222,7 +222,7 @@ export default function SolicitudesProductos({ onAviso }) {
                   <td>
                     <div className="d-flex align-items-center gap-2">
                       <img
-                        src={s.implementoImagen || "/img/placeholder.png"}
+                        src={s.implementoImagen || "/img/placeholder.svg"}
                         alt={s.implementoNombre}
                         className="img-producto"
                       />
@@ -239,7 +239,7 @@ export default function SolicitudesProductos({ onAviso }) {
                     <div className="d-flex gap-2">
                       <button
                         type="button"
-                        className="btn-accion-cuadrado btn-accion--ojo"
+                        className="ui-accion ui-accion--detalle"
                         title="Ver detalle"
                         onClick={() => verDetalle(s)}
                       >
@@ -249,7 +249,7 @@ export default function SolicitudesProductos({ onAviso }) {
                         <>
                           <button
                             type="button"
-                            className="btn-accion-cuadrado btn-accion--check"
+                            className="ui-accion ui-accion--aprobar"
                             title="Aprobar"
                             onClick={() => aprobar(s)}
                           >
@@ -259,7 +259,7 @@ export default function SolicitudesProductos({ onAviso }) {
                           </button>
                           <button
                             type="button"
-                            className="btn-accion-cuadrado btn-accion--x"
+                            className="ui-accion ui-accion--rechazar"
                             title="Rechazar"
                             onClick={() => pedirRechazo(s)}
                           >

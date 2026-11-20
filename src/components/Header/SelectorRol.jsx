@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 export default function SelectorRol({ rol }) {
   const [abierto, setAbierto] = useState(false);

@@ -7,7 +7,7 @@ const ModalGuardado = forwardRef(function ModalGuardado({ categoriaLabel, fecha,
   };
 
   return (
-    <dialog ref={ref} id="modal-guardado">
+    <dialog ref={ref} className="adm-asistencia-modal-guardado">
       <div className="modal-exito">
         <div className="modal-exito-icono">
           <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">

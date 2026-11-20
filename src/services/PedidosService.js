@@ -1,63 +1,65 @@
-const API_URL = "http://localhost:3001/pedidos";
+import { solicitudesApi } from '../api/solicitudes.api'
+// Pedidos de implementos. En el backend se llaman "solicitudes": /api/solicitud (+ sus líneas)
 
-async function parchar(id, cambios, mensajeError) {
-  const res = await fetch(`${API_URL}/${id}`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(cambios),
-  });
-  if (!res.ok) throw new Error(mensajeError);
-  return res.json();
-}
+const aPedido = (s) => ({
+  id: s._id,
+  codigo: s.codigo ?? s._id,
+  atleta: s.usuario ? [s.usuario.nombre, s.usuario.apellido].filter(Boolean).join(' ') : '',
+  // TODO(backend): la solicitud no incluye el nivel del atleta.
+  categoria: '',
+  fecha: String(s.fecha ?? '').slice(0, 10),
+  items: (s.items ?? []).map((l) => ({
+    implementoId: l.implemento?._id ?? l.implemento,
+    implementoNombre: l.implemento?.nombre ?? '',
+    implementoImagen: l.implemento?.imagen ?? '',
+    grupoTalla: l.grupo,
+    talla: l.talla,
+    cantidad: l.cantidad,
+    precioUnitario: l.precioUnitario,
+    resenaEnviada: !!s.tieneResena,
+  })),
+  total: s.total ?? 0,
+  // TODO(backend): la solicitud aún no guarda método de pago ni comprobante.
+  metodoPagoId: '',
+  metodoPago: '',
+  llavePago: '',
+  comprobante: '',
+  estado: s.condicion, // Pendiente | Aprobado | Entregado | Cancelado | Rechazado
+  motivoRechazo: s.motivoRechazo ?? '',
+  recibido: s.condicion === 'Entregado',
+})
 
 export async function getPedidos() {
-  const res = await fetch(API_URL);
-  if (!res.ok) throw new Error("No se pudieron cargar los pedidos.");
-  return res.json();
+  const { data } = await solicitudesApi.list()
+  return (data ?? []).map(aPedido)
 }
 
 export async function getPedido(id) {
-  const res = await fetch(`${API_URL}/${id}`);
-  if (!res.ok) throw new Error("No se pudo cargar el pedido.");
-  return res.json();
+  const todos = await getPedidos()
+  const p = todos.find((x) => x.id === id)
+  if (!p) throw new Error('No se pudo cargar el pedido.')
+  return p
 }
 
-// Un pedido agrupa todos los productos del carrito: { items: [...], total, metodoPago, ... }
-// (json-server asigna el id)
+// Un pedido agrupa todos los productos del carrito
 export async function crearPedido(datos) {
-  const res = await fetch(API_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      estado: "Pendiente",
-      motivoRechazo: "",
-      recibido: false,
-      ...datos,
-    }),
-  });
-  if (!res.ok) throw new Error("No se pudo enviar el pedido.");
-  return res.json();
+  const { data } = await solicitudesApi.create({
+    items: datos.items.map((i) => ({ implemento: i.implementoId, grupo: i.grupoTalla, talla: i.talla, cantidad: i.cantidad })),
+  })
+  return aPedido(data)
 }
 
-export const cancelarPedido = (pedido) =>
-  parchar(pedido.id, { estado: "Cancelado" }, "No se pudo cancelar el pedido.");
+const cambiar = async (pedido, cuerpo) => {
+  const { data } = await solicitudesApi.update(pedido.id, cuerpo)
+  return aPedido(data)
+}
 
-export const marcarRecibido = (pedido) =>
-  parchar(pedido.id, { recibido: true }, "No se pudo actualizar el pedido.");
+export const cancelarPedido = (pedido) => cambiar(pedido, { condicion: 'Cancelado' })
+export const marcarRecibido = (pedido) => cambiar(pedido, { condicion: 'Entregado' })
+export const aprobarPedido = (pedido) => cambiar(pedido, { condicion: 'Aprobado' })
+export const rechazarPedido = (pedido, motivo) => cambiar(pedido, { condicion: 'Rechazado', motivoRechazo: motivo })
 
-export const aprobarPedido = (pedido) =>
-  parchar(pedido.id, { estado: "Aprobado", motivoRechazo: "" }, "No se pudo aprobar el pedido.");
-
-export const rechazarPedido = (pedido, motivo) =>
-  parchar(pedido.id, { estado: "Rechazado", motivoRechazo: motivo }, "No se pudo rechazar el pedido.");
-
-// Marca un producto del pedido como ya reseñado (se lee el pedido fresco para no pisar cambios)
-export async function marcarResenaEnviada(pedidoId, item) {
-  const actual = await getPedido(pedidoId);
-  const items = (actual.items ?? []).map((i) =>
-    i.implementoId === item.implementoId && i.talla === item.talla && i.grupoTalla === item.grupoTalla
-      ? { ...i, resenaEnviada: true }
-      : i
-  );
-  return parchar(pedidoId, { items }, "No se pudo registrar la reseña.");
+// El backend marca "reseñado" solo al crear la reseña del pedido: no hay nada más que guardar.
+export async function marcarResenaEnviada() {
+  return null
 }

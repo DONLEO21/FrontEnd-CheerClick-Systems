@@ -66,7 +66,7 @@ function SeccionPerfil({ perfil }) {
   )
 }
 
-export default function ModalDetalle({ detalle, perfil, cargandoPerfil, onCerrar, onAccion }) {
+export default function ModalDetalle({ detalle, perfil, registro, cargandoPerfil, onCerrar, onAccion }) {
   return (
     <div className="modal-overlay modal-overlay--scroll"
       onClick={(e) => e.target === e.currentTarget && onCerrar()}>
@@ -106,6 +106,9 @@ export default function ModalDetalle({ detalle, perfil, cargandoPerfil, onCerrar
             <Campo etiqueta="Nombre">{val(detalle.primerNombre ?? detalle.nombre)}</Campo>
             {detalle.apellido && <Campo etiqueta="Apellido">{val(detalle.apellido)}</Campo>}
             <Campo etiqueta="Correo electrónico" completo>{val(detalle.email)}</Campo>
+            {/* nivel y plan asignados (también en cuentas aprobadas); el plan solo aplica a atletas */}
+            <Campo etiqueta="Nivel">{cargandoPerfil ? 'Cargando…' : val(registro?.nivel)}</Campo>
+            {detalle.rol === 'atleta' && <Campo etiqueta="Plan asociado">{cargandoPerfil ? 'Cargando…' : val(registro?.plan)}</Campo>}
           </div>
 
           {/* el perfil solo existe para cuentas aprobadas */}

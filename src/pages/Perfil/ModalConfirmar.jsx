@@ -1,24 +1,21 @@
-import { X, Lock } from 'lucide-react';
-import Modal from './Modal.jsx';
+import { Lock } from 'lucide-react';
+import ModalConfirmarBase from '../../components/Compartidos/ModalConfirmar.jsx';
 import { ETIQUETA_CAMPO } from './perfilData.js';
 
+// Confirmación de "Guardar cambios" del perfil: usa el modal compartido y agrega el aviso de campos de un solo cambio
 export default function ModalConfirmar({ abierto, onCerrar, cambiosUnaVez, errorGuardar, guardando, onConfirmar }) {
   return (
-    <Modal
-      abierto={abierto} onCerrar={onCerrar}
-      className="perfil-modal--chico" labelledBy="perfil-modal-confirmar-titulo"
+    <ModalConfirmarBase
+      abierto={abierto}
+      titulo="¿Guardar cambios?"
+      mensaje="Se actualizará tu información personal. ¿Confirmas los cambios realizados?"
+      tipo="normal"
+      textoConfirmar="Sí, guardar"
+      cargando={guardando}
+      error={errorGuardar}
+      onConfirmar={async () => { await onConfirmar(); }}
+      onCancelar={onCerrar}
     >
-      <div className="perfil-modal-cabeza perfil-modal-cabeza--simple">
-        <h2 className="perfil-modal-titulo" id="perfil-modal-confirmar-titulo">¿Guardar cambios?</h2>
-        <button className="perfil-modal-cerrar" type="button" onClick={onCerrar} aria-label="Cerrar">
-          <X size={20} strokeWidth={2.5} />
-        </button>
-      </div>
-
-      <p className="perfil-modal-descripcion">
-        Se actualizará tu información personal. ¿Confirmas los cambios realizados?
-      </p>
-
       {cambiosUnaVez.length > 0 && (
         <p className="perfil-modal-advertencia" role="alert">
           <Lock size={14} />
@@ -29,20 +26,6 @@ export default function ModalConfirmar({ abierto, onCerrar, cambiosUnaVez, error
           </span>
         </p>
       )}
-
-      {errorGuardar && <p className="estado-carga estado-carga--error" role="alert">{errorGuardar}</p>}
-
-      <div className="perfil-modal-pie">
-        <button className="btn btn-blanco" type="button" onClick={onCerrar}>
-          Cancelar
-        </button>
-        <button
-          className="btn btn-primario" type="button" disabled={guardando}
-          onClick={async () => { await onConfirmar(); }}
-        >
-          {guardando ? 'Guardando…' : 'Sí, guardar'}
-        </button>
-      </div>
-    </Modal>
+    </ModalConfirmarBase>
   );
 }

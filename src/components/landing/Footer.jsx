@@ -15,7 +15,7 @@ const redesSociales = [
 function Footer() {
   return (
     <footer>
-      <section id="footer">
+      <section id="footer" className="landing-footer">
         <div className="contenedor">
           <div className="footer-contenido">
 

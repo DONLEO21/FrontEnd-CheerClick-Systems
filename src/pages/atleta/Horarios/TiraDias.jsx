@@ -1,5 +1,4 @@
 
-import React from "react";
 import { DIAS_ABREV, DIAS_NOMBRE, MESES, fechaAISO, mismaFecha, CATEGORIAS } from "./horariosAtletaData";
 
 export default function TiraDias({ lunes, sesionesPorFecha }) {

@@ -1,10 +1,10 @@
 
-import React, { useRef, useEffect } from "react";
+import { useRef, useEffect } from "react";
 import { diasSemana, etiquetaDias, comprimirImagen } from "./horariosData";
 
 const BLOQUE_VACIO = () => ({ dias: [], inicio: "18:00", fin: "20:00" });
 
-export default function ModalNivel({ abierto, formNivel, setFormNivel, onCerrar, onGuardar }) {
+export default function ModalNivel({ abierto, formNivel, setFormNivel, onCerrar, onGuardar, onAviso }) {
   const inputFotoRef = useRef(null);
   const primerCampoRef = useRef(null);
 
@@ -48,7 +48,7 @@ export default function ModalNivel({ abierto, formNivel, setFormNivel, onCerrar,
     if (!file) return;
     comprimirImagen(file, 400, 0.7)
       .then((dataUrl) => setFormNivel((f) => ({ ...f, foto: dataUrl })))
-      .catch(() => alert("No se pudo procesar la imagen. Intenta con otra."));
+      .catch(() => onAviso?.("No se pudo procesar la imagen. Intenta con otra.", "error"));
   };
 
   return (

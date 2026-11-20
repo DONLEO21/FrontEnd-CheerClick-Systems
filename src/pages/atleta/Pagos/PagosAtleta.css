@@ -1,13 +1,29 @@
-main#contenido.vista-atleta {
-  margin-left: var(--ancho-barra);
-  margin-top: var(--alto-encabezado);
-  padding: 28px 60px 40px;
-  min-height: calc(100vh - var(--alto-encabezado));
-}
+/* ── Estilos de otros módulos que ya afectaban a este (copiados para conservar el aspecto; ver README) ── */
 
-.vista-atleta {
+:where(.atl-pagos) select {
+    border: 1px solid #d4d4d4;
+    color: #333333;
+    font-size: 14px;
+    padding: 10px;
+    border-radius: 10px;
+    height: 40px;
+    width: 100%;}
+:where(.atl-pagos) .valor {
+    font-size: 25px;
+    font-weight: 700;}
+:where(.atl-pagos) select {
+    border: 1px solid #d4d4d4;
+    color: #333333;
+    font-size: 14px;
+    padding: 10px;
+    border-radius: 10px;
+    height: 40px;
+    width: 100%;}/* Contenedor raíz del módulo (antes #conteni, que tomaba su margen del CSS de Rendimiento) */
+.atl-pagos {
+  margin: 30px;
+  padding: 10px 0 40px;
 
-  #infor-usuario-atl{
+  .atl-pagos-infor-usuario-atl {
       background-color: #ffffff;
       border-radius: 15px;
       border: 1px solid #d4d4d4;
@@ -20,7 +36,7 @@ main#contenido.vista-atleta {
       animation: atleta-entrada-abajo 0.7s ease 0.05s forwards;
   }
 
-  #detalle-usu-atl{
+  .atl-pagos-detalle-usu-atl {
       height: 45px;
       width: 45px;
       border-radius: 100%;
@@ -28,36 +44,34 @@ main#contenido.vista-atleta {
       border: 2px solid #dcdcdc;
   }
 
-  #infor-usua-atl{
+  .atl-pagos-infor-usua-atl {
       display: flex;
       align-items: center;
   }
 
-  #infor-usua-atl h3{
+  .atl-pagos-infor-usua-atl h3 {
     margin-top: 22px;
       margin-left: 20px;
       font-size: 20px;
-      font-family: var(--text-titulo);
   }
 
-  #infor-usua-atl h3 p{
+  .atl-pagos-infor-usua-atl h3 p {
       margin-top: 3px;
       font-size: 12px;
-      font-family: var(--text-texto);
       color: #929292;
   }
 
-  #lapiz-atl{
+  .atl-pagos-lapiz-atl {
       height: 18px;
       width: 18px;
       margin-right: 7px;
   }
 
-  #perfil-atl a{
+  .atl-pagos-perfil-atl a {
       text-decoration: none;
   }
 
-  #perfil-atl button{
+  .atl-pagos-perfil-atl button {
       display: flex;
       align-items: center;
       justify-content: center;
@@ -72,12 +86,12 @@ main#contenido.vista-atleta {
       cursor: pointer;
   }
 
-  #infor-general-atl{
+  .atl-pagos-infor-general-atl {
       gap: 30px;
       display: flex;
   }
 
-  .atl-tar-general{
+  .atl-tar-general {
       background: #ffffff;
       width: 25%;
       height: 90px;
@@ -87,41 +101,37 @@ main#contenido.vista-atleta {
       margin-bottom: 15px;
   }
 
-  #filtros-atl{
+  .atl-pagos-filtros-atl {
       display: flex;
       justify-content: space-between;
       margin-top: 20px;
   }
 
-  .atl-gene-titu{
-      font-family: var(--text-titulo);
+  .atl-gene-titu {
       font-size: 18px;
       color: #696969;
       margin-bottom: 9px;
   }
 
-  #titu-pendi-atl{
+  .atl-pagos-titu-pendi-atl {
       font-size: 20px;
-      font-family: var(--text-texto);
       margin-top: 5px;
       color: #cc0000;
   }
 
-  #titu-paga-atl{
+  .atl-pagos-titu-paga-atl {
       font-size: 20px;
-      font-family: var(--text-texto);
       margin-top: 5px;
       color: #1eaf52;
   }
 
-  #titu-meses-atl{
+  .atl-pagos-titu-meses-atl {
       font-size: 20px;
-      font-family: var(--text-texto);
       margin-top: 5px;
       color: #000000;
   }
 
-  #mes-atl{
+  .atl-pagos-mes-atl {
       border: 2px solid #d1d5db;
       color: #333333;
       font-size: 15px;
@@ -130,17 +140,15 @@ main#contenido.vista-atleta {
       height: 45px;
       width: 100%;
       margin-right: 20px;
-      font-family: var(--text-texto);
   }
 
-  #titu-fecha-atl{
+  .atl-pagos-titu-fecha-atl {
       font-size: 20px;
-      font-family: var(--text-texto);
       margin-top: 5px;
       color: #fe4800;
   }
 
-  #panel-atl{
+  .atl-pagos-panel-atl {
       background: #ffffff;
       border-radius: 15px;
       border: 1px solid #d4d4d4;
@@ -150,13 +158,12 @@ main#contenido.vista-atleta {
       animation: atleta-entrada-arriba 0.9s ease 0.5s forwards;
   }
 
-  #titulo-mensu-atl{
-      font-family: var(--text-titulo);
+  .atl-pagos-titulo-mensu-atl {
       font-size: 30px;
       margin-top: 2000px;
   }
 
-  #mensaje-atl{
+  .atl-pagos-mensaje-atl {
       margin-top: 40px;
       background: #FEF9C3;
       border: 2px solid #fad755;
@@ -168,28 +175,24 @@ main#contenido.vista-atleta {
       align-items: center;
   }
 
-  #mensaje-atl h4{
+  .atl-pagos-mensaje-atl h4 {
     margin-top: 6px;
       color: #000000;
       font-weight: 300;
       font-size: 17px;
-      font-family: var(--text-texto);
   }
 
-  #usu-tex-atl h4, h5{
+  .atl-pagos-usu-tex-atl h4, h5 {
     font-size: 15px;
 
   }
 
-
-  #mensaje-atl h4 strong{
+  .atl-pagos-mensaje-atl h4 strong {
       color: #000000;
       font-weight: 900;
-      font-family: var(--text-texto);
   }
 
-  .atl-acti{
-      font-family: var(--text-texto);
+  .atl-acti {
       background: #cc0000;
       height: 45px;
       width: 150px;
@@ -201,8 +204,7 @@ main#contenido.vista-atleta {
       cursor: pointer;
   }
 
-  .atl-btn-normal{
-      font-family: var(--text-texto);
+  .atl-btn-normal {
       background: #E5E7EB;
       height: 45px;
       width: 130px;
@@ -215,7 +217,7 @@ main#contenido.vista-atleta {
       margin-bottom: 30px;
   }
 
-    #targetas-atl{
+    .atl-pagos-targetas-atl {
       background: #E5E7EB;
       border-radius: 15px;
       display: grid;
@@ -224,7 +226,7 @@ main#contenido.vista-atleta {
       padding: 30px;
   }
 
-    .atl-tar-infor{
+    .atl-tar-infor {
       background: #ffffff;
       border-radius: 10px;
       padding: 30px;
@@ -232,19 +234,18 @@ main#contenido.vista-atleta {
       animation: atleta-entrada-arriba 0.7s ease 0.1s forwards;
   }
 
-  .atl-img-tar{
+  .atl-img-tar {
       height: 15px;
       margin-right: 10px;
   }
 
-  .atl-tar-titulo{
+  .atl-tar-titulo {
       font-size: 25px;
-      font-family: var(--text-titulo);
       font-weight: 500;
       margin-bottom: 25px;
   }
 
-  .atl-esta-pen{
+  .atl-esta-pen {
       height: 32px;
       width: 100%;
       display: flex;
@@ -258,7 +259,7 @@ main#contenido.vista-atleta {
       margin-bottom: 40px;
   }
 
-  .atl-esta-paga{
+  .atl-esta-paga {
       height: 32px;
       width: 100%;
       display: flex;
@@ -272,7 +273,7 @@ main#contenido.vista-atleta {
       margin-bottom: 40px;
   }
 
-  .atl-esta-ven{
+  .atl-esta-ven {
       height: 32px;
       width: 100%;
       display: flex;
@@ -286,26 +287,23 @@ main#contenido.vista-atleta {
       margin-bottom: 40px;
   }
 
-  .atl-tar-precio{
+  .atl-tar-precio {
       font-size: 25px;
-      font-family: var(--text-texto);
       font-weight: 700;
       margin-bottom: 3px;
   }
 
-  .atl-tar-fecha{
+  .atl-tar-fecha {
       font-size: 13px;
-      font-family: var(--text-texto);
       font-weight: 500;
       color: #696969;
   }
 
-  .atl-subir-compro{
+  .atl-subir-compro {
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 14px;
-      font-family: var(--text-titulo);
       font-weight: 700;
       margin-top: 20px;
       height: 40px;
@@ -316,12 +314,11 @@ main#contenido.vista-atleta {
       cursor: pointer;
   }
 
-  .atl-ver-compro{
+  .atl-ver-compro {
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 14px;
-      font-family: var(--text-titulo);
       font-weight: 700;
       margin-top: 20px;
       height: 40px;
@@ -333,20 +330,20 @@ main#contenido.vista-atleta {
       cursor: pointer;
   }
 
-  .atl-sim-compro{
+  .atl-sim-compro {
       height: 17px;
       width: 17px;
       margin-right: 15px;
   }
 
-  #infor-final-atl{
+  .atl-pagos-infor-final-atl {
       display: flex;
       gap: 30px;
       opacity: 0;
       animation: atleta-entrada-arriba 0.8s ease 0.75s forwards;
   }
 
-  #infor-plan-atl{
+  .atl-pagos-infor-plan-atl {
       background: #ffffff;
       border-radius: 15px;
       border: 1px solid #d4d4d4;
@@ -354,7 +351,7 @@ main#contenido.vista-atleta {
       padding: 30px;
   }
 
-  #noti-final-atl{
+  .atl-pagos-noti-final-atl {
       background: #ffffff;
       border-radius: 15px;
       border: 1px solid #d4d4d4;
@@ -362,21 +359,19 @@ main#contenido.vista-atleta {
       padding: 30px;
   }
 
-  .atl-titu-final{
+  .atl-titu-final {
       font-size: 23px;
-      font-family: var(--text-titulo);
       margin-bottom: 7px;
   }
 
-  .atl-sub-final{
+  .atl-sub-final {
       font-size: 14px;
-      font-family: var(--text-texto);
       font-weight: 200;
       color: #696969;
       margin-bottom: 20px;
   }
 
-  .atl-con-infor{
+  .atl-con-infor {
       margin-bottom: 15px;
       padding: 7px;
       border-bottom: 2px solid #d4d4d4;
@@ -384,21 +379,19 @@ main#contenido.vista-atleta {
       justify-content: space-between;
   }
 
-  .atl-plan-sub{
-      font-family: var(--text-texto);
+  .atl-plan-sub {
       font-size: 16px;
       font-weight: 500;
       color: #696969;
   }
 
-  .atl-plan-valor{
-      font-family: var(--text-texto);
+  .atl-plan-valor {
       font-size: 15px;
       font-weight: 300;
       color: #000000;
   }
 
-  .atl-conte-noti{
+  .atl-conte-noti {
       margin-bottom: 15px;
       padding: 7px;
       border-bottom: 2px solid #d4d4d4;
@@ -406,13 +399,12 @@ main#contenido.vista-atleta {
       justify-content: space-between;
   }
 
-  .atl-conte-a{
+  .atl-conte-a {
       display: flex;
       align-items: center;
   }
 
-  .atl-plan-su{
-      font-family: var(--text-texto);
+  .atl-plan-su {
       font-size: 16px;
       font-weight: 500;
       color: #696969;
@@ -420,7 +412,7 @@ main#contenido.vista-atleta {
   }
 
   /* ── Modal 1: subir comprobante ── */
-  #menu-regis-atleta{
+  .atl-pagos-menu-regis-atleta {
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
@@ -429,14 +421,14 @@ main#contenido.vista-atleta {
       border: 2px solid #ffffff;
       border-radius: 15px;
   }
-  #menu-regis-atleta[open] { gap: 30px; }
-  #menu-regis-atleta::backdrop{
+  .atl-pagos-menu-regis-atleta[open] { gap: 30px; }
+  .atl-pagos-menu-regis-atleta::backdrop {
       background: #00000062;
       backdrop-filter: blur(2px);
   }
 
   /* ── Modal 2: ver comprobante ── */
-  #menu-regis2-atleta{
+  .atl-pagos-menu-regis2-atleta {
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
@@ -446,13 +438,13 @@ main#contenido.vista-atleta {
       border: 2px solid #ffffff;
       border-radius: 15px;
   }
-  #menu-regis2-atleta[open] { gap: 30px; }
-  #menu-regis2-atleta::backdrop{
+  .atl-pagos-menu-regis2-atleta[open] { gap: 30px; }
+  .atl-pagos-menu-regis2-atleta::backdrop {
       background: #00000062;
       backdrop-filter: blur(2px);
   }
 
-  #conte-compro-atl{
+  .atl-pagos-conte-compro-atl {
       background-color: #ffffff;
       border-radius: 15px;
       border: 1px solid #d4d4d4;
@@ -460,7 +452,7 @@ main#contenido.vista-atleta {
       height: 120px;
   }
 
-  #docu-infor-atl{
+  .atl-pagos-docu-infor-atl {
       display: flex;
       align-items: center;
       border-top-right-radius: 15px;
@@ -471,7 +463,7 @@ main#contenido.vista-atleta {
       height: 77%;
   }
 
-  #docu-infor-atl button{
+  .atl-pagos-docu-infor-atl button {
       display: flex;
       justify-content: center;
       align-items: center;
@@ -483,15 +475,14 @@ main#contenido.vista-atleta {
       height: 50px;
   }
 
-  #docu-infor-atl svg{ color: #147036; }
-  #docu-infor-atl h4{ font-family: var(--text-titulo); font-size: 15px; }
-  #docu-infor-atl span{
-      font-family: var(--text-texto);
+  .atl-pagos-docu-infor-atl svg { color: #147036; }
+  .atl-pagos-docu-infor-atl h4 { font-size: 15px; }
+  .atl-pagos-docu-infor-atl span {
       color: #8c8c8c;
       font-size: 13px;
   }
 
-  #infor-pago-atl{
+  .atl-pagos-infor-pago-atl {
       display: flex;
       justify-content: center;
       align-items: center;
@@ -501,28 +492,27 @@ main#contenido.vista-atleta {
       padding: 7px;
   }
 
-  .atl-sim-pago{
+  .atl-sim-pago {
       height: 13px;
       width: 13px;
       margin-right: 5px;
   }
 
-  .atl-informacion-pag{
+  .atl-informacion-pag {
       display: flex;
       align-items: center;
-      font-family: var(--text-texto);
       font-size: 12px;
       color: #8c8c8c;
       margin: 0;
   }
 
-  #btn-compro-atl{
+  .atl-pagos-btn-compro-atl {
       padding: 20px 25px;
       display: flex;
       gap: 20px;
   }
 
-  .atl-btn{
+  .atl-btn {
       display: flex;
       align-items: center;
       justify-content: center;
@@ -535,34 +525,33 @@ main#contenido.vista-atleta {
       cursor: pointer;
   }
 
-  #cabe-menu-atl{
+  .atl-pagos-cabe-menu-atl {
       display: flex;
       justify-content: space-between;
       padding: 15px;
       border-bottom: 2px solid #d4d4d4;
   }
 
-  #infor-cabe-atl{
+  .atl-pagos-infor-cabe-atl {
       display: flex;
       align-items: center;
       gap: 20px;
   }
 
-  #sim-menu-atl{ color: #3b82f6; }
+  .atl-pagos-sim-menu-atl { color: #3b82f6; }
 
-  #titu-menu-atl{
+  .atl-pagos-titu-menu-atl {
       font-size: 18px;
       font-weight: 600;
-      font-family: var(--text-titulo);
   }
 
-  #sim-x-atl{
+  .atl-pagos-sim-x-atl {
       height: 25px;
       width: 25px;
       cursor: pointer;
   }
 
-  #infor-usu-atl{
+  .atl-pagos-infor-usu-atl {
       display: flex;
       justify-content: space-between;
       background-color: #fffbfb;
@@ -572,12 +561,12 @@ main#contenido.vista-atleta {
       padding: 15px;
   }
 
-  #conte-usu-atl{
+  .atl-pagos-conte-usu-atl {
       display: flex;
       align-items: center;
   }
 
-  #detalle-menu-atl{
+  .atl-pagos-detalle-menu-atl {
       background: #ffffff;
       border: 2px solid #d4d4d4;
       border-radius: 100%;
@@ -586,24 +575,21 @@ main#contenido.vista-atleta {
       margin-right: 17px;
   }
 
-  #id-usu-atl{ 
+  .atl-pagos-id-usu-atl { 
     display: flex;
  }
 
-
-  #usu-tex-atl h4{
-      font-family: var(--text-titulo);
+  .atl-pagos-usu-tex-atl h4 {
       margin-bottom: 5px;
       font-weight: 600;
   }
 
-  #usu-tex-atl h5{
-      font-family: var(--text-texto);
+  .atl-pagos-usu-tex-atl h5 {
       font-weight: 700;
       color: #6E6B5F;
   }
 
-  .atl-fon-blanco{
+  .atl-fon-blanco {
       display: flex;
       align-items: center;
       justify-content: center;
@@ -616,12 +602,12 @@ main#contenido.vista-atleta {
       margin-left: 10px;
   }
 
-  #mes-conte-atl{
+  .atl-pagos-mes-conte-atl {
       display: flex;
       align-items: center;
   }
 
-  #mes-conte-atl button{
+  .atl-pagos-mes-conte-atl button {
       display: flex;
       justify-content: center;
       align-items: center;
@@ -633,26 +619,26 @@ main#contenido.vista-atleta {
       border: 3px solid #3b82f6;
   }
 
-  #con-input-atl{ padding: 25px; }
+  .atl-pagos-con-input-atl { padding: 25px; }
 
-  .atl-input-div{
+  .atl-input-div {
       display: flex;
       gap: 20px;
   }
 
-  .atl-inputs{
+  .atl-inputs {
       display: grid;
       width: 100%;
   }
 
-  .atl-inputs label{
+  .atl-inputs label {
       font-size: 16px;
       font-weight: 500;
       color: #676767;
       margin-bottom: 10px;
   }
 
-  .atl-inputs input, .atl-inputs select{
+  .atl-inputs input, .atl-inputs select {
       border: 1px solid #d4d4d4;
       color: #000000;
       font-size: 14px;
@@ -660,24 +646,23 @@ main#contenido.vista-atleta {
       border-radius: 10px;
       height: 40px;
       width: 100%;
-      font-family: var(--text-texto);
       margin-bottom: 10px;
   }
 
-  #titu-com-atl{
+  .atl-pagos-titu-com-atl {
       font-size: 16px;
       font-weight: 500;
       color: #676767;
       margin-left: 25px;
   }
 
-  #linea-atl{
+  .atl-pagos-linea-atl {
       height: 2px;
       background: #d4d4d4;
       margin: 0 24px 15px;
   }
 
-  #con-compro-atl{
+  .atl-pagos-con-compro-atl {
       background-color: #ffffff;
       border-radius: 5px;
       border: 2px dashed #d4d4d4;
@@ -685,12 +670,12 @@ main#contenido.vista-atleta {
       margin: 15px 25px;
   }
 
-  #con-compro-atl div{
+  .atl-pagos-con-compro-atl div {
       display: flex;
       justify-content: center;
   }
 
-  #detalle-cir-atl{
+  .atl-pagos-detalle-cir-atl {
       background: #3b83f656;
       border: #3b83f656;
       color: #3b82f6;
@@ -700,19 +685,19 @@ main#contenido.vista-atleta {
       margin-bottom: 10px;
   }
 
-  #con-compro-atl span{
+  .atl-pagos-con-compro-atl span {
       font-size: 16px;
       color: #333333;
       margin-bottom: 5px;
   }
 
-  #con-compro-atl p{
+  .atl-pagos-con-compro-atl p {
       font-size: 12px;
       font-weight: 500;
       color: #696969;
   }
 
-  #conte-btn-atl{
+  .atl-pagos-conte-btn-atl {
       display: flex;
       justify-content: flex-end;
       gap: 20px;
@@ -721,7 +706,7 @@ main#contenido.vista-atleta {
       border-top: 2px solid #d4d4d4;
   }
 
-  #cancelar-atl{
+  .atl-pagos-cancelar-atl {
       border: 1px solid #E5E7EB;
       background: #E5E7EB;
       color: #696969;
@@ -731,11 +716,10 @@ main#contenido.vista-atleta {
       height: 40px;
       width: 120px;
       font-weight: 900;
-      font-family: var(--text-texto);
       cursor: pointer;
   }
 
-  #registrar-atl{
+  .atl-pagos-registrar-atl {
       border: 1px solid #cc0000;
       background: #cc0000;
       color: #ffffff;
@@ -745,28 +729,27 @@ main#contenido.vista-atleta {
       height: 40px;
       width: 200px;
       font-weight: 900;
-      font-family: var(--text-texto);
       cursor: pointer;
   }
-  #registrar-atl:disabled{
+  .atl-pagos-registrar-atl:disabled {
       opacity: .6;
       cursor: not-allowed;
   }
 
    @media (max-width: 720px) {
-    #infor-final-atl, #infor-general-atl{ flex-direction: column; }
-    .atl-tar-general, #infor-plan-atl, #noti-final-atl{ width: 100%; }
-    #targetas-atl{ grid-template-columns: 1fr; }
+    .atl-pagos-infor-final-atl, .atl-pagos-infor-general-atl { flex-direction: column; }
+    .atl-tar-general, .atl-pagos-infor-plan-atl, .atl-pagos-noti-final-atl { width: 100%; }
+    .atl-pagos-targetas-atl { grid-template-columns: 1fr; }
   }
 }
 
 @keyframes atleta-entrada-arriba {
   from { opacity: 0; transform: translateY(28px); }
-  to   { opacity: 1; transform: translateY(0); }
+  to { opacity: 1; transform: translateY(0); }
 }
 @keyframes atleta-entrada-abajo {
   from { opacity: 0; transform: translateY(-18px); }
-  to   { opacity: 1; transform: translateY(0); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .vista-atleta dialog[open] {
@@ -777,8 +760,91 @@ main#contenido.vista-atleta {
 }
 @keyframes atleta-dialog-entrar {
   from { opacity: 0; transform: translate(-50%, calc(-50% + 20px)); }
-  to   { opacity: 1; transform: translate(-50%, -50%); }
+  to { opacity: 1; transform: translate(-50%, -50%); }
 }
 @keyframes atleta-dialog-fondo {
   from { opacity: 0; } to { opacity: 1; }
 }
+
+/* ── Modal "Pagar mensualidad" ─────────────────────────────────────────── */
+.atl-pagos-menu-regis-atleta { width: min(540px, calc(100vw - 24px)); padding: 0; }
+.atl-pagos-menu-regis-atleta[open] { gap: 0; }
+
+.atl-pago-cuerpo { display: flex; flex-direction: column; gap: 16px; padding: 20px 25px 4px; }
+
+.atl-pago-valor {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 12px 16px; border-radius: 12px; background: #fdeaea; color: #333;
+}
+.atl-pago-valor span { font-size: 14px; font-weight: 600; }
+.atl-pago-valor strong { font-size: 22px; color: #cc0000; }
+
+.atl-pago-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.atl-pago-campo { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.atl-pago-campo--completo { grid-column: 1 / -1; }
+.atl-pago-campo label, .atl-pago-etiqueta { font-size: 13px; font-weight: 700; color: #555; }
+.atl-pago-campo input, .atl-pago-campo select {
+    height: 40px; width: 100%; padding: 0 12px; border: 1px solid #d4d4d4; border-radius: 10px;
+    font-size: 14px; color: #333; background: #fff;
+}
+.atl-pago-campo input:focus, .atl-pago-campo select:focus { outline: 2px solid #cc0000; outline-offset: 1px; }
+
+.atl-pago-comprobante { display: flex; flex-direction: column; gap: 6px; }
+.atl-pago-subir {
+    display: flex; align-items: center; justify-content: center; min-height: 120px; max-height: 240px;
+    padding: 10px; border: 2px dashed #d4d4d4; border-radius: 12px; background: #fafafa;
+    cursor: pointer; overflow: hidden; transition: border-color .2s, background .2s;
+}
+.atl-pago-subir:hover { border-color: #cc0000; background: #fff7f7; }
+.atl-pago-subir__texto { display: flex; flex-direction: column; align-items: center; gap: 8px; color: #777; font-size: 14px; text-align: center; }
+.atl-pago-vista { max-width: 100%; max-height: 218px; object-fit: contain; border-radius: 8px; }
+.atl-pago-nota { font-size: 12px; color: #888; }
+.atl-pago-error { margin: 0; padding: 8px 12px; border-radius: 8px; background: #fdeaea; color: #cc0000; font-size: 13px; font-weight: 600; }
+
+.atl-pagos-menu-regis-atleta .atl-pagos-conte-btn-atl { margin-top: 12px; padding: 18px 25px; }
+
+/* ── Modal "Comprobante de pago" ───────────────────────────────────────── */
+.atl-pagos-menu-regis2-atleta { width: min(470px, calc(100vw - 24px)); padding: 0; height: auto; }
+.atl-pagos-menu-regis2-atleta[open] { gap: 0; }
+
+.atl-comp-cuerpo { display: flex; flex-direction: column; gap: 14px; padding: 18px 25px 0; }
+.atl-comp-atleta { margin: 0; font-weight: 700; color: #333; }
+.atl-comp-imagen {
+    display: flex; justify-content: center; padding: 8px; border: 1px solid #d4d4d4; border-radius: 12px;
+    background: #fafafa; cursor: zoom-in;
+}
+.atl-comp-imagen img { max-width: 100%; max-height: 300px; object-fit: contain; border-radius: 8px; }
+.atl-comp-pdf, .atl-comp-sin {
+    margin: 0; padding: 22px 14px; border: 1px dashed #d4d4d4; border-radius: 12px; text-align: center; color: #777; font-size: 14px;
+}
+.atl-comp-datos { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 0; }
+.atl-comp-datos div { padding: 8px 12px; border: 1px solid #e5e5e5; border-radius: 10px; }
+.atl-comp-datos dt { font-size: 12px; font-weight: 600; color: #888; }
+.atl-comp-datos dd { margin: 2px 0 0; font-size: 14px; font-weight: 700; color: #333; overflow-wrap: anywhere; }
+
+.atl-pagos-menu-regis2-atleta .atl-pagos-btn-compro-atl { gap: 10px; flex-wrap: wrap; }
+.atl-pagos-menu-regis2-atleta .atl-btn { flex: 1; width: auto; min-width: 110px; padding: 0 14px; color: #333; text-decoration: none; font-weight: 600; }
+.atl-pagos-menu-regis2-atleta .atl-btn:hover { background: #f4f4f4; }
+
+@media (max-width: 560px) {
+    .atl-pago-grid, .atl-comp-datos { grid-template-columns: 1fr; }
+}
+
+/* ── Tarjetas de mensualidad: estado como etiqueta y botón de pago destacado ── */
+.atl-pagos .atl-tar-infor { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06); }
+.atl-pagos .atl-tar-infor .atl-tar-titulo { margin: 0; }
+.atl-pagos .atl-tar-infor .atl-esta-paga,
+.atl-pagos .atl-tar-infor .atl-esta-pen,
+.atl-pagos .atl-tar-infor .atl-esta-ven {
+    width: auto; height: auto; margin: 0 0 14px; padding: 4px 16px; font-size: 14px; font-weight: 700; border-radius: 999px;
+}
+.atl-pagos .atl-tar-infor .atl-tar-precio { margin: 0; }
+.atl-pagos .atl-tar-infor .atl-tar-fecha { margin: 0; }
+.atl-pagos .atl-tar-infor .atl-subir-compro,
+.atl-pagos .atl-tar-infor .atl-ver-compro { margin-top: auto; padding-top: 0; }
+.atl-pagos .atl-tar-infor .atl-subir-compro {
+    background-color: #cc0000; border-color: #cc0000; color: #ffffff; gap: 8px; transition: background-color .2s;
+}
+.atl-pagos .atl-tar-infor .atl-subir-compro:hover { background-color: #a30000; border-color: #a30000; }
+.atl-pagos .atl-tar-infor .atl-sim-compro { width: 18px; height: 18px; }
+.atl-pagos .atl-tar-infor > :nth-last-child(2) { margin-bottom: 14px; }

@@ -79,7 +79,7 @@ export default function PedidosImplementos({ onAviso }) {
   return pedidos.filter((p) => {
     const coincideTexto =
       !texto ||
-      p.id?.toLowerCase().includes(texto) ||
+      (p.codigo ?? p.id)?.toLowerCase().includes(texto) ||
       p.atleta?.toLowerCase().includes(texto) ||
       (p.items ?? []).some((i) => i.implementoNombre?.toLowerCase().includes(texto));
     const coincideEstado = filtroEstado === "Todos" || p.estado === filtroEstado;
@@ -159,7 +159,7 @@ export default function PedidosImplementos({ onAviso }) {
                 const primero = items[0];
                 return (
                   <tr key={p.id}>
-                    <td>{p.id}</td>
+                    <td>{p.codigo ?? p.id}</td>
                     <td>
                       <div className="celda-productos">
                         <img
@@ -185,7 +185,7 @@ export default function PedidosImplementos({ onAviso }) {
                       <div className="d-flex justify-content-end gap-2">
                         <button
                           type="button"
-                          className="btn-accion-cuadrado btn-accion--ojo"
+                          className="ui-accion ui-accion--detalle"
                           title="Ver detalle"
                           onClick={() => verDetalle(p)}
                         >
@@ -194,7 +194,7 @@ export default function PedidosImplementos({ onAviso }) {
 
                         <button
                           type="button"
-                          className="btn-accion-cuadrado btn-accion--check"
+                          className="ui-accion ui-accion--aprobar"
                           title="Aprobar"
                           disabled={p.estado !== "Pendiente"}
                           onClick={() => aprobar(p)}
@@ -206,7 +206,7 @@ export default function PedidosImplementos({ onAviso }) {
 
                         <button
                           type="button"
-                          className="btn-accion-cuadrado btn-accion--x"
+                          className="ui-accion ui-accion--rechazar"
                           title="Rechazar"
                           disabled={p.estado !== "Pendiente"}
                           onClick={() => pedirRechazo(p)}

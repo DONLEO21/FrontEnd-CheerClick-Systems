@@ -1,5 +1,4 @@
 
-import React from "react";
 import { MESES_ES } from "./calendarioData";
 
 export default function ResumenMes({ anio, mes, totales }) {

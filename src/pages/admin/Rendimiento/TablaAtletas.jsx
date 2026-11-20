@@ -1,6 +1,6 @@
 import imgusuario from "../../../assets/icons/usuario.png";
 
-function TablaAtletas({ atletas, onVerAtleta, onEditarAtleta, onRegistrarAtleta, onEliminarAtleta }) {
+function TablaAtletas({ atletas, cargando = false, onVerAtleta, onEditarAtleta, onRegistrarAtleta, onEliminarAtleta }) {
     const obtenerEstiloNivel = (nivel) => {
         switch (nivel?.toLowerCase().trim()) {
         case "nivel formativo king":
@@ -20,8 +20,8 @@ function TablaAtletas({ atletas, onVerAtleta, onEditarAtleta, onRegistrarAtleta,
 
 
   return (
-    <section id="panel" className="container mt-4">
-      <table id="tabla" className="table align-middle">
+    <section className="container mt-4 adm-rendimiento-panel">
+      <table className="table align-middle adm-rendimiento-tabla">
         <thead>
           <tr>
             <th>Atleta</th>
@@ -52,7 +52,7 @@ function TablaAtletas({ atletas, onVerAtleta, onEditarAtleta, onRegistrarAtleta,
                   </div>
                 </td>
 
-                <td className="edad-ne">{atleta.edad}</td>
+                <td className="edad-ne">{atleta.edad || "—"}</td>
 
                 <td>
                   <button
@@ -79,7 +79,7 @@ function TablaAtletas({ atletas, onVerAtleta, onEditarAtleta, onRegistrarAtleta,
                 </td>
 
                 <td>
-                  <div id="con-acci" className="d-flex gap-1">
+                  <div className="d-flex gap-1 adm-rendimiento-con-acci">
                     <button
                         type="button"
                         className="btn-ojo btn-sm btn-light"
@@ -115,7 +115,7 @@ function TablaAtletas({ atletas, onVerAtleta, onEditarAtleta, onRegistrarAtleta,
           ) : (
             <tr>
               <td colSpan="5" className="text-center py-4 text-muted">
-                No se encontraron atletas que coincidan con la búsqueda.
+                {cargando ? "Cargando atletas…" : "No se encontraron atletas que coincidan con la búsqueda."}
               </td>
             </tr>
           )}

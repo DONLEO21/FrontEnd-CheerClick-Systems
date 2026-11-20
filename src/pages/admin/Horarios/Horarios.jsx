@@ -1,22 +1,23 @@
 
 import "./Horarios.css";
-import React, { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect } from "react";
 
 import NivelCard from "./NivelCard";
 import CompetenciaCard from "./CompetenciaCard";
 import ModalNivel from "./ModalNivel";
 import ModalCompetencia from "./ModalCompetencia";
 import AvisoToast from "../../../components/Compartidos/AvisoToast";
+import useAviso from "../../../hooks/useAviso";
 
-import { nivelesCompetencia, contarPorNivel } from "./horariosData";
-
-const API_URL = "http://localhost:3001";
-const jsonHeaders = { "Content-Type": "application/json" };
-
-async function manejarRespuesta(res) {
-  if (!res.ok) throw new Error(`Error ${res.status} al comunicarse con la API`);
-  return res.json();
-}
+import { contarPorNivel } from "./horariosData";
+import {
+  listarNiveles,
+  listarCompetencias,
+  guardarNivel as guardarNivelApi,
+  alternarNivel,
+  guardarCompetencia as guardarCompetenciaApi,
+  alternarCompetencia,
+} from "../../../services/horariosService";
 
 const ESTADO_INICIAL_NIVEL = {
   id: null,
@@ -39,10 +40,11 @@ const ESTADO_INICIAL_TORNEO = {
   link: "",
 };
 
-export default function Horarios() {
+function HorariosContenido() {
   const [niveles, setNiveles] = useState([]);
   const [torneos, setTorneos] = useState([]);
   const [cargando, setCargando] = useState(true);
+  const [subTabActiva, setSubTabActiva] = useState("");
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -50,13 +52,14 @@ export default function Horarios() {
     setCargando(true);
 
     Promise.all([
-      fetch(`${API_URL}/niveles`).then(manejarRespuesta),
-      fetch(`${API_URL}/torneos`).then(manejarRespuesta),
+      listarNiveles(),
+      listarCompetencias(),
     ])
       .then(([n, t]) => {
         if (!activo) return;
         setNiveles(n);
         setTorneos(t);
+        setSubTabActiva((actual) => actual || n[0]?.id || "");
       })
       .catch((err) => activo && setError(err))
       .finally(() => activo && setCargando(false));
@@ -66,20 +69,16 @@ export default function Horarios() {
     };
   }, []);
 
-  const [aviso, setAviso] = useState({ visible: false, mensaje: "", tipo: "ok" });
-
-  useEffect(() => {
-    if (!aviso.visible) return;
-    const id = setTimeout(() => setAviso((a) => ({ ...a, visible: false })), 3000);
-    return () => clearTimeout(id);
-  }, [aviso.visible, aviso.mensaje]);
-
-  const mostrarAviso = (mensaje, tipo = "ok") => setAviso({ visible: true, mensaje, tipo });
-  const avisoErrorApi = () =>
-    mostrarAviso("No se pudo conectar con la API (json-server). ¿Está corriendo?", "error");
+  const { aviso, mostrarAviso } = useAviso({ tipoPorDefecto: "ok" });
+  const avisoErrorApi = (err) =>
+    mostrarAviso(err?.message || "No se pudo completar la acción. Inténtalo de nuevo.", "error");
 
   const [tabActiva, setTabActiva] = useState("niveles");
-  const [subTabActiva, setSubTabActiva] = useState("queen");
+  // Un nivel de competencia por cada nivel del club (vienen del backend)
+  const nivelesCompetencia = useMemo(
+    () => niveles.map((n) => ({ valor: n.id, etiqueta: n.categoria })),
+    [niveles]
+  );
 
 
   const [modalNivelAbierto, setModalNivelAbierto] = useState(false);
@@ -123,64 +122,26 @@ export default function Horarios() {
       }
     }
 
-    const datos = { categoria, entrenador, foto: formNivel.foto, horarios: formNivel.horarios };
-
-    if (formNivel.id !== null) {
-      // UPDATE
-      fetch(`${API_URL}/niveles/${formNivel.id}`, {
-        method: "PATCH",
-        headers: jsonHeaders,
-        body: JSON.stringify(datos),
+    const esNuevo = formNivel.id === null;
+    guardarNivelApi({ id: formNivel.id, categoria, entrenador, foto: formNivel.foto, horarios: formNivel.horarios })
+      .then((guardado) => {
+        setNiveles((prev) => (esNuevo ? [...prev, guardado] : prev.map((n) => (n.id === guardado.id ? guardado : n))));
+        mostrarAviso(esNuevo ? "Nivel creado." : "Cambios guardados.", "ok");
+        setModalNivelAbierto(false);
       })
-        .then(manejarRespuesta)
-        .then((actualizado) => {
-          setNiveles((prev) => prev.map((n) => (n.id === formNivel.id ? actualizado : n)));
-          mostrarAviso("Cambios guardados.", "ok");
-          setModalNivelAbierto(false);
-        })
-        .catch(avisoErrorApi);
-    } else {
-      // CREATE
-      const nuevoId = niveles.length ? Math.max(...niveles.map((n) => n.id)) + 1 : 0;
-      fetch(`${API_URL}/niveles`, {
-        method: "POST",
-        headers: jsonHeaders,
-        body: JSON.stringify({ id: nuevoId, inhabilitado: false, ...datos }),
-      })
-        .then(manejarRespuesta)
-        .then((creado) => {
-          setNiveles((prev) => [...prev, creado]);
-          mostrarAviso("Nivel creado.", "ok");
-          setModalNivelAbierto(false);
-        })
-        .catch(avisoErrorApi);
-    }
+      .catch(avisoErrorApi);
   };
 
   // UPDATE parcial inhabilitar / habilitar
   const alternarNivelHandler = (nivel) => {
-    fetch(`${API_URL}/niveles/${nivel.id}`, {
-      method: "PATCH",
-      headers: jsonHeaders,
-      body: JSON.stringify({ inhabilitado: !nivel.inhabilitado }),
-    })
-      .then(manejarRespuesta)
+    alternarNivel(nivel)
       .then((actualizado) => {
         setNiveles((prev) => prev.map((n) => (n.id === nivel.id ? actualizado : n)));
       })
       .catch(avisoErrorApi);
   };
 
-  // DELETE 
-  const eliminarNivel = (id) => {
-    fetch(`${API_URL}/niveles/${id}`, { method: "DELETE" })
-      .then(manejarRespuesta)
-      .then(() => {
-        setNiveles((prev) => prev.filter((n) => n.id !== id));
-        mostrarAviso("Nivel eliminado.", "ok");
-      })
-      .catch(avisoErrorApi);
-  };
+  // TODO(backend): no existe DELETE de niveles ni de competencias; solo se inhabilitan.
 
   /* ═══════════════════ CRUD COMPETENCIAS ═══════════════════ */
 
@@ -213,79 +174,31 @@ export default function Horarios() {
       nivel,
       imagen: formCompetencia.imagen || "",
       link: formCompetencia.link || "",
-      etiquetaLimite: formCompetencia.etiquetaLimite || "Límite de pago",
     };
+    const esRegistro = modalCompetencia.modo === "registrar";
 
-    if (modalCompetencia.modo === "registrar") {
-      // CREATE
-      const nuevoId = `${nivel}-${Date.now()}`;
-      fetch(`${API_URL}/torneos`, {
-        method: "POST",
-        headers: jsonHeaders,
-        body: JSON.stringify({
-          id: nuevoId,
-          clave: "personalizada",
-          activa: true,
-          inhabilitada: false,
-          ...datos,
-        }),
+    guardarCompetenciaApi(datos, esRegistro ? undefined : formCompetencia.id)
+      .then((guardado) => {
+        setTorneos((prev) => (esRegistro ? [...prev, guardado] : prev.map((x) => (x.id === guardado.id ? guardado : x))));
+        setSubTabActiva(nivel);
+        mostrarAviso(esRegistro ? "Competencia registrada." : "Cambios del torneo guardados.", "ok");
+        cerrarModalCompetencia();
       })
-        .then(manejarRespuesta)
-        .then((creado) => {
-          setTorneos((prev) => [...prev, creado]);
-          setSubTabActiva(nivel);
-          mostrarAviso("Competencia registrada.", "ok");
-          cerrarModalCompetencia();
-        })
-        .catch(avisoErrorApi);
-    } else {
-      // UPDATE
-      fetch(`${API_URL}/torneos/${formCompetencia.id}`, {
-        method: "PATCH",
-        headers: jsonHeaders,
-        body: JSON.stringify(datos),
-      })
-        .then(manejarRespuesta)
-        .then((actualizado) => {
-          setTorneos((prev) => prev.map((t) => (t.id === formCompetencia.id ? actualizado : t)));
-          setSubTabActiva(nivel);
-          mostrarAviso("Cambios del torneo guardados.", "ok");
-          cerrarModalCompetencia();
-        })
-        .catch(avisoErrorApi);
-    }
+      .catch(avisoErrorApi);
   };
 
   // UPDATE parcial inhabilitar / habilitar
   const alternarTorneoHandler = (torneo) => {
-    fetch(`${API_URL}/torneos/${torneo.id}`, {
-      method: "PATCH",
-      headers: jsonHeaders,
-      body: JSON.stringify({ inhabilitada: !torneo.inhabilitada }),
-    })
-      .then(manejarRespuesta)
+    alternarCompetencia(torneo)
       .then((actualizado) => {
-        setTorneos((prev) => prev.map((t) => (t.id === torneo.id ? actualizado : t)));
+        setTorneos((prev) => prev.map((x) => (x.id === torneo.id ? actualizado : x)));
       })
       .catch(avisoErrorApi);
   };
-
-  // DELETE 
-  const eliminarTorneo = (id) => {
-    fetch(`${API_URL}/torneos/${id}`, { method: "DELETE" })
-      .then(manejarRespuesta)
-      .then(() => {
-        setTorneos((prev) => prev.filter((t) => t.id !== id));
-        mostrarAviso("Competencia eliminada.", "ok");
-      })
-      .catch(avisoErrorApi);
-  };
-
-  
 
   if (cargando) {
     return (
-      <main className="contenido container-fluid py-5 text-center text-secondary">
+      <main className="ui-contenido container-fluid py-5 text-center text-secondary">
         <div className="spinner-border text-danger mb-3" role="status" />
         <p>Cargando información…</p>
       </main>
@@ -294,17 +207,17 @@ export default function Horarios() {
 
   if (error) {
     return (
-      <main className="contenido container-fluid py-5 text-center text-danger">
+      <main className="ui-contenido container-fluid py-5 text-center text-danger">
         <p className="fw-semibold mb-2">No se pudo conectar con la API.</p>
         <p className="text-secondary small mb-0">
-          Verifica que json-server esté corriendo: <code>npx json-server db.json --port 3001</code>
+          Inténtalo de nuevo en unos minutos.
         </p>
       </main>
     );
   }
 
   return (
-    <main className="contenido container-fluid py-4 px-3 px-md-4">
+    <main className="ui-contenido container-fluid py-4 px-3 px-md-4">
       <div className="encabezado-pagina mb-3">
         <h1 className="h3 fw-bold mb-1">Panel de Gestión</h1>
         <p className="text-secondary mb-0">Niveles, horarios y competencias del club</p>
@@ -409,9 +322,12 @@ export default function Horarios() {
         setFormNivel={setFormNivel}
         onCerrar={() => setModalNivelAbierto(false)}
         onGuardar={guardarNivel}
+        onAviso={mostrarAviso}
       />
 
       <ModalCompetencia
+        onAviso={mostrarAviso}
+        niveles={nivelesCompetencia}
         abierto={modalCompetencia.abierto}
         modo={modalCompetencia.modo}
         form={formCompetencia}
@@ -422,5 +338,14 @@ export default function Horarios() {
 
       <AvisoToast aviso={aviso} />
     </main>
+  );
+}
+
+// Clase raíz del módulo: todos sus estilos viven bajo .adm-horarios
+export default function Horarios(props) {
+  return (
+    <div className="adm-horarios">
+      <HorariosContenido {...props} />
+    </div>
   );
 }

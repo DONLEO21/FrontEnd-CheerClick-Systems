@@ -1,6 +1,6 @@
 
 import "./Horarios.css";
-import React, { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 
 import FiltrosCategoria from "./FiltrosCategoria";
 import TiraDias from "./TiraDias";
@@ -10,18 +10,17 @@ import ModalEntrenamientoAtleta from "./ModalEntrenamientoAtleta";
 import ModalCampeonatoAtleta from "./ModalCampeonatoAtleta";
 import ModalPago from "./ModalPago";
 import AvisoToast from "../../../components/Compartidos/AvisoToast";
+import useAviso from "../../../hooks/useAviso";
 
 import { fechaAISO, obtenerLunesDeSemana, formatearRangoSemana, obtenerIniciales } from "./horariosAtletaData";
+import { useSesion } from "../../../context/SesionContext";
+import { obtenerNivel, listarCompetencias, listarSesionesAtleta } from "../../../services/horariosService";
+import { enviarPagoCompetencia } from "../../../services/pagosService";
 
-const API_URL = "http://localhost:3001";
-const jsonHeaders = { "Content-Type": "application/json" };
-
-async function manejarRespuesta(res) {
-  if (!res.ok) throw new Error(`Error ${res.status} al comunicarse con la API`);
-  return res.json();
-}
-
-export default function HorariosAtleta({ nivelId = 3 }) {
+function HorariosAtletaContenido() {
+  const { sesion } = useSesion();
+  // nivel del atleta autenticado (el backend lo devuelve en su usuario)
+  const nivelId = sesion.usuario?.nivel ?? null;
   const [sesiones, setSesiones] = useState([]);
   const [torneos, setTorneos] = useState([]);
   const [cargando, setCargando] = useState(true);
@@ -31,21 +30,25 @@ export default function HorariosAtleta({ nivelId = 3 }) {
   useEffect(() => {
     let activo = true;
     setCargando(true);
+    if (!nivelId) {
+      // TODO(backend): un atleta sin nivel asignado no tiene horarios; lo asigna el administrador.
+      setCargando(false);
+      return undefined;
+    }
     Promise.all([
-      fetch(`${API_URL}/sesionesAtleta?nivelId=${nivelId}`).then(manejarRespuesta),
-      fetch(`${API_URL}/torneos?nivel=magic`).then(manejarRespuesta),
-      fetch(`${API_URL}/niveles/${nivelId}`).then(manejarRespuesta),
+      obtenerNivel(nivelId),
+      listarCompetencias(nivelId),
     ])
-      .then(([s, t, nivel]) => {
+      .then(async ([nivel, t]) => {
+        const s = await listarSesionesAtleta(nivelId, nivel.entrenador);
         if (!activo) return;
         setSesiones(
           s.map((ses) => ({
             ...ses,
-            entrenador: nivel.entrenador,
             iniciales: obtenerIniciales(nivel.entrenador),
           }))
         );
-        setTorneos(t);
+        setTorneos(t.filter((x) => !x.inhabilitada));
       })
       .catch((err) => activo && setError(err))
       .finally(() => activo && setCargando(false));
@@ -54,13 +57,7 @@ export default function HorariosAtleta({ nivelId = 3 }) {
     };
   }, [nivelId]);
 
-  const [aviso, setAviso] = useState({ visible: false, mensaje: "", tipo: "ok" });
-  useEffect(() => {
-    if (!aviso.visible) return;
-    const id = setTimeout(() => setAviso((a) => ({ ...a, visible: false })), 3000);
-    return () => clearTimeout(id);
-  }, [aviso.visible, aviso.mensaje]);
-  const mostrarAviso = (mensaje, tipo = "ok") => setAviso({ visible: true, mensaje, tipo });
+  const { aviso, mostrarAviso } = useAviso({ tipoPorDefecto: "ok" });
 
   const [lunes, setLunes] = useState(() => obtenerLunesDeSemana(new Date()));
   const [filtroActivo, setFiltroActivo] = useState("todos");
@@ -109,22 +106,23 @@ export default function HorariosAtleta({ nivelId = 3 }) {
 
   // CREATE (POST) enviar comprobante de pago
   const enviarPago = (datosPago) => {
-    return fetch(`${API_URL}/pagos`, {
-      method: "POST",
-      headers: jsonHeaders,
-      body: JSON.stringify({ id: `pago-${Date.now()}`, ...datosPago }),
-    })
-      .then(manejarRespuesta)
-      .then((creado) => {
-        mostrarAviso("Comprobante enviado correctamente.", "ok");
-        return creado;
-      });
+    return enviarPagoCompetencia(sesion.atletaId, {
+      torneoId: datosPago.torneoId,
+      metodo: datosPago.metodo,
+      monto: datosPago.monto,
+      fechaPago: datosPago.fecha,
+      referencia: datosPago.referencia,
+      comprobante: datosPago.archivo,
+    }).then((creado) => {
+      mostrarAviso("Comprobante enviado correctamente.", "ok");
+      return creado;
+    });
   };
 
 
   if (cargando) {
     return (
-      <main className="contenido container-fluid py-5 text-center text-secondary">
+      <main className="ui-contenido container-fluid py-5 text-center text-secondary">
         <div className="spinner-border text-danger mb-3" role="status" />
         <p>Cargando tus horarios…</p>
       </main>
@@ -133,17 +131,17 @@ export default function HorariosAtleta({ nivelId = 3 }) {
 
   if (error) {
     return (
-      <main className="contenido container-fluid py-5 text-center text-danger">
+      <main className="ui-contenido container-fluid py-5 text-center text-danger">
         <p className="fw-semibold mb-2">No se pudo conectar con la API.</p>
         <p className="text-secondary small mb-0">
-          Verifica que json-server esté corriendo: <code>npx json-server db.json --port 3001</code>
+          Inténtalo de nuevo en unos minutos.
         </p>
       </main>
     );
   }
 
   return (
-    <main className="contenido">
+    <main className="ui-contenido">
       <section className="envoltura-horario" aria-labelledby="titulo-entrenamientos">
         <header className="encabezado-horario">
           <div className="bloque-titulo-horario">
@@ -229,10 +227,19 @@ export default function HorariosAtleta({ nivelId = 3 }) {
       />
 
       {pagoModal && (
-        <ModalPago torneo={pagoModal} onCerrar={() => setPagoModal(null)} onEnviar={enviarPago} />
+        <ModalPago torneo={pagoModal} onCerrar={() => setPagoModal(null)} onEnviar={enviarPago} onAviso={mostrarAviso} />
       )}
 
       <AvisoToast aviso={aviso} />
     </main>
+  );
+}
+
+// Clase raíz del módulo: todos sus estilos viven bajo .atl-horarios
+export default function HorariosAtleta(props) {
+  return (
+    <div className="atl-horarios">
+      <HorariosAtletaContenido {...props} />
+    </div>
   );
 }

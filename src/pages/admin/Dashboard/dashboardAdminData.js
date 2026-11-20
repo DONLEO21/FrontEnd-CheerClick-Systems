@@ -9,10 +9,11 @@ import {
 // Ruta real de la pantalla de cuentas (App.jsx)
 export const RUTA_CUENTAS = "/admin/usuarios";
 
-// Rutas de las pantallas externas
-export const RUTA_HORARIOS = "horarios.html";
-export const RUTA_NOVEDADES = "novedades.html";
-export const RUTA_PAGOS = "Gestion_Pagos_admi.html";
+// Rutas de las pantallas (App.jsx)
+export const RUTA_HORARIOS = "/admin/horarios";
+// Supuesto: "Novedades" (PQRS, pedidos, clases) lleva a PQRS, que es su primera fuente.
+export const RUTA_NOVEDADES = "/admin/pqrs";
+export const RUTA_PAGOS = "/admin/pagos";
 
 // Máximo de elementos visibles por tarjeta en el dashboard
 export const MAX_ITEMS = 3;

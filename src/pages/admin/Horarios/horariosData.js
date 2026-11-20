@@ -11,13 +11,6 @@ export const etiquetaDias = {
 
 export const diasSemana = ["lun", "mar", "mie", "jue", "vie", "sab", "dom"];
 
-export const nivelesCompetencia = [
-  { valor: "queen", etiqueta: "Blood Tigers Queen (Nivel 1 Youth)" },
-  { valor: "princess", etiqueta: "Blood Tigers Princess (Nivel 1 Youth)" },
-  { valor: "magic", etiqueta: "Blood Tiger Magic (Nivel 3 Open)" },
-  { valor: "blood", etiqueta: "Blood Tigers Cheer (Nivel 4 Open Large)" },
-];
-
 // Convierte ['mar','jue','sab'] -> "Martes, Jueves y Sábados"
 export function formatearDias(dias) {
   if (!dias || !dias.length) return "";

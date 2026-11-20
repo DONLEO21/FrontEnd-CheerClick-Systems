@@ -1,7 +1,9 @@
 
-import React, { useRef, useEffect } from "react";
-import { nivelesCompetencia, comprimirImagen } from "./horariosData";
+import { useRef, useEffect } from "react";
+import { comprimirImagen } from "./horariosData";
 export default function ModalCompetencia({
+  onAviso,
+  niveles: nivelesCompetencia = [],
   abierto,
   modo, 
   form,
@@ -25,7 +27,7 @@ export default function ModalCompetencia({
     if (!file) return;
     comprimirImagen(file, 600, 0.7)
       .then((dataUrl) => setForm((f) => ({ ...f, imagen: dataUrl })))
-      .catch(() => alert("No se pudo procesar la imagen. Intenta con otra."));
+      .catch(() => onAviso?.("No se pudo procesar la imagen. Intenta con otra.", "error"));
   };
 
   return (

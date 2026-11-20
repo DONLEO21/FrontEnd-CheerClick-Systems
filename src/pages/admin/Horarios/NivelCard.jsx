@@ -1,7 +1,6 @@
 
-import React from "react";
 import { formatearDias } from "./horariosData";
-import { formatearRangoHora } from "../../Entrenador/Horarios/calendarioData";
+import { formatearRangoHora } from "../../entrenador/Horarios/calendarioData";
 
 export default function NivelCard({ nivel, onModificar, onInhabilitar, delay = 0 }) {
   return (

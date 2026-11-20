@@ -13,10 +13,12 @@ function PerfilAtleta({ atleta }) {
       )}
       <div className="perfil-atleta__info">
         <h3>{atleta.nombre}</h3>
-        <p>Edad: {atleta.edad} años</p>
-        <span className="badge-nivel" style={obtenerEstiloNivel(atleta.nivel)}>
-          {atleta.nivel}
-        </span>
+        <p>{atleta.edad != null ? `Edad: ${atleta.edad} años` : "Completa tu fecha de nacimiento en el perfil"}</p>
+        {atleta.nivel && (
+          <span className="badge-nivel" style={obtenerEstiloNivel(atleta.nivel)}>
+            {atleta.nivel}
+          </span>
+        )}
       </div>
     </div>
   );

@@ -1,32 +1,26 @@
-import { supabase } from '../../../services/supabase';
+import { almacenSesion } from '../../../api/client'
+;
+import { obtenerNivel, listarCompetencias, listarSesiones } from '../../../services/horariosService';
+import { asistenciaApi } from '../../../api/asistencia.api'
+import { rendimientoApi } from '../../../api/rendimiento.api'
+import { mensualidadesApi } from '../../../api/mensualidades.api'
+import { inscripcionesCompetenciasApi } from '../../../api/inscripciones_competencias.api'
+import { pqrsApi } from '../../../api/pqrs.api'
 
 /* ───────── configuración ───────── */
-// AJUSTA nombres de tablas/columnas a tu BD real
-const DB = {
-  usuarios: 'usuarios',
-  niveles: 'niveles',
-  entrenamientos: 'entrenamientos',
-  asistencias: 'asistencias',
-  evaluaciones: 'evaluaciones',
-  habilidades: 'habilidades_atleta',
-  pagos: 'mensualidades',
-  torneos: 'torneos',
-  inscripciones: 'inscripciones',
-  pqrs: 'pqrs',
-};
-
 export const RUTAS = {
   perfil: '/atleta/perfil',
   rendimiento: '/atleta/rendimiento',
-  entrenamientos: '/atleta/entrenamientos',
+  entrenamientos: '/atleta/horarios',
   pqrs: '/atleta/pqrs',
-  mensualidades: '/atleta/mensualidades',
-  torneo: (id) => `/atleta/torneos/${id}`,
+  mensualidades: '/atleta/pagos',
+  // los campeonatos se ven en Horarios (no hay pantalla por torneo)
+  torneo: () => '/atleta/horarios',
 };
 
 export const RUTA_INICIO_ATLETA = '/atleta';
 export const USAR_DATOS_DEMO = false; // true = siempre datos quemados
-export const DEMO_SI_FALLA = true;    // true = si no hay datos/BD, usa quemados
+export const DEMO_SI_FALLA = false;   // true = si no hay datos/BD, usa quemados
 export const TORNEOS_POR_PAGINA = 4;
 
 const CATEGORIAS = [
@@ -36,7 +30,7 @@ const CATEGORIAS = [
 ];
 
 // valores de respaldo cuando una categoría no tiene datos reales todavía
-const VALORES_RESPALDO = { apropiadas: 79, avanzada: 83, elite: 65 };
+const VALORES_RESPALDO = {}; // sin datos de ejemplo: si no hay evaluaciones, no se muestra valor
 
 export const MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 export const MESES_CORTO = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
@@ -65,47 +59,73 @@ export const fechaCorta = (f) => {
   return `${d.getDate()} ${MESES_CORTO[d.getMonth()]} ${d.getFullYear()}`;
 };
 
-/* ───────── acceso a datos (Supabase) ───────── */
-async function pedir(tabla, armar) {
-  const { data, error } = await armar(supabase.from(tabla));
-  if (error) throw new Error(`${tabla}: ${error.message}`);
-  return data ?? [];
-}
 
+const sinTildes = (s) => String(s ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
+// Porcentaje completado de una categoría de habilidades (apropiada / avanzada / elite) según el resumen del backend
+const pctCategoria = (porCategoria = {}, prefijo) => {
+  const k = Object.keys(porCategoria).find((n) => sinTildes(n).startsWith(prefijo))
+  const c = k ? porCategoria[k] : null
+  return c && c.total ? Math.round((c.completadas / c.total) * 100) : null
+}
+export const BASE_VACIA = {
+  yo: null, nivel: null, asist: [], evals: [], habilidades: [], pagos: [],
+  torneos: [], inscritos: [], pqrs: [], errores: [],
+};
+
+const ESTADO_PQRS = { Pendiente: 'pendiente', 'En tramite': 'proceso', Resuelta: 'respondida' };
+
+/* ───────── acceso a datos (backend) ───────── */
 export async function cargarBase(uid) {
   const errores = [];
-  const seguro = async (tabla, armar) => {
-    try { return await pedir(tabla, armar); } catch (e) { errores.push(e.message); return []; }
+  const seguro = async (fn, vacio = []) => {
+    try { return await fn(); } catch (e) { errores.push(e.message); return vacio; }
   };
 
-  const [yo] = await seguro(DB.usuarios, (t) => t.select('id,nombre,id_nivel,foto').eq('id', uid).limit(1));
-  if (!yo) return { yo: null, errores };
+  const u = almacenSesion.usuario();
+  if (!u) return { ...BASE_VACIA, errores };
+  const yo = { id: uid, nombre: u.nombre, id_nivel: u.nivel ?? null, foto: null };
 
-  const [nivel, asist, evals, habilidades, pagos, torneos, inscr, pqrs] = await Promise.all([
-    yo.id_nivel
-      ? seguro(DB.niveles, (t) => t.select('id,nombre').eq('id', yo.id_nivel).limit(1))
-      : Promise.resolve([]),
-    seguro(DB.asistencias, (t) => t.select('fecha,presente').eq('id_atleta', uid)),
-    seguro(DB.evaluaciones, (t) => t.select('fecha,apropiadas,avanzada,elite').eq('id_atleta', uid).gte('fecha', iso(hace(27)))),
-    seguro(DB.habilidades, (t) => t.select('estado').eq('id_atleta', uid)),
-    seguro(DB.pagos, (t) => t.select('fecha_pago,valor,mes,estado,fecha_vencimiento').eq('id_atleta', uid).order('fecha_vencimiento', { ascending: false }).limit(12)),
-    seguro(DB.torneos, (t) => t.select('id,nombre,fecha,lugar').gte('fecha', iso(new Date())).order('fecha')),
-    seguro(DB.inscripciones, (t) => t.select('id_torneo').eq('id_atleta', uid)),
-    seguro(DB.pqrs, (t) => t.select('estado').eq('id_usuario', uid)),
+  const [nivel, asist, rend, pagos, torneos, inscr, pqrs] = await Promise.all([
+    yo.id_nivel ? seguro(() => obtenerNivel(yo.id_nivel), null) : Promise.resolve(null),
+    seguro(async () => (await asistenciaApi.list({ usuario: uid })).data ?? []),
+    seguro(async () => (await rendimientoApi.getAtleta(uid)).data ?? null, null),
+    seguro(async () => (await mensualidadesApi.list()).data ?? []),
+    yo.id_nivel ? seguro(() => listarCompetencias(yo.id_nivel)) : Promise.resolve([]),
+    seguro(async () => (await inscripcionesCompetenciasApi.list()).data ?? []),
+    seguro(async () => (await pqrsApi.list()).data ?? []),
   ]);
 
+  const hoyIso = iso(new Date());
+  const pc = rend?.resumen?.porCategoria;
+  const evals = pc ? [{ fecha: hoyIso, apropiadas: pctCategoria(pc, 'apropiad'), avanzada: pctCategoria(pc, 'avanz'), elite: pctCategoria(pc, 'elit') }] : [];
+
   return {
-    yo, nivel: nivel[0] ?? null, asist, evals, habilidades, pagos,
-    torneos, inscritos: inscr.map((i) => String(i.id_torneo)), pqrs, errores,
+    yo,
+    nivel: nivel ? { id: nivel.id, nombre: nivel.categoria } : null,
+    asist: asist.map((a) => ({ fecha: a.fecha, presente: a.tipoNovedad === 'Presente' || a.tipoNovedad === 'Tarde' })),
+    evals,
+    habilidades: (rend?.habilidades ?? []).map((h) => ({ estado: h.completado ? 'aprobado' : 'reprobado' })),
+    pagos: pagos.map((m) => ({
+      mes: new Date(m.fechaGeneracion).toLocaleDateString('es-CO', { month: 'long', timeZone: 'UTC' }),
+      valor: m.valor,
+      estado: (m.pago?.estado ?? 'Pendiente').toLowerCase(),
+      fecha_pago: m.pago?.fechaPago ?? null,
+      fecha_vencimiento: m.fechaVencimiento,
+    })),
+    torneos: torneos.filter((x) => !x.inhabilitada && x.fecha >= hoyIso).map((x) => ({ id: x.id, nombre: x.nombre, fecha: x.fecha, lugar: x.ciudad })),
+    inscritos: inscr.map((i) => String(i.competencia?._id ?? i.competencia)),
+    pqrs: pqrs.map((p) => ({ estado: ESTADO_PQRS[p.etapa] ?? 'pendiente' })),
+    errores,
   };
 }
 
 async function cargarEntrenos(idNivel, desde, hasta) {
   if (!idNivel) return [];
-  return pedir(DB.entrenamientos, (t) =>
-    t.select('id,id_nivel,titulo,fecha,hora_inicio,hora_fin')
-      .eq('id_nivel', idNivel).gte('fecha', desde).lte('fecha', hasta)
-      .order('fecha').order('hora_inicio'));
+  const sesiones = await listarSesiones(idNivel);
+  return sesiones
+    .filter((s) => s.estado === 'activa' && s.fecha >= desde && s.fecha <= hasta)
+    .map((s) => ({ id: s.id, id_nivel: s.nivelId, titulo: s.enfoque, fecha: s.fecha, hora_inicio: s.horaInicio, hora_fin: s.horaFin }))
+    .sort((a, b) => a.fecha.localeCompare(b.fecha) || a.hora_inicio.localeCompare(b.hora_inicio));
 }
 
 // Punto único de acceso: decide entre datos demo o reales

@@ -13,7 +13,7 @@ export default function TarjetaCalendario({
   })
 
   return (
-    <article className="de-tarjeta de-col-5">
+    <article className="de-tarjeta de-col-6">
       <h2 className="de-titulo de-titulo--icono"><Calendar size={24} strokeWidth={2} /> Calendario</h2>
 
       <div className="de-cal-nav">

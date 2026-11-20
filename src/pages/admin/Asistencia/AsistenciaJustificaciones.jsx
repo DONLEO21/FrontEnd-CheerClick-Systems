@@ -4,11 +4,14 @@ import JustificacionesPanel from "./JustificacionPanel";
 import { obtenerJustificaciones } from "../../../services/justificacionesService";
 import "./Asistencia.css";
 
-export default function AsistenciaJustificaciones({ niveles = [], subtitulo }) {
+function AsistenciaJustificacionesContenido({ niveles = [], subtitulo }) {
   const [vista, setVista] = useState("asistencia"); // "asistencia" | "justificaciones"
+  // TODO: el contador de pendientes aún no se muestra en la UI
+  // eslint-disable-next-line no-unused-vars
   const [pendientes, setPendientes] = useState(0);
 
   const nivelIds = niveles.map((n) => String(n.id));
+  const claveNiveles = nivelIds.join(",");
 
   const actualizarConteoPendientes = useCallback(() => {
     if (nivelIds.length === 0) {
@@ -21,7 +24,8 @@ export default function AsistenciaJustificaciones({ niveles = [], subtitulo }) {
         setPendientes(propias.filter((j) => j.estado === "pendiente").length);
       })
       .catch(() => setPendientes(0));
-  }, [niveles.map((n) => n.id).join(",")]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- nivelIds se recalcula solo cuando cambia claveNiveles
+  }, [claveNiveles]);
 
   useEffect(() => {
     actualizarConteoPendientes();
@@ -29,10 +33,12 @@ export default function AsistenciaJustificaciones({ niveles = [], subtitulo }) {
 
   return (
     <div className="p-4">
-      <div className="vista-switch">
+      <div className="ui-tabs" role="tablist" style={{ marginBottom: 16 }}>
         <button
           type="button"
-          className={`vista-btn${vista === "asistencia" ? " vista-btn-activo" : ""}`}
+          role="tab"
+          aria-selected={vista === "asistencia"}
+          className={`ui-tab${vista === "asistencia" ? " ui-tab--activa" : ""}`}
           onClick={() => setVista("asistencia")}
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -43,7 +49,9 @@ export default function AsistenciaJustificaciones({ niveles = [], subtitulo }) {
         </button>
         <button
           type="button"
-          className={`vista-btn${vista === "justificaciones" ? " vista-btn-activo" : ""}`}
+          role="tab"
+          aria-selected={vista === "justificaciones"}
+          className={`ui-tab${vista === "justificaciones" ? " ui-tab--activa" : ""}`}
           onClick={() => setVista("justificaciones")}
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -62,6 +70,15 @@ export default function AsistenciaJustificaciones({ niveles = [], subtitulo }) {
           onCambio={actualizarConteoPendientes}
         />
       )}
+    </div>
+  );
+}
+
+// Clase raíz del módulo: todos sus estilos viven bajo .adm-asistencia
+export default function AsistenciaJustificaciones(props) {
+  return (
+    <div className="adm-asistencia">
+      <AsistenciaJustificacionesContenido {...props} />
     </div>
   );
 }

@@ -1,8 +1,11 @@
 export const FILAS_POR_PAGINA = 5
 export const TABS = { pendiente: 'Pendientes', aprobada: 'Aprobadas', rechazada: 'Rechazadas' }
 export const BADGE_ESTADO = { pendiente: 'amarillo', aprobada: 'verde', rechazada: 'rojo' }
-export const NOMBRE_ROL = { atleta: 'Atleta', entrenador: 'Entrenador' }
-export const ROLES = ['atleta', 'entrenador'] // el primero es el rol por defecto
+export const NOMBRE_ROL = { atleta: 'Atleta', entrenador: 'Entrenador', administrador: 'Administrador' }
+export const ROLES = ['atleta', 'entrenador'] // roles que se pueden asignar a una SOLICITUD (el primero es el de por defecto)
+// SEGURIDAD: solo al crear una cuenta desde este panel (administrador autenticado) se ofrece "Administrador".
+// El registro público siempre crea Atletas (el backend ignora el rol que llegue) y una solicitud no puede ser admin.
+export const ROLES_CREAR = ['atleta', 'entrenador', 'administrador']
 
 export const NOMBRE_GENERO = {
   femenino: 'Femenino', masculino: 'Masculino', otro: 'Otro', 'no-decir': 'Prefiere no decirlo',
@@ -22,23 +25,6 @@ const NOMBRE_PARENTESCO = {
   'conyuge-pareja': 'Cónyuge / Pareja',
   otro: 'Otro',
 }
-
-// Para campos publicos de la cuenta,nivlees y planes
-export const NIVELES = [
-  ['formativo-king', 'Nivel Inicio | Formativo King'],
-  ['queens', 'Nivel 1 | Queens'],
-  ['princess', 'Nivel 2 | Princess'],
-  ['magic', 'Nivel 3 | Magic'],
-  ['blood-tigers', 'Nivel 4 | Blood Tigers'],
-]
-export const NOMBRE_NIVEL = Object.fromEntries(NIVELES)
-
-export const PLANES = [
-  ['basico', 'Plan básico'],
-  ['black', 'Plan black'],
-  ['white', 'Plan white'],
-]
-export const NOMBRE_PLAN = Object.fromEntries(PLANES)
 
 export const ACCIONES = {
   aprobar: {

@@ -60,12 +60,10 @@ export const PARENTESCOS = [
   { value: 'otro', label: 'Otro' },
 ];
 
-// Bucket público de Supabase Storage donde se guardan las fotos de perfil
-export const BUCKET_AVATARES = 'avatars';
 export const MAX_FOTO = 5 * 1024 * 1024; // 5MB
 export const TIPOS_FOTO = ['image/jpeg', 'image/png'];
 
-// Valores por defecto mientras carga el perfil real desde Supabase
+// Valores por defecto mientras carga el perfil real desde el backend
 export const DATOS_INICIALES = {
   fotoUrl: null,
   tipoDocumento: 'cedula',
@@ -92,27 +90,6 @@ export const BLOQUEOS_INICIALES = {
   fechaNacimiento: false,
   numeroDocumento: false,
 };
-
-// Convierte la fila de la tabla `perfiles` (snake_case) al shape del formulario (camelCase)
-export function perfilDesdeFila(fila, correoAuth) {
-  return {
-    fotoUrl: fila.foto_url ?? null,
-    tipoDocumento: fila.tipo_documento ?? 'cedula',
-    numeroDocumento: fila.numero_documento ?? '',
-    genero: fila.genero ?? '',
-    fechaNacimiento: fila.fecha_nacimiento ?? '',
-    correo: correoAuth ?? '',
-    telefono: fila.telefono ?? '',
-    eps: fila.eps ?? '',
-    certificadoEpsNombre: fila.certificado_eps_nombre ?? '',
-    certificadoEpsPath: fila.certificado_eps_url ?? '', // en DB se guarda la ruta del archivo, no una URL pública
-    certificadoEpsUrl: '',
-    certificadoEpsArchivo: null,
-    nivel: fila.nivel ?? '',
-    planMensualidad: fila.plan_mensualidad ?? '',
-    contactos: fila.contactos?.length ? fila.contactos : DATOS_INICIALES.contactos,
-  };
-}
 
 export function iniciales(nombreCompleto) {
   return (nombreCompleto || '')

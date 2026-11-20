@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import {
-  llamarAdmin as llamar, cargarUsuarios, obtenerDetalleUsuario, usuariosEnCache,
+  cargarUsuarios, obtenerDetalleUsuario, usuariosEnCache,
+  aprobarSolicitud, rechazarSolicitud, cambiarRolUsuario, cambiarActivoUsuario, crearUsuarioAdmin,
 } from '../../../services/adminUsuarios'
 import { ACCIONES } from './cuentasData.js'
 
@@ -14,6 +15,7 @@ export default function useCuentas(mostrarAviso) {
   const [esGestion, setEsGestion] = useState(leerVista)
   const [detalle, setDetalle] = useState(null)
   const [perfilDetalle, setPerfilDetalle] = useState(null)
+  const [registroDetalle, setRegistroDetalle] = useState({ nivel: null, plan: null }) // nivel y plan del usuario
   const [cargandoDetalle, setCargandoDetalle] = useState(false)
   const [confirmar, setConfirmar] = useState(null) // { usuario, accion, rol? }
   const [crearAbierto, setCrearAbierto] = useState(false)
@@ -53,11 +55,13 @@ export default function useCuentas(mostrarAviso) {
   const abrirDetalle = async (u) => {
     setDetalle(u)
     setPerfilDetalle(null)
-    if (u.estado !== 'aprobada') return
+    setRegistroDetalle({ nivel: null, plan: null })
     setCargandoDetalle(true)
     try {
-      const { perfil } = await obtenerDetalleUsuario(u.id)
-      setPerfilDetalle(perfil) // null si nunca editó su perfil
+      const { perfil, registro } = await obtenerDetalleUsuario(u.id)
+      setRegistroDetalle(registro)
+      // El perfil solo se muestra en cuentas aprobadas (null si nunca editó su perfil)
+      setPerfilDetalle(u.estado === 'aprobada' ? perfil : null)
     } catch (e) {
       mostrarAviso(e.message, 'error')
     } finally {
@@ -92,17 +96,14 @@ export default function useCuentas(mostrarAviso) {
   const ejecutar = async () => {
     const { usuario, accion, rol } = confirmar
     try {
-      if (accion === 'aprobar' || accion === 'rechazar') {
-        await llamar({
-          accion: 'cambiar-estado',
-          id: usuario.id,
-          estado: accion === 'aprobar' ? 'aprobada' : 'rechazada',
-          ...(accion === 'aprobar' ? { rol: rol ?? usuario.rol } : {}),
-        })
+      if (accion === 'aprobar') {
+        await aprobarSolicitud(usuario.id, rol ?? usuario.rol)
+      } else if (accion === 'rechazar') {
+        await rechazarSolicitud(usuario.id)
       } else if (accion === 'cambiar-rol') {
-        await llamar({ accion: 'cambiar-rol', id: usuario.id, rol })
+        await cambiarRolUsuario(usuario.id, rol)
       } else {
-        await llamar({ accion: 'cambiar-activo', id: usuario.id, activo: accion === 'activar' })
+        await cambiarActivoUsuario(usuario.id, accion === 'activar')
       }
       setConfirmar(null)
       mostrarAviso(ACCIONES[accion].exito, ACCIONES[accion].tipo)
@@ -120,7 +121,7 @@ export default function useCuentas(mostrarAviso) {
   const crearUsuario = async (datos) => {
     setCreando(true)
     try {
-      await llamar({ accion: 'crear-usuario', ...datos })
+      await crearUsuarioAdmin(datos)
       setCrearAbierto(false)
       mostrarAviso(ACCIONES['crear-usuario'].exito, ACCIONES['crear-usuario'].tipo)
       cargar()
@@ -131,7 +132,7 @@ export default function useCuentas(mostrarAviso) {
 
   return {
     usuarios, cargando, tab, setTab, esGestion, alternarVista,
-    detalle, setDetalle, perfilDetalle, cargandoDetalle, abrirDetalle, cerrarDetalle,
+    detalle, setDetalle, perfilDetalle, registroDetalle, cargandoDetalle, abrirDetalle, cerrarDetalle,
     confirmar, pedirConfirmacion, cancelarConfirmacion, ejecutar,
     crearAbierto, creando, abrirCrear, cerrarCrear, crearUsuario,
   }

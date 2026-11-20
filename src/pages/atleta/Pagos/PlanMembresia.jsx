@@ -2,7 +2,7 @@ import { pesos } from "../../../components/utils/PagosAtleta";
 
 function PlanMembresia({ plan, valor }) {
   return (
-    <section id="infor-plan-atl">
+    <section className="atl-pagos-infor-plan-atl">
       <h3 className="atl-titu-final">Mi plan de membresía</h3>
       <h5 className="atl-sub-final">Plan vigente actualmente</h5>
       <div className="atl-con-infor">

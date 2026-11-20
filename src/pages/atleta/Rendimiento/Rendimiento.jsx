@@ -35,7 +35,7 @@ function Rendimiento() {
   const { datos, cargando, error, recargar } = useRendimientoAtleta(atletaId);
   const [tab, setTab] = useState("rendimiento");
   const [fechaJustificando, setFechaJustificando] = useState(null); 
-  const [aviso, mostrarAviso] = useAviso();
+  const { aviso, mostrarAviso } = useAviso();
   const [hoyISO] = useState(fechaHoyISO); 
 
   const habilidadesDelAtleta = useMemo(

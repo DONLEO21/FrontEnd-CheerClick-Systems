@@ -8,7 +8,7 @@ const servicios = [
 
 function Servicios() {
   return (
-    <section id="servicios">
+    <section id="servicios" className="landing-servicios">
       <div className="contenedor">
         <div className="servicios-contenido">
           <div className="seccion-titulo">

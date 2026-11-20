@@ -207,7 +207,7 @@
   }
 
   /* ── hero ───────────────────────────────────────────── */
-  & #hero {
+  & .landing-hero {
     min-height: 100vh;
     padding-top: 70px;
     position: relative;
@@ -346,19 +346,19 @@
   }
 
   /* ── secciones de contenido ─────────────────────────── */
-  & #nosotros,
-  & #niveles,
+  & .landing-nosotros,
+  & .landing-niveles,
   & #inscripcion {
     background: var(--gris-claro);
   }
-  & #servicios,
-  & #horarios {
+  & .landing-servicios,
+  & .landing-horarios {
     background: var(--blanco);
   }
-  & #nosotros,
-  & #servicios,
-  & #niveles,
-  & #horarios,
+  & .landing-nosotros,
+  & .landing-servicios,
+  & .landing-niveles,
+  & .landing-horarios,
   & #inscripcion {
     padding: 96px 48px;
   }
@@ -797,7 +797,7 @@
     background: var(--rojo);
     color: var(--blanco);
   }
-  & #footer {
+  & .landing-footer {
     padding: 64px 48px 32px;
   }
   & .footer-contenido {
@@ -958,10 +958,10 @@
     & .hero-imagen {
       display: none;
     }
-    & #nosotros,
-    & #servicios,
-    & #niveles,
-    & #horarios,
+    & .landing-nosotros,
+    & .landing-servicios,
+    & .landing-niveles,
+    & .landing-horarios,
     & #inscripcion {
       padding: 64px 24px;
     }
@@ -1046,3 +1046,52 @@
     opacity: 1;
   }
 }
+
+/* ── Estilos de otros módulos que ya afectaban a este (copiados para conservar el aspecto; ver README) ── */
+
+:where(.pagina-landing) .contenedor {
+  /* sin max-width/centrado: en pantallas anchas ese centrado metía un espacio
+     extra entre la sidebar y las tarjetas */
+  max-width: none;
+  margin: 0;
+  /* arriba se ven ~34px (24 + lo que aporta el header), por eso los lados
+     llevan 34px: así el espacio es igual en vertical y en horizontal */
+  padding: 24px 34px;}
+:where(.pagina-landing) .logo-club img {
+    height: 40px; 
+    width: 40px;
+    object-fit: contain;
+    border-radius: 0;
+    border: none;
+    background: transparent;}
+:where(.pagina-landing) .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 30px;
+    border-radius: var(--radio-sm);
+    font-weight: 700;
+    font-size: var(--texto-sm);
+    transition: var(--transicion);}
+:where(.pagina-landing) .btn-primario {
+    background: var(--rojo);
+    color: var(--blanco);}
+:where(.pagina-landing) .btn-primario:hover { background: var(--rojo-hover);}
+:where(.pagina-landing) .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--espacio-xs);
+  padding: 10px 24px;
+  border-radius: var(--radio-sm);
+  font-weight: 700;
+  font-size: var(--texto-sm);
+  transition: var(--transicion);}
+:where(.pagina-landing) .btn-primario {
+  background: var(--rojo);
+  color: var(--blanco);
+  box-shadow: var(--sombra-sm);}
+:where(.pagina-landing) .btn-primario:hover {
+  background: var(--rojo-hover);
+  transform: translateY(-1px);}

@@ -1,6 +1,6 @@
 export default function TarjetaRendimientoEquipo({ equipo, cargando, esDemo }) {
   return (
-    <article className="de-tarjeta de-col-6">
+    <article className="de-tarjeta de-col-5">
       <h2 className="de-titulo">Rendimiento del Equipo</h2>
       <ul className="de-barras">
         {equipo.map((c) => (

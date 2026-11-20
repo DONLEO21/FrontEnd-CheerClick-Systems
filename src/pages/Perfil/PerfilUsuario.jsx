@@ -1,13 +1,10 @@
 import { useNavigate } from 'react-router-dom';
-import Header from '../../components/Header/Header.jsx';
-import Sidebar from '../../components/Sidebar/Sidebar.jsx';
-import AvisoToast from '../../components/AvisoToast';
+import AvisoToast from '../../components/Compartidos/AvisoToast';
 import useAviso from '../../hooks/useAviso';
 import useUsuario from '../../hooks/useUsuario';
-import { supabase } from '../../services/supabase';
 
 import usePerfil from './usePerfil.js';
-import { MENUS, ETIQUETA_HEADER, iniciales } from './perfilData.js';
+import { iniciales } from './perfilData.js';
 import TarjetaEncabezado from './TarjetaEncabezado.jsx';
 import TarjetaSeguridad from './TarjetaSeguridad.jsx';
 import TarjetaPreferencias from './TarjetaPreferencias.jsx';
@@ -16,15 +13,13 @@ import TarjetaContactos from './TarjetaContactos.jsx';
 import ModalFoto from './ModalFoto.jsx';
 import ModalConfirmar from './ModalConfirmar.jsx';
 
-import { cerrarSesion as cerrarSesionSistema } from '../../services/sesion'
-
 import './PerfilUsuario.css';
 
 export default function PerfilUsuario({ rol = 'atleta' }) {
   const esAtleta = rol === 'atleta';
 
-  const navigate = useNavigate()
-  const cerrarSesion = () => cerrarSesionSistema(navigate)
+  const navigate = useNavigate();
+
   const { aviso, mostrarAviso } = useAviso();
 
   const usuario = useUsuario();
@@ -35,28 +30,15 @@ export default function PerfilUsuario({ rol = 'atleta' }) {
   const {
     datos, vista, bloqueos, editando, guardando, guardandoFoto,
     errorGuardar, cargandoPerfil, modal, setModal,
-    cantidadContactos, cambiosUnaVez,
+    cantidadContactos, cambiosUnaVez, errorFecha,
     cambiar, cambiarContacto, cambiarArchivoEps,
     activarEdicion, cancelarEdicion, confirmarGuardar, guardarFoto,
   } = usePerfil({ rol, mostrarAviso });
 
   return (
-    <div className="dashboard perfil-pagina">
-      <Sidebar
-        items={MENUS[rol] ?? []}
-        activeHref={`/${rol}/perfil`}
-        onNavigate={(href) => navigate(href)}
-      />
-
-      <div className="dashboard__contenido">
-        <Header
-          rol={ETIQUETA_HEADER[rol]}
-          onCerrarSesion={cerrarSesion}
-          onIrInicio={() => navigate(`/${rol}`)}
-        />
-
-        <main className="panel-atleta perfil-main">
-          <div className="contenedor perfil-contenedor">
+    <div className="perfil-pagina">
+      <div className="perfil-main ui-contenido">
+          <div className="perfil-contenedor">
 
             <section className="pagina-encabezado">
               <h1>Mi perfil</h1>
@@ -81,14 +63,14 @@ export default function PerfilUsuario({ rol = 'atleta' }) {
                   editando={editando}
                   onCambiarFoto={() => setModal('foto')}
                   onEditar={activarEdicion}
-                  onGuardar={() => setModal('confirmar')}
+                  onGuardar={() => (errorFecha ? mostrarAviso(errorFecha, 'error') : setModal('confirmar'))}
                   onCancelar={cancelarEdicion}
                 />
 
                 {/* Seguridad + Preferencias, lado a lado */}
                 <div className="perfil-fila-doble">
                   <TarjetaSeguridad
-                    onCambiarContrasena={() => navigate('/acceso?view=pantalla-recuperar-3')}
+                    onCambiarContrasena={() => navigate('/acceso?view=recuperar')}
                   />
                   <TarjetaPreferencias />
                 </div>
@@ -100,6 +82,8 @@ export default function PerfilUsuario({ rol = 'atleta' }) {
                   bloqueos={bloqueos}
                   onCambiar={cambiar}
                   onCambiarArchivoEps={cambiarArchivoEps}
+                  rol={rol}
+                  errorFecha={errorFecha}
                 />
 
                 {/* Contactos de emergencia: 2 para atleta, 1 para entrenador/admin */}
@@ -132,7 +116,6 @@ export default function PerfilUsuario({ rol = 'atleta' }) {
             guardando={guardando}
             onConfirmar={confirmarGuardar}
           />
-        </main>
       </div>
 
       <AvisoToast aviso={aviso} />

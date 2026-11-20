@@ -3,9 +3,10 @@ import {
 } from 'lucide-react';
 import Campo from './Campo.jsx';
 import { TIPOS_DOCUMENTO, GENEROS, EPS } from './perfilData.js';
+import { fechaMaximaPermitida } from '../../utils/fechaNacimiento.js';
 
 export default function TarjetaInfoPersonal({
-  vista, editando, bloqueos, onCambiar, onCambiarArchivoEps,
+  vista, editando, bloqueos, onCambiar, onCambiarArchivoEps, rol, errorFecha,
 }) {
   const editable = (campo) => editando && !bloqueos[campo];
 
@@ -61,11 +62,11 @@ export default function TarjetaInfoPersonal({
 
         <Campo
           id="fecha-nacimiento" label="Fecha de nacimiento" icono={Calendar}
-          aviso={avisoUnaVez('fechaNacimiento')}
+          aviso={avisoUnaVez('fechaNacimiento')} error={errorFecha}
         >
           <input
             type="date" id="fecha-nacimiento"
-            max={new Date().toISOString().split('T')[0]}
+            max={fechaMaximaPermitida(rol)}
             value={vista.fechaNacimiento} disabled={!editable('fechaNacimiento')}
             onChange={(e) => onCambiar('fechaNacimiento', e.target.value)}
           />

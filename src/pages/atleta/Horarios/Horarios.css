@@ -1,30 +1,33 @@
-:root {
-  --rojo: #d71920;
-  --rojo-hover: #b8141a;
-  --gris-fondo: #f5f5f5;
-  --gris-borde: #e0e0e0;
-  --texto-dark: #1e1e1e;
-  --texto-muted: #888888;
-  --radio-sm: 6px;
-  --radio-md: 10px;
-  --sombra-tarjeta: 0 2px 10px rgba(0, 0, 0, .07);
-  --partner-color: #000000;
-  --gimnasia-color: #059669;
-  --baile-color: #33b9f7;
-  --camp-color: #6d28d9;
-  --pasado-color: #9ca3af;
-  --pago-color: #221c4d;
-}
+/* ── Estilos de otros módulos que ya afectaban a este (copiados para conservar el aspecto; ver README) ── */
 
-.contenido {
-  padding: 28px;
-}
+:where(.atl-horarios) select {
+    border: 1px solid #d4d4d4;
+    color: #333333;
+    font-size: 14px;
+    padding: 10px;
+    border-radius: 10px;
+    height: 40px;
+    width: 100%;}
+:where(.atl-horarios) .punto {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;}
+:where(.atl-horarios) select {
+    border: 1px solid #d4d4d4;
+    color: #333333;
+    font-size: 14px;
+    padding: 10px;
+    border-radius: 10px;
+    height: 40px;
+    width: 100%;}
 
-.envoltura-horario {
+:where(.atl-horarios) .envoltura-horario {
   margin-bottom: 32px;
 }
 
-.encabezado-horario {
+:where(.atl-horarios) .encabezado-horario {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-end;
@@ -33,26 +36,26 @@
   margin-bottom: 18px;
 }
 
-.bloque-titulo-horario h1 {
+:where(.atl-horarios) .bloque-titulo-horario h1 {
   font-size: 22px;
   font-weight: 700;
   color: var(--texto-dark);
   margin: 0;
 }
 
-.subtitulo-horario-atleta {
+:where(.atl-horarios) .subtitulo-horario-atleta {
   font-size: 13px;
   color: var(--texto-muted);
   margin-top: 4px;
 }
 
-.chips-horario {
+:where(.atl-horarios) .chips-horario {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
 }
 
-.chip-estadistica {
+:where(.atl-horarios) .chip-estadistica {
   display: inline-flex;
   align-items: center;
   gap: 7px;
@@ -65,18 +68,18 @@
   color: var(--texto-dark);
 }
 
-.chip-estadistica i {
+:where(.atl-horarios) .chip-estadistica i {
   color: var(--rojo);
 }
 
-.filtros-categoria {
+:where(.atl-horarios) .filtros-categoria {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
   margin-bottom: 18px;
 }
 
-.chip-filtro {
+:where(.atl-horarios) .chip-filtro {
   display: inline-flex;
   align-items: center;
   gap: 7px;
@@ -93,37 +96,37 @@
   box-shadow: none !important;
 }
 
-.chip-filtro:hover {
+:where(.atl-horarios) .chip-filtro:hover {
   border-color: var(--rojo);
   color: var(--rojo);
 }
 
-.chip-filtro.activo {
+:where(.atl-horarios) .chip-filtro.activo {
   color: #fff;
   border-color: transparent;
 }
 
-.chip-filtro.activo.cat-partner {
+:where(.atl-horarios) .chip-filtro.activo.cat-partner {
   background: var(--partner-color);
 }
 
-.chip-filtro.activo.cat-gimnasia {
+:where(.atl-horarios) .chip-filtro.activo.cat-gimnasia {
   background: var(--gimnasia-color);
 }
 
-.chip-filtro.activo.cat-baile {
+:where(.atl-horarios) .chip-filtro.activo.cat-baile {
   background: var(--baile-color);
 }
 
-.chip-filtro.activo.cat-campeonato {
+:where(.atl-horarios) .chip-filtro.activo.cat-campeonato {
   background: var(--camp-color);
 }
 
-.chip-filtro.activo:not(.cat-partner):not(.cat-gimnasia):not(.cat-baile):not(.cat-campeonato) {
+:where(.atl-horarios) .chip-filtro.activo:not(.cat-partner):not(.cat-gimnasia):not(.cat-baile):not(.cat-campeonato) {
   background: var(--rojo);
 }
 
-.navegador-semana {
+:where(.atl-horarios) .navegador-semana {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -136,7 +139,7 @@
   flex-wrap: wrap;
 }
 
-.btn-semana {
+:where(.atl-horarios) .btn-semana {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -154,13 +157,13 @@
   box-shadow: none !important;
 }
 
-.btn-semana:hover {
+:where(.atl-horarios) .btn-semana:hover {
   background: var(--rojo);
   border-color: var(--rojo);
   color: #fff;
 }
 
-.centro-semana {
+:where(.atl-horarios) .centro-semana {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -169,18 +172,18 @@
   min-width: 260px;
 }
 
-.etiqueta-rango-semana {
+:where(.atl-horarios) .etiqueta-rango-semana {
   font-size: 14px;
   font-weight: 700;
   color: var(--texto-dark);
 }
 
-.tira-dias {
+:where(.atl-horarios) .tira-dias {
   display: flex;
   gap: 6px;
 }
 
-.celda-dia {
+:where(.atl-horarios) .celda-dia {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -190,59 +193,59 @@
   min-width: 42px;
 }
 
-.celda-dia.hoy {
+:where(.atl-horarios) .celda-dia.hoy {
   background: #fdeaea;
   border: 1.5px solid var(--rojo);
 }
 
-.abrev-dia {
+:where(.atl-horarios) .abrev-dia {
   font-size: 10px;
   font-weight: 700;
   color: var(--texto-muted);
   text-transform: uppercase;
 }
 
-.numero-dia {
+:where(.atl-horarios) .numero-dia {
   font-size: 14px;
   font-weight: 700;
   color: var(--texto-dark);
 }
 
-.puntos-dia {
+:where(.atl-horarios) .puntos-dia {
   display: flex;
   gap: 3px;
   min-height: 6px;
 }
 
-.punto {
+:where(.atl-horarios) .punto {
   width: 6px;
   height: 6px;
   border-radius: 50%;
 }
 
-.punto-partner {
+:where(.atl-horarios) .punto-partner {
   background: var(--partner-color);
 }
 
-.punto-gimnasia {
+:where(.atl-horarios) .punto-gimnasia {
   background: var(--gimnasia-color);
 }
 
-.punto-baile {
+:where(.atl-horarios) .punto-baile {
   background: var(--baile-color);
 }
 
-.punto-campeonato {
+:where(.atl-horarios) .punto-campeonato {
   background: var(--camp-color);
 }
 
-.cuadricula-entrenamientos {
+:where(.atl-horarios) .cuadricula-entrenamientos {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
   gap: 18px;
 }
 
-.tarjeta-entrenamiento {
+:where(.atl-horarios) .tarjeta-entrenamiento {
   background: #fff;
   border: 1px solid var(--gris-borde);
   border-radius: var(--radio-md);
@@ -253,48 +256,48 @@
   transition: transform .25s, box-shadow .25s;
 }
 
-.tarjeta-entrenamiento:hover {
+:where(.atl-horarios) .tarjeta-entrenamiento:hover {
   transform: translateY(-3px);
   box-shadow: 0 8px 20px rgba(0, 0, 0, .1);
 }
 
-.tarjeta-pasada {
+:where(.atl-horarios) .tarjeta-pasada {
   opacity: .68;
 }
 
-.cabecera-tarjeta {
+:where(.atl-horarios) .cabecera-tarjeta {
   padding: 14px 16px;
   color: #fff;
 }
 
-.cabecera-tarjeta.cat-partner {
+:where(.atl-horarios) .cabecera-tarjeta.cat-partner {
   background: var(--partner-color);
 }
 
-.cabecera-tarjeta.cat-gimnasia {
+:where(.atl-horarios) .cabecera-tarjeta.cat-gimnasia {
   background: var(--gimnasia-color);
 }
 
-.cabecera-tarjeta.cat-baile {
+:where(.atl-horarios) .cabecera-tarjeta.cat-baile {
   background: var(--baile-color);
 }
 
-.cabecera-tarjeta.cat-campeonato {
+:where(.atl-horarios) .cabecera-tarjeta.cat-campeonato {
   background: var(--camp-color);
 }
 
-.cabecera-tarjeta.cabecera-pasado {
+:where(.atl-horarios) .cabecera-tarjeta.cabecera-pasado {
   background: var(--pasado-color);
 }
 
-.fila-superior {
+:where(.atl-horarios) .fila-superior {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 10px;
 }
 
-.insignia {
+:where(.atl-horarios) .insignia {
   font-size: 10px;
   font-weight: 700;
   padding: 3px 9px;
@@ -302,7 +305,7 @@
   letter-spacing: .4px;
 }
 
-.insignia-hoy {
+:where(.atl-horarios) .insignia-hoy {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -311,7 +314,7 @@
   border: 1px solid rgba(255, 255, 255, .6);
 }
 
-.insignia-hoy::before {
+:where(.atl-horarios) .insignia-hoy::before {
   content: "";
   width: 6px;
   height: 6px;
@@ -334,17 +337,17 @@
   }
 }
 
-.insignia-proximo {
+:where(.atl-horarios) .insignia-proximo {
   background: rgba(255, 255, 255, .25);
   color: #fff;
 }
 
-.insignia-pasado {
+:where(.atl-horarios) .insignia-pasado {
   background: rgba(255, 255, 255, .18);
   color: #fff;
 }
 
-.pastilla-duracion {
+:where(.atl-horarios) .pastilla-duracion {
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -353,13 +356,13 @@
   opacity: .9;
 }
 
-.fila-categoria {
+:where(.atl-horarios) .fila-categoria {
   display: flex;
   align-items: center;
   gap: 9px;
 }
 
-.icono-categoria-contenedor {
+:where(.atl-horarios) .icono-categoria-contenedor {
   width: 30px;
   height: 30px;
   border-radius: 50%;
@@ -370,12 +373,12 @@
   font-size: 15px;
 }
 
-.nombre-categoria {
+:where(.atl-horarios) .nombre-categoria {
   font-size: 15px;
   font-weight: 700;
 }
 
-.cuerpo-tarjeta {
+:where(.atl-horarios) .cuerpo-tarjeta {
   padding: 14px 16px;
   display: flex;
   flex-direction: column;
@@ -383,7 +386,7 @@
   flex: 1;
 }
 
-.fila-info {
+:where(.atl-horarios) .fila-info {
   display: flex;
   align-items: center;
   gap: 9px;
@@ -391,17 +394,17 @@
   color: var(--texto-dark);
 }
 
-.icono-info {
+:where(.atl-horarios) .icono-info {
   color: var(--rojo);
   display: flex;
   align-items: center;
 }
 
-.fila-entrenador {
+:where(.atl-horarios) .fila-entrenador {
   margin-top: 2px;
 }
 
-.avatar-entrenador {
+:where(.atl-horarios) .avatar-entrenador {
   width: 34px;
   height: 34px;
   border-radius: 50%;
@@ -414,49 +417,49 @@
   flex-shrink: 0;
 }
 
-.avatar-entrenador.cat-partner {
+:where(.atl-horarios) .avatar-entrenador.cat-partner {
   background: var(--partner-color);
 }
 
-.avatar-entrenador.cat-gimnasia {
+:where(.atl-horarios) .avatar-entrenador.cat-gimnasia {
   background: var(--gimnasia-color);
 }
 
-.avatar-entrenador.cat-baile {
+:where(.atl-horarios) .avatar-entrenador.cat-baile {
   background: var(--baile-color);
 }
 
-.avatar-entrenador.cat-campeonato {
+:where(.atl-horarios) .avatar-entrenador.cat-campeonato {
   background: var(--camp-color);
 }
 
-.avatar-entrenador.avatar-pasado {
+:where(.atl-horarios) .avatar-entrenador.avatar-pasado {
   background: var(--pasado-color);
 }
 
-.info-entrenador-atleta {
+:where(.atl-horarios) .info-entrenador-atleta {
   display: flex;
   flex-direction: column;
   line-height: 1.3;
 }
 
-.nombre-entrenador {
+:where(.atl-horarios) .nombre-entrenador {
   font-size: 12.5px;
   font-weight: 700;
   color: var(--texto-dark);
 }
 
-.rol-entrenador {
+:where(.atl-horarios) .rol-entrenador {
   font-size: 11px;
   color: var(--texto-muted);
 }
 
-.pie-tarjeta {
+:where(.atl-horarios) .pie-tarjeta {
   padding: 12px 16px;
   border-top: 1px solid var(--gris-borde);
 }
 
-.btn-detalles {
+:where(.atl-horarios) .btn-detalles {
   width: 100%;
   display: inline-flex;
   align-items: center;
@@ -475,12 +478,12 @@
   box-shadow: none !important;
 }
 
-.btn-detalles:hover {
+:where(.atl-horarios) .btn-detalles:hover {
   border-color: var(--rojo);
   color: var(--rojo);
 }
 
-.estado-vacio {
+:where(.atl-horarios) .estado-vacio {
   grid-column: 1 / -1;
   display: flex;
   flex-direction: column;
@@ -491,39 +494,39 @@
   text-align: center;
 }
 
-.estado-vacio i {
+:where(.atl-horarios) .estado-vacio i {
   font-size: 2rem;
   opacity: .35;
 }
 
-.seccion-campeonatos {
+:where(.atl-horarios) .seccion-campeonatos {
   margin-top: 8px;
 }
 
-.encabezado-seccion-campeonatos {
+:where(.atl-horarios) .encabezado-seccion-campeonatos {
   margin-bottom: 16px;
 }
 
-.bloque-titulo-seccion h2 {
+:where(.atl-horarios) .bloque-titulo-seccion h2 {
   font-size: 19px;
   font-weight: 700;
   color: var(--texto-dark);
   margin: 0;
 }
 
-.subtitulo-seccion {
+:where(.atl-horarios) .subtitulo-seccion {
   font-size: 13px;
   color: var(--texto-muted);
   margin-top: 3px;
 }
 
-.cuadricula-campeonatos {
+:where(.atl-horarios) .cuadricula-campeonatos {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
   gap: 16px;
 }
 
-.tarjeta-campeonato {
+:where(.atl-horarios) .tarjeta-campeonato {
   background: #fff;
   border: 1px solid var(--gris-borde);
   border-radius: var(--radio-md);
@@ -534,24 +537,24 @@
   transition: transform .25s, box-shadow .25s;
 }
 
-.tarjeta-campeonato:hover {
+:where(.atl-horarios) .tarjeta-campeonato:hover {
   transform: translateY(-3px);
   box-shadow: 0 8px 20px rgba(0, 0, 0, .1);
 }
 
-.imagen-campeonato {
+:where(.atl-horarios) .imagen-campeonato {
   height: 120px;
   margin: 0;
   background: var(--gris-fondo);
 }
 
-.imagen-campeonato img {
+:where(.atl-horarios) .imagen-campeonato img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.placeholder-imagen-campeonato {
+:where(.atl-horarios) .placeholder-imagen-campeonato {
   width: 100%;
   height: 100%;
   display: flex;
@@ -561,12 +564,12 @@
   font-size: 2rem;
 }
 
-.cuerpo-tarjeta-campeonato {
+:where(.atl-horarios) .cuerpo-tarjeta-campeonato {
   padding: 14px 16px;
   flex: 1;
 }
 
-.cabecera-info-campeonato {
+:where(.atl-horarios) .cabecera-info-campeonato {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
@@ -574,22 +577,22 @@
   margin-bottom: 8px;
 }
 
-.nombre-campeonato {
+:where(.atl-horarios) .nombre-campeonato {
   font-size: 14.5px;
   font-weight: 700;
   color: var(--texto-dark);
   margin: 0;
 }
 
-.fecha-campeonato {
+:where(.atl-horarios) .fecha-campeonato {
   font-size: 11.5px;
   color: var(--rojo);
   font-weight: 700;
   white-space: nowrap;
 }
 
-.ciudad-campeonato,
-.costo-campeonato {
+:where(.atl-horarios) .ciudad-campeonato,
+:where(.atl-horarios) .costo-campeonato {
   font-size: 12.5px;
   color: var(--texto-muted);
   margin: 4px 0 0;
@@ -598,15 +601,15 @@
   gap: 6px;
 }
 
-.acciones-campeonato {
+:where(.atl-horarios) .acciones-campeonato {
   display: flex;
   gap: 8px;
   padding: 12px 16px;
   border-top: 1px solid var(--gris-borde);
 }
 
-.btn-detalles-campeonato,
-.btn-pagar-campeonato {
+:where(.atl-horarios) .btn-detalles-campeonato,
+:where(.atl-horarios) .btn-pagar-campeonato {
   flex: 1;
   display: inline-flex;
   align-items: center;
@@ -622,28 +625,28 @@
   box-shadow: none !important;
 }
 
-.btn-detalles-campeonato {
+:where(.atl-horarios) .btn-detalles-campeonato {
   background: none;
   border: 1.5px solid var(--gris-borde);
   color: var(--texto-dark);
 }
 
-.btn-detalles-campeonato:hover {
+:where(.atl-horarios) .btn-detalles-campeonato:hover {
   border-color: var(--rojo);
   color: var(--rojo);
 }
 
-.btn-pagar-campeonato {
+:where(.atl-horarios) .btn-pagar-campeonato {
   background: var(--rojo);
   border: 1.5px solid var(--rojo);
   color: #fff;
 }
 
-.btn-pagar-campeonato:hover {
+:where(.atl-horarios) .btn-pagar-campeonato:hover {
   background: var(--rojo-hover, #b8141a);
 }
 
-.superposicion-modal-atleta {
+:where(.atl-horarios) .superposicion-modal-atleta {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, .55);
@@ -655,11 +658,11 @@
   backdrop-filter: blur(2px);
 }
 
-.superposicion-modal-atleta.activo {
+:where(.atl-horarios) .superposicion-modal-atleta.activo {
   display: flex;
 }
 
-.contenedor-modal-atleta {
+:where(.atl-horarios) .contenedor-modal-atleta {
   width: 100%;
   max-width: 480px;
   max-height: 88vh;
@@ -669,15 +672,15 @@
   box-shadow: 0 20px 60px rgba(0, 0, 0, .25);
 }
 
-.contenedor-modal-atleta--campeonato {
+:where(.atl-horarios) .contenedor-modal-atleta--campeonato {
   max-width: 460px;
 }
 
-.contenedor-modal-atleta--pago {
+:where(.atl-horarios) .contenedor-modal-atleta--pago {
   max-width: 560px;
 }
 
-.cabecera-modal {
+:where(.atl-horarios) .cabecera-modal {
   padding: 14px 18px;
   color: #fff;
   display: flex;
@@ -686,49 +689,49 @@
   border-radius: 14px 14px 0 0;
 }
 
-.cabecera-modal.cat-partner {
+:where(.atl-horarios) .cabecera-modal.cat-partner {
   background: var(--partner-color);
 }
 
-.cabecera-modal.cat-gimnasia {
+:where(.atl-horarios) .cabecera-modal.cat-gimnasia {
   background: var(--gimnasia-color);
 }
 
-.cabecera-modal.cat-baile {
+:where(.atl-horarios) .cabecera-modal.cat-baile {
   background: var(--baile-color);
 }
 
-.cabecera-modal.cat-campeonato {
+:where(.atl-horarios) .cabecera-modal.cat-campeonato {
   background: linear-gradient(135deg, #3b1fea, #5b2be0);
   padding: 18px 20px;
 }
 
-.cabecera-modal--pago {
+:where(.atl-horarios) .cabecera-modal--pago {
   background: var(--pago-color);
 }
 
-.fila-titulo-modal-atleta {
+:where(.atl-horarios) .fila-titulo-modal-atleta {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.icono-categoria-modal {
+:where(.atl-horarios) .icono-categoria-modal {
   display: flex;
   align-items: center;
   font-size: 18px;
 }
 
-.titulo-modal-atleta {
+:where(.atl-horarios) .titulo-modal-atleta {
   font-size: 16px;
   font-weight: 700;
 }
 
-.envoltura-pill-nivel {
+:where(.atl-horarios) .envoltura-pill-nivel {
   padding: 18px 24px 0;
 }
 
-.pill-nivel-campeonato {
+:where(.atl-horarios) .pill-nivel-campeonato {
   display: inline-block;
   padding: 5px 14px;
   background: #ede9fe;
@@ -739,7 +742,7 @@
   font-weight: 700;
 }
 
-.cerrar-modal {
+:where(.atl-horarios) .cerrar-modal {
   width: 32px;
   height: 32px;
   border: none;
@@ -755,28 +758,28 @@
   box-shadow: none !important;
 }
 
-.cerrar-modal:hover {
+:where(.atl-horarios) .cerrar-modal:hover {
   background: rgba(255, 255, 255, .35);
 }
 
-.cuerpo-modal-atleta {
+:where(.atl-horarios) .cuerpo-modal-atleta {
   padding: 16px 20px 18px;
 }
 
-.fecha-modal {
+:where(.atl-horarios) .fecha-modal {
   font-size: 15px;
   font-weight: 700;
   color: var(--texto-dark);
   margin: 0 0 10px;
 }
 
-.info-modal {
+:where(.atl-horarios) .info-modal {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.fila-info-modal {
+:where(.atl-horarios) .fila-info-modal {
   display: flex;
   align-items: center;
   gap: 9px;
@@ -784,26 +787,26 @@
   color: var(--texto-dark);
 }
 
-.icono-info-modal {
+:where(.atl-horarios) .icono-info-modal {
   color: var(--rojo);
   display: flex;
   align-items: center;
 }
 
-.divisor-modal {
+:where(.atl-horarios) .divisor-modal {
   border: none;
   border-top: 1px solid var(--gris-borde);
   margin: 12px 0;
   opacity: 1;
 }
 
-.seccion-modal {
+:where(.atl-horarios) .seccion-modal {
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
 
-.titulo-seccion-modal {
+:where(.atl-horarios) .titulo-seccion-modal {
   display: flex;
   align-items: center;
   gap: 7px;
@@ -814,11 +817,11 @@
   letter-spacing: .4px;
 }
 
-.titulo-seccion-modal i {
+:where(.atl-horarios) .titulo-seccion-modal i {
   color: var(--rojo);
 }
 
-.item-seccion-modal {
+:where(.atl-horarios) .item-seccion-modal {
   display: flex;
   align-items: flex-start;
   gap: 9px;
@@ -826,12 +829,12 @@
   color: var(--texto-dark);
 }
 
-.item-seccion-modal i {
+:where(.atl-horarios) .item-seccion-modal i {
   color: var(--rojo);
   margin-top: 2px;
 }
 
-.cabecera-modal.cat-campeonato .icono-categoria-modal {
+:where(.atl-horarios) .cabecera-modal.cat-campeonato .icono-categoria-modal {
   width: 36px;
   height: 36px;
   justify-content: center;
@@ -841,22 +844,22 @@
   border-radius: 9px;
 }
 
-.cabecera-modal.cat-campeonato .cerrar-modal {
+:where(.atl-horarios) .cabecera-modal.cat-campeonato .cerrar-modal {
   background: rgba(255, 255, 255, .25);
 }
 
-.cuerpo-modal-campeonato-det {
+:where(.atl-horarios) .cuerpo-modal-campeonato-det {
   padding: 10px 24px 14px;
 }
 
-.tabla-info-campeonato {
+:where(.atl-horarios) .tabla-info-campeonato {
   display: flex;
   flex-direction: column;
   gap: 0;
   margin: 0;
 }
 
-.fila-info-campeonato {
+:where(.atl-horarios) .fila-info-campeonato {
   display: flex;
   justify-content: flex-start;
   align-items: center;
@@ -866,11 +869,11 @@
   font-size: 14px;
 }
 
-.fila-info-campeonato--ultimo {
+:where(.atl-horarios) .fila-info-campeonato--ultimo {
   border-bottom: none;
 }
 
-.fila-info-campeonato dt {
+:where(.atl-horarios) .fila-info-campeonato dt {
   flex: 0 0 140px;
   margin: 0;
   color: #6b7280;
@@ -882,13 +885,13 @@
   white-space: nowrap;
 }
 
-.fila-info-campeonato dd {
+:where(.atl-horarios) .fila-info-campeonato dd {
   margin: 0;
   color: var(--texto-dark);
   text-align: left;
 }
 
-.bloque-publicidad-modal {
+:where(.atl-horarios) .bloque-publicidad-modal {
   margin-top: 6px;
   padding: 14px;
   background: #f6f4ff;
@@ -896,7 +899,7 @@
   border-radius: 12px;
 }
 
-.encabezado-publicidad {
+:where(.atl-horarios) .encabezado-publicidad {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -908,7 +911,7 @@
   letter-spacing: .4px;
 }
 
-.btn-link-publicidad {
+:where(.atl-horarios) .btn-link-publicidad {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -922,12 +925,12 @@
   text-decoration: none;
 }
 
-.btn-link-publicidad:hover {
+:where(.atl-horarios) .btn-link-publicidad:hover {
   background: var(--rojo-hover, #b8141a);
   color: #fff;
 }
 
-.btn-link-publicidad--vacio {
+:where(.atl-horarios) .btn-link-publicidad--vacio {
   background: #f9f8ff;
   border: 1px dashed #d8d2f5;
   color: #9ca3af;
@@ -936,12 +939,12 @@
   cursor: default;
 }
 
-.acciones-modal-campeonato {
+:where(.atl-horarios) .acciones-modal-campeonato {
   padding: 0 24px 24px;
   border-top: none;
 }
 
-.btn-pagar-desde-modal {
+:where(.atl-horarios) .btn-pagar-desde-modal {
   width: 100%;
   display: inline-flex;
   align-items: center;
@@ -960,38 +963,38 @@
   box-shadow: none !important;
 }
 
-.btn-pagar-desde-modal:hover {
+:where(.atl-horarios) .btn-pagar-desde-modal:hover {
   background: var(--rojo-hover, #b8141a);
 }
 
-.cuerpo-modal-atleta--pago {
+:where(.atl-horarios) .cuerpo-modal-atleta--pago {
   padding: 20px;
 }
 
-.cuadricula-campos-pago {
+:where(.atl-horarios) .cuadricula-campos-pago {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 14px;
   margin-bottom: 14px;
 }
 
-.cuadricula-campos-pago--una-col {
+:where(.atl-horarios) .cuadricula-campos-pago--una-col {
   grid-template-columns: 1fr;
 }
 
-.campo-formulario-atleta {
+:where(.atl-horarios) .campo-formulario-atleta {
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
 
-.etiqueta-campo-atleta {
+:where(.atl-horarios) .etiqueta-campo-atleta {
   font-size: 12px;
   font-weight: 700;
   color: var(--texto-dark);
 }
 
-.entrada-campo {
+:where(.atl-horarios) .entrada-campo {
   padding: 9px 12px;
   border: 1.5px solid var(--gris-borde);
   border-radius: var(--radio-sm);
@@ -1001,23 +1004,23 @@
   font-family: inherit;
 }
 
-.entrada-campo:focus {
+:where(.atl-horarios) .entrada-campo:focus {
   border-color: var(--rojo);
 }
 
-.entrada-campo--error {
+:where(.atl-horarios) .entrada-campo--error {
   border-color: var(--rojo);
   background: #fdeaea;
 }
 
-.entrada-campo--bloqueada {
+:where(.atl-horarios) .entrada-campo--bloqueada {
   background: var(--gris-fondo);
   color: var(--texto-dark);
   font-weight: 600;
   cursor: not-allowed;
 }
 
-.pista-campo-bloqueado {
+:where(.atl-horarios) .pista-campo-bloqueado {
   display: flex;
   align-items: center;
   gap: 5px;
@@ -1026,7 +1029,7 @@
   margin-top: 5px;
 }
 
-.nota-pago-efectivo {
+:where(.atl-horarios) .nota-pago-efectivo {
   background: var(--gris-fondo);
   border: 1px solid var(--gris-borde);
   border-radius: var(--radio-sm);
@@ -1036,14 +1039,14 @@
   margin: 0;
 }
 
-.titulo-zona-carga {
+:where(.atl-horarios) .titulo-zona-carga {
   font-size: 12.5px;
   font-weight: 700;
   color: var(--texto-dark);
   margin: 0 0 10px;
 }
 
-.zona-carga-archivo {
+:where(.atl-horarios) .zona-carga-archivo {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1057,47 +1060,39 @@
   background: var(--gris-fondo);
 }
 
-.zona-carga-archivo:hover,
-.zona-carga-activa {
+:where(.atl-horarios) .zona-carga-archivo:hover,
+:where(.atl-horarios) .zona-carga-activa {
   border-color: var(--rojo);
   background: #fdeaea;
 }
 
-.icono-zona-carga {
+:where(.atl-horarios) .icono-zona-carga {
   font-size: 1.6rem;
   color: var(--texto-muted);
 }
 
-.texto-zona-carga {
+:where(.atl-horarios) .texto-zona-carga {
   font-size: 12.5px;
   color: var(--texto-dark);
 }
 
-.enlace-zona-carga {
+:where(.atl-horarios) .enlace-zona-carga {
   color: var(--rojo);
   font-weight: 700;
 }
 
-.formatos-zona-carga {
+:where(.atl-horarios) .formatos-zona-carga {
   font-size: 11px;
   color: var(--texto-muted);
 }
 
-.visualmente-oculto {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-}
-
-.nombre-archivo-cargado {
+:where(.atl-horarios) .nombre-archivo-cargado {
   font-size: 12.5px;
   color: var(--texto-dark);
   margin-top: 8px;
 }
 
-.pie-modal-pago {
+:where(.atl-horarios) .pie-modal-pago {
   display: flex;
   gap: 10px;
   justify-content: flex-end;
@@ -1105,7 +1100,7 @@
   border-top: 1px solid var(--gris-borde);
 }
 
-.btn-cancelar-pago {
+:where(.atl-horarios) .btn-cancelar-pago {
   padding: 9px 18px;
   background: #fff;
   border: 1.5px solid var(--gris-borde);
@@ -1117,7 +1112,7 @@
   box-shadow: none !important;
 }
 
-.btn-enviar-comprobante {
+:where(.atl-horarios) .btn-enviar-comprobante {
   padding: 9px 18px;
   background: var(--rojo);
   color: #fff;
@@ -1131,50 +1126,60 @@
   box-shadow: none !important;
 }
 
-.btn-enviar-comprobante:hover:not(:disabled) {
+:where(.atl-horarios) .btn-enviar-comprobante:hover:not(:disabled) {
   background: var(--rojo-hover, #b8141a);
 }
 
-.btn-enviar-comprobante:disabled {
+:where(.atl-horarios) .btn-enviar-comprobante:disabled {
   opacity: .6;
   cursor: not-allowed;
 }
 
-.estado-exito-pago {
+:where(.atl-horarios) .estado-exito-pago {
   padding: 46px 24px;
   text-align: center;
 }
 
-.icono-exito-pago {
+:where(.atl-horarios) .icono-exito-pago {
   font-size: 2.6rem;
   color: #1a7a40;
   margin-bottom: 12px;
   display: block;
 }
 
-.estado-exito-pago h3 {
+:where(.atl-horarios) .estado-exito-pago h3 {
   font-size: 17px;
   font-weight: 700;
   color: var(--texto-dark);
   margin-bottom: 8px;
 }
 
-.estado-exito-pago p {
+:where(.atl-horarios) .estado-exito-pago p {
   font-size: 13px;
   color: var(--texto-muted);
 }
 
 @media (max-width: 700px) {
-  .cuadricula-campos-pago {
+  :where(.atl-horarios) .cuadricula-campos-pago {
     grid-template-columns: 1fr;
   }
 
-  .navegador-semana {
+  :where(.atl-horarios) .navegador-semana {
     flex-direction: column;
   }
 
-  .encabezado-horario {
+  :where(.atl-horarios) .encabezado-horario {
     flex-direction: column;
     align-items: flex-start;
   }
 }
+
+/* ── Estilos de otros módulos que ya afectaban a este (copiados para conservar el aspecto; ver README) ── */
+
+:where(.atl-horarios) .subtitulo-seccion {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--carbon);
+    margin: 28px 0 16px;
+    padding-left: 12px;
+    border-left: 3px solid var(--rojo);}

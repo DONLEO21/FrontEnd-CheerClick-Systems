@@ -11,7 +11,7 @@ export default function TarjetaResumen({ cargando, atletasActivos, entrenosHoy, 
   ]
 
   return (
-    <article className="de-tarjeta de-col-14">
+    <article className="de-tarjeta de-col-13">
       <h2 className="de-titulo">Resumen rápido</h2>
       <div className="de-stats">
         {stats.map(({ id, Icono, color, valor, etiqueta }) => (

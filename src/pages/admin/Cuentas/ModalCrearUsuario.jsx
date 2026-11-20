@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { X, User } from 'lucide-react'
 import CampoClave from '../../../components/auth/CampoClave'
-import { ROLES, NOMBRE_ROL, NIVELES, PLANES } from './cuentasData.js'
+import { ROLES, ROLES_CREAR, NOMBRE_ROL } from './cuentasData.js'
+import { listarNivelesOpciones, listarPlanesOpciones } from '../../../services/catalogos'
 
 const VACIO = {
   rol: ROLES[0], nombre: '', apellido: '', email: '', password: '', nivel: '', plan: '',
@@ -10,6 +11,13 @@ const VACIO = {
 export default function ModalCrearUsuario({ onCerrar, onCrear, creando }) {
   const [datos, setDatos] = useState(VACIO)
   const [mensaje, setMensaje] = useState('')
+  // Niveles y planes reales del club (vienen del backend)
+  const [niveles, setNiveles] = useState([])
+  const [planes, setPlanes] = useState([])
+  useEffect(() => {
+    listarNivelesOpciones().then(setNiveles).catch((e) => setMensaje(e.message))
+    listarPlanesOpciones().then(setPlanes).catch((e) => setMensaje(e.message))
+  }, [])
 
   const cambiar = (campo) => (e) => setDatos((d) => ({ ...d, [campo]: e.target.value }))
 
@@ -22,12 +30,14 @@ export default function ModalCrearUsuario({ onCerrar, onCrear, creando }) {
     if (!nombre) return setMensaje('Ingresa el nombre.')
     if (!apellido) return setMensaje('Ingresa el apellido.')
     if (!email) return setMensaje('Ingresa el correo electrónico.')
-    if (!datos.nivel) return setMensaje('Selecciona el nivel.')
-    if (!datos.plan) return setMensaje('Selecciona el plan asociado.')
-    if (datos.password.length < 6) return setMensaje('La contraseña debe tener mínimo 6 caracteres.')
+    // el backend exige nivel a atletas y entrenadores; el administrador no lleva nivel ni plan
+    if (datos.rol !== 'administrador' && !datos.nivel) return setMensaje('Selecciona el nivel.')
+    // el backend exige plan solo para atletas (el entrenador solo lleva nivel)
+    if (datos.rol === 'atleta' && !datos.plan) return setMensaje('Selecciona el plan asociado.')
+    if (datos.password.length < 8) return setMensaje('La contraseña debe tener mínimo 8 caracteres.')
 
     try {
-      await onCrear({ ...datos, nombre, apellido, email })
+      await onCrear({ ...datos, nivel: datos.rol === 'administrador' ? '' : datos.nivel, plan: datos.rol === 'atleta' ? datos.plan : '', nombre, apellido, email })
     } catch (e) {
       setMensaje(e.message)
     }
@@ -56,7 +66,7 @@ export default function ModalCrearUsuario({ onCerrar, onCrear, creando }) {
                 value={datos.rol}
                 onChange={cambiar('rol')}
               >
-                {ROLES.map((r) => <option key={r} value={r}>{NOMBRE_ROL[r]}</option>)}
+                {ROLES_CREAR.map((r) => <option key={r} value={r}>{NOMBRE_ROL[r]}</option>)}
               </select>
             </div>
 
@@ -80,23 +90,23 @@ export default function ModalCrearUsuario({ onCerrar, onCrear, creando }) {
 
             <div className="detalle-grupo detalle-grupo--full">
               <label htmlFor="crear-password">Contraseña</label>
-              <CampoClave id="crear-password" placeholder="Mínimo 6 caracteres"
+              <CampoClave id="crear-password" placeholder="Mínimo 8 caracteres"
                 value={datos.password} onChange={cambiar('password')} />
             </div>
 
             <div className="detalle-grupo">
               <label htmlFor="crear-nivel">Nivel</label>
-              <select className="campo" id="crear-nivel" value={datos.nivel} onChange={cambiar('nivel')}>
+              <select className="campo" id="crear-nivel" value={datos.rol === 'administrador' ? '' : datos.nivel} onChange={cambiar('nivel')} disabled={datos.rol === 'administrador'}>
                 <option value="" disabled hidden>Seleccionar...</option>
-                {NIVELES.map(([v, t]) => <option key={v} value={v}>{t}</option>)}
+                {niveles.map(([v, t]) => <option key={v} value={v}>{t}</option>)}
               </select>
             </div>
 
             <div className="detalle-grupo">
               <label htmlFor="crear-plan">Plan asociado</label>
-              <select className="campo" id="crear-plan" value={datos.plan} onChange={cambiar('plan')}>
+              <select className="campo" id="crear-plan" value={datos.rol === 'atleta' ? datos.plan : ''} onChange={cambiar('plan')} disabled={datos.rol !== 'atleta'}>
                 <option value="" disabled hidden>Seleccionar...</option>
-                {PLANES.map(([v, t]) => <option key={v} value={v}>{t}</option>)}
+                {planes.map(([v, t]) => <option key={v} value={v}>{t}</option>)}
               </select>
             </div>
           </div>

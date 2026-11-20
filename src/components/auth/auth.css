@@ -1,4 +1,13 @@
-/* ══════════════════════════════════════════════════════════
+/* ── Estilos de otros módulos que ya afectaban a este (copiados para conservar el aspecto; ver README) ── */
+
+:where(.pagina-auth) select {
+    border: 1px solid #d4d4d4;
+    color: #333333;
+    font-size: 14px;
+    padding: 10px;
+    border-radius: 10px;
+    height: 40px;
+    width: 100%;}/* ══════════════════════════════════════════════════════════
    AUTH — todo vive dentro de .pagina-auth
    ══════════════════════════════════════════════════════════ */
 
@@ -737,74 +746,78 @@
   }
 }
 
-/* ══════════════════════════════════════════════════════════
-   AVISO TOAST (otras pantallas que aún usen AvisoToast)
-   ══════════════════════════════════════════════════════════ */
-.aviso-toast {
-  position: fixed;
-  top: 100px;
-  right: -90px;
-  width: max-content;
-  max-width: min(300px, calc(100vw - 40px));
+/* ── Estilos de otros módulos que ya afectaban a este (copiados para conservar el aspecto; ver README) ── */
 
+:where(.pagina-auth) .contenedor {
+  /* sin max-width/centrado: en pantallas anchas ese centrado metía un espacio
+     extra entre la sidebar y las tarjetas */
+  max-width: none;
+  margin: 0;
+  /* arriba se ven ~34px (24 + lo que aporta el header), por eso los lados
+     llevan 34px: así el espacio es igual en vertical y en horizontal */
+  padding: 24px 34px;}
+:where(.pagina-auth) .campo {
+  width: 100%;
+  min-height: 38px;
+  padding: 9px 12px;
+  border-radius: var(--radio-sm);
+  border: 1.5px solid var(--gris-borde);
+  background: var(--gris-fondo);
+  color: var(--texto-dark);
+  font-size: var(--texto-sm);
+  font-family: inherit;
+  outline: none;
+  transition: var(--transicion);}
+:where(.pagina-auth) .campo:focus {
+  border-color: var(--rojo);
+  background: var(--blanco);
+  box-shadow: 0 0 0 3px var(--rojo-light);}
+:where(.pagina-auth) .campo::placeholder { color: #bbb;}
+:where(.pagina-auth) .campo:disabled {
+  background: #f0f0f0;
+  color: var(--texto-muted);
+  cursor: not-allowed;}
+:where(.pagina-auth) select.campo {
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23999' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 13px center;
+  padding-right: 32px;}
+:where(.pagina-auth) .clave-contenedor { position: relative;}
+:where(.pagina-auth) .clave-contenedor .campo { padding-right: 42px;}
+:where(.pagina-auth) .boton-ojo {
+  position: absolute;
+  right: 11px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #aaa;
+  padding: 0;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 10px;
-  padding: 20px 24px 18px;
-  border-radius: 16px;
-
-  background: #2b2b2b;
-  color: #fff;
-  font-family: "Arimo", "Segoe UI", Arial, sans-serif;
-  font-size: 14px;
-  font-weight: 700;
-  line-height: 1.4;
-  text-align: center;
-
-  z-index: 4000;
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.28);
-
-  /* estado oculto: pequeño y en el centro */
-  opacity: 0;
-  transform: translate(-50%, -50%) scale(0.6);
-  pointer-events: none;
-  transition:
-    opacity 0.2s ease,
-    transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-/* estado visible: crece desde el centro */
-.aviso-toast.visible {
-  opacity: 1;
-  transform: translate(-50%, -50%) scale(1);
-  pointer-events: auto;
-}
-
-.aviso-toast__icono {
-  flex-shrink: 0;
-  width: 38px;
-  height: 38px;
-  overflow: visible;
-}
-
-.aviso-toast.aviso-ok {
-  background: #3a9d68;
-}
-
-.aviso-toast.aviso-advertencia {
-  background: #f7dc72;
-  color: #4e4b42;
-  border: 1.5px solid #f6db78;
-}
-
-.aviso-toast.aviso-error {
-  background: #d94a4a;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .aviso-toast {
-    transition: opacity 0.2s ease;
-    transform: translate(-50%, -50%);
-  }
-}
+  justify-content: center;
+  transition: color .15s;}
+:where(.pagina-auth) .boton-ojo:hover { color: var(--rojo);}
+:where(.pagina-auth) .boton-ojo svg { display: block;}
+:where(.pagina-auth) select {
+    border: 1px solid #d4d4d4;
+    color: #333333;
+    font-size: 14px;
+    padding: 10px;
+    border-radius: 10px;
+    height: 40px;
+    width: 100%;}
+:where(.pagina-auth) .tarjeta {
+  background: #fff;
+  border-radius: var(--radio-md);
+  padding: 20px;
+  border: 1px solid var(--gris-borde);
+  box-shadow: var(--sombra-tarjeta);}
+:where(.pagina-auth) .icono-info {
+  color: var(--rojo);
+  display: flex;
+  align-items: center;}

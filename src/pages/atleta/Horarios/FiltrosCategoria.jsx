@@ -1,4 +1,3 @@
-import React from "react";
 import { CATEGORIAS, FILTROS_LISTA } from "./horariosAtletaData";
 
 export default function FiltrosCategoria({ filtroActivo, onCambiarFiltro }) {

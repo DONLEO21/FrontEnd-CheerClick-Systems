@@ -1,6 +1,6 @@
 
 import "./Horarios.css";
-import React, { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useLocation } from "react-router-dom";
 
 import CalendarioMes from "./CalendarioMes";
@@ -10,6 +10,8 @@ import ResumenMes from "./ResumenMes";
 import ModalSesion from "./ModalSesion";
 import SelectorNivel from "./SelectorNivel";
 import AvisoToast from "../../../components/Compartidos/AvisoToast";
+import useAviso from "../../../hooks/useAviso";
+import { listarNiveles, listarSesiones, guardarSesion as guardarSesionApi } from "../../../services/horariosService";
 
 import {
   TIPOS_BASE,
@@ -21,15 +23,7 @@ import {
   sesionPorDefecto,
 } from "./calendarioData";
 
-const API_URL = "http://localhost:3001";
-const jsonHeaders = { "Content-Type": "application/json" };
-
-async function manejarRespuesta(res) {
-  if (!res.ok) throw new Error(`Error ${res.status} al comunicarse con la API`);
-  return res.json();
-}
-
-export default function HorariosEntrenador({ esAdmin: esAdminProp, nivelIdEntrenador = 3 }) {
+function HorariosEntrenadorContenido({ esAdmin: esAdminProp }) {
   const { pathname } = useLocation();
   const esAdmin = esAdminProp ?? pathname.toLowerCase().startsWith("/admin");
 
@@ -46,17 +40,13 @@ export default function HorariosEntrenador({ esAdmin: esAdminProp, nivelIdEntren
     setNivelActivoId(null);
 
     Promise.all([
-      fetch(`${API_URL}/niveles`).then(manejarRespuesta),
-      fetch(`${API_URL}/sesiones`).then(manejarRespuesta),
+      listarNiveles(),
+      listarSesiones(),
     ])
       .then(([n, s]) => {
         if (!activo) return;
-        if (esAdmin) {
-          setNiveles(n);
-        } else {
-          const propio = n.find((x) => String(x.id) === String(nivelIdEntrenador));
-          setNiveles(propio ? [propio] : []);
-        }
+        // El backend ya devuelve solo los niveles del entrenador (el administrador ve todos)
+        setNiveles(n);
         setSesiones(s);
       })
       .catch((err) => activo && setError(err))
@@ -65,19 +55,11 @@ export default function HorariosEntrenador({ esAdmin: esAdminProp, nivelIdEntren
     return () => {
       activo = false;
     };
-  }, [esAdmin, nivelIdEntrenador]);
+  }, [esAdmin]);
 
-  const [aviso, setAviso] = useState({ visible: false, mensaje: "", tipo: "ok" });
-
-  useEffect(() => {
-    if (!aviso.visible) return;
-    const id = setTimeout(() => setAviso((a) => ({ ...a, visible: false })), 3000);
-    return () => clearTimeout(id);
-  }, [aviso.visible, aviso.mensaje]);
-
-  const mostrarAviso = (mensaje, tipo = "ok") => setAviso({ visible: true, mensaje, tipo });
-  const avisoErrorApi = () =>
-    mostrarAviso("No se pudo conectar con la API (json-server). ¿Está corriendo?", "error");
+  const { aviso, mostrarAviso } = useAviso({ tipoPorDefecto: "ok" });
+  const avisoErrorApi = (err) =>
+    mostrarAviso(err?.message || "No se pudo completar la acción. Inténtalo de nuevo.", "error");
 
   useEffect(() => {
     if (!niveles.length || nivelActivoId !== null) return;
@@ -143,37 +125,19 @@ export default function HorariosEntrenador({ esAdmin: esAdminProp, nivelIdEntren
   };
 
 
-  const persistirSesion = (cambios) => {
-    if (sesionGuardada) {
-      return fetch(`${API_URL}/sesiones/${sesionGuardada.id}`, {
-        method: "PATCH",
-        headers: jsonHeaders,
-        body: JSON.stringify(cambios),
-      })
-        .then(manejarRespuesta)
-        .then((actualizada) => {
-          setSesiones((prev) => prev.map((s) => (s.id === sesionGuardada.id ? actualizada : s)));
-          return actualizada;
-        });
-    }
-
-    const nueva = {
-      ...sesionPorDefecto(nivelActivo, fechaActiva, numeroDiaSemana),
-      id: `${nivelActivoId}-${fechaActiva}`,
-      ...cambios,
-    };
-
-    return fetch(`${API_URL}/sesiones`, {
-      method: "POST",
-      headers: jsonHeaders,
-      body: JSON.stringify(nueva),
-    })
-      .then(manejarRespuesta)
-      .then((creada) => {
-        setSesiones((prev) => [...prev, creada]);
-        return creada;
-      });
-  };
+  const persistirSesion = (cambios) =>
+    guardarSesionApi(
+      sesionGuardada,
+      cambios,
+      sesionPorDefecto(nivelActivo, fechaActiva, numeroDiaSemana)
+    ).then((guardada) => {
+      setSesiones((prev) =>
+        sesionGuardada
+          ? prev.map((s) => (s.id === sesionGuardada.id ? guardada : s))
+          : [...prev, guardada]
+      );
+      return guardada;
+    });
 
   const guardarTipos = () => {
     if (!hayEntrenamiento) return;
@@ -265,7 +229,7 @@ export default function HorariosEntrenador({ esAdmin: esAdminProp, nivelIdEntren
 
   if (cargando) {
     return (
-      <main className="contenido container-fluid py-5 text-center text-secondary">
+      <main className="ui-contenido container-fluid py-5 text-center text-secondary">
         <div className="spinner-border text-danger mb-3" role="status" />
         <p>Cargando calendario…</p>
       </main>
@@ -274,10 +238,10 @@ export default function HorariosEntrenador({ esAdmin: esAdminProp, nivelIdEntren
 
   if (error) {
     return (
-      <main className="contenido container-fluid py-5 text-center text-danger">
+      <main className="ui-contenido container-fluid py-5 text-center text-danger">
         <p className="fw-semibold mb-2">No se pudo conectar con la API.</p>
         <p className="text-secondary small mb-0">
-          Verifica que json-server esté corriendo: <code>npx json-server db.json --port 3001</code>
+          Inténtalo de nuevo en unos minutos.
         </p>
       </main>
     );
@@ -285,7 +249,7 @@ export default function HorariosEntrenador({ esAdmin: esAdminProp, nivelIdEntren
 
   if (!esAdmin && niveles.length === 0) {
     return (
-      <main className="contenido container-fluid py-5 text-center text-secondary">
+      <main className="ui-contenido container-fluid py-5 text-center text-secondary">
         <i className="bi bi-exclamation-circle" style={{ fontSize: "2rem" }} />
         <p className="fw-semibold mt-2 mb-1">No tienes un nivel asignado.</p>
         <p className="small mb-0">Pídele al administrador que te asigne un nivel.</p>
@@ -294,7 +258,7 @@ export default function HorariosEntrenador({ esAdmin: esAdminProp, nivelIdEntren
   }
 
   return (
-    <main className="contenido">
+    <main className="ui-contenido">
       {/* Encabezado */}
       <div className="encabezado-calendario">
         <div className="contenedor-titulos">
@@ -388,5 +352,14 @@ export default function HorariosEntrenador({ esAdmin: esAdminProp, nivelIdEntren
 
       <AvisoToast aviso={aviso} />
     </main>
+  );
+}
+
+// Clase raíz del módulo: todos sus estilos viven bajo .ent-horarios
+export default function HorariosEntrenador(props) {
+  return (
+    <div className="ent-horarios">
+      <HorariosEntrenadorContenido {...props} />
+    </div>
   );
 }

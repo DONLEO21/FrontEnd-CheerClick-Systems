@@ -16,10 +16,12 @@ export default function VistaSolicitudes({ usuarios, cargando, tab, onTab, busqu
   return (
     <div>
       <div className="tabs-barra">
-        <div className="tabs-grupo">
+        <div className="ui-tabs" role="tablist">
           {Object.entries(TABS).map(([clave, texto]) => (
             <button key={clave}
-              className={`tab-btn ${tab === clave ? 'tab-btn--activo' : ''}`}
+              role="tab"
+              aria-selected={tab === clave}
+              className={`ui-tab ${tab === clave ? 'ui-tab--activa' : ''}`}
               onClick={() => onTab(clave)}>
               {texto}
             </button>
@@ -56,15 +58,15 @@ export default function VistaSolicitudes({ usuarios, cargando, tab, onTab, busqu
                 </td>
                 <td><span className="fecha-celda">{fecha(u.created_at)}</span></td>
                 <td className="acciones-celda">
-                  <button className="btn-accion btn-accion--ojo" title="Ver detalles" onClick={() => onVer(u)}>
+                  <button className="ui-accion ui-accion--detalle" title="Ver detalles" onClick={() => onVer(u)}>
                     <Eye size={15} strokeWidth={2} />
                   </button>
                   {u.estado === 'pendiente' && (
                     <>
-                      <button className="btn-accion btn-accion--check" title="Aprobar" onClick={() => onAccion(u, 'aprobar')}>
+                      <button className="ui-accion ui-accion--aprobar" title="Aprobar" onClick={() => onAccion(u, 'aprobar')}>
                         <Check size={15} strokeWidth={2.5} />
                       </button>
-                      <button className="btn-accion btn-accion--x" title="Rechazar" onClick={() => onAccion(u, 'rechazar')}>
+                      <button className="ui-accion ui-accion--rechazar" title="Rechazar" onClick={() => onAccion(u, 'rechazar')}>
                         <X size={15} strokeWidth={2.5} />
                       </button>
                     </>

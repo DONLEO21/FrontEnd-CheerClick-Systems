@@ -1,5 +1,4 @@
 
-import React from "react";
 import { formatearFechaCorta, formatearMoneda } from "./horariosAtletaData";
 
 export default function TarjetaCampeonatoAtleta({ torneo, onVerDetalles, onPagar }) {

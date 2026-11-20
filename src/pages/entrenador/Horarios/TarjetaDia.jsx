@@ -1,5 +1,4 @@
 // src/components/Horarios/TarjetaDia.jsx
-import React from "react";
 import { formatearRangoHora, etiquetaFechaLarga, esHoy, DIAS_ES } from "./calendarioData";
 
 export default function TarjetaDia({

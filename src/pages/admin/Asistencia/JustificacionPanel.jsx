@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import JustificacionCard from "./JustificacionCard";
 import ModalRevisionJustificacion from "./ModalRevisionJustificacion";
 import AvisoToast from "../../../components/Compartidos/AvisoToast";
-import useAviso from "../../../Hooks/useAviso";
+import useAviso from "../../../hooks/useAviso";
 import {
   obtenerJustificaciones,
   actualizarJustificacion,
@@ -22,7 +22,7 @@ export default function JustificacionesPanel({ niveles = [], onCambio }) {
   const [filtroEstado, setFiltroEstado] = useState("pendiente");
   const [filtroNivel, setFiltroNivel] = useState("todos");
   const [accionActiva, setAccionActiva] = useState(null); // { justificacion, tipo: 'aprobar' | 'rechazar' }
-  const [aviso, mostrarAviso] = useAviso();
+  const { aviso, mostrarAviso } = useAviso();
 
   const modalRef = useRef(null);
   const nivelIds = niveles.map((n) => String(n.id));
@@ -75,6 +75,7 @@ export default function JustificacionesPanel({ niveles = [], onCambio }) {
     [justificacionesDelNivel]
   );
 
+  // eslint-disable-next-line no-unused-vars
   const conteoGlobal = useMemo(
     () => contarPorEstado(justificaciones),
     [justificaciones]
@@ -138,12 +139,14 @@ export default function JustificacionesPanel({ niveles = [], onCambio }) {
         </div>
 
         <div className="asist-header__tabs-bloque">
-          <div className="tabla-contenido">
+          <div className="ui-tabs" role="tablist">
             {niveles.map((n) => (
               <button
                 key={n.id}
                 type="button"
-                className={`tab-btn${filtroNivel === String(n.id) ? " tab-btn-activo" : ""}`}
+                role="tab"
+                aria-selected={filtroNivel === String(n.id)}
+                className={`ui-tab${filtroNivel === String(n.id) ? " ui-tab--activa" : ""}`}
                 onClick={() => setFiltroNivel(String(n.id))}
                 title={`Ver solo justificaciones de ${nombreCortoNivel(n.categoria)}`}
               >
@@ -152,10 +155,12 @@ export default function JustificacionesPanel({ niveles = [], onCambio }) {
             ))}
             <button
               type="button"
-              className={`tab-btn tab-btn-justificaciones${filtroNivel === "todos" ? " tab-btn-activo" : ""}`}
+              role="tab"
+              aria-selected={filtroNivel === "todos"}
+              className={`ui-tab${filtroNivel === "todos" ? " ui-tab--activa" : ""}`}
               onClick={() => setFiltroNivel("todos")}
             >
-              Justificaciones {conteos.pendientes > 0 && <span className="tab-badge">{conteos.pendientes}</span>}
+              Justificaciones {conteos.pendientes > 0 && <span className="ui-tab__conteo">{conteos.pendientes}</span>}
             </button>
           </div>
         </div>
@@ -167,35 +172,24 @@ export default function JustificacionesPanel({ niveles = [], onCambio }) {
         )}
 
         <div className="just-filtros">
-          <div className="just-filtros-estado">
-            <button
-              type="button"
-              className={`just-filtro-pill just-filtro-pendiente${filtroEstado === "pendiente" ? " activo" : ""}`}
-              onClick={() => setFiltroEstado("pendiente")}
-            >
-              <span />Pendientes <span className="just-filtro-num">{conteos.pendientes}</span>
-            </button>
-            <button
-              type="button"
-              className={`just-filtro-pill just-filtro-aprobada${filtroEstado === "aprobada" ? " activo" : ""}`}
-              onClick={() => setFiltroEstado("aprobada")}
-            >
-              <span /> Aprobadas <span className="just-filtro-num">{conteos.aprobadas}</span>
-            </button>
-            <button
-              type="button"
-              className={`just-filtro-pill just-filtro-rechazada${filtroEstado === "rechazada" ? " activo" : ""}`}
-              onClick={() => setFiltroEstado("rechazada")}
-            >
-              <span className="just-filtro-dot" /> Rechazadas <span className="just-filtro-num">{conteos.rechazadas}</span>
-            </button>
-            <button
-              type="button"
-              className={`just-filtro-pill${filtroEstado === "todas" ? " activo" : ""}`}
-              onClick={() => setFiltroEstado("todas")}
-            >
-              Todas <span className="just-filtro-num">{justificacionesDelNivel.length}</span>
-            </button>
+          <div className="ui-tabs" role="tablist">
+            {[
+              ["pendiente", "Pendientes", conteos.pendientes],
+              ["aprobada", "Aprobadas", conteos.aprobadas],
+              ["rechazada", "Rechazadas", conteos.rechazadas],
+              ["todas", "Todas", justificacionesDelNivel.length],
+            ].map(([valor, texto, num]) => (
+              <button
+                key={valor}
+                type="button"
+                role="tab"
+                aria-selected={filtroEstado === valor}
+                className={`ui-tab${filtroEstado === valor ? " ui-tab--activa" : ""}`}
+                onClick={() => setFiltroEstado(valor)}
+              >
+                {texto} <span className="ui-tab__conteo">{num}</span>
+              </button>
+            ))}
           </div>
         </div>
 

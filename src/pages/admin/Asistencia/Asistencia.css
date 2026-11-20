@@ -1,14 +1,56 @@
-:root {
-    --verde: #1eaf52;
-    --verde-light: #e6f9ee;
-    --rojo: #d71920;
-    --rojo-hover: #b8141a;
-    --rojo-light: #fdeaea;
-    --blanco: #ffffff;
+/* ── Estilos de otros módulos que ya afectaban a este (copiados para conservar el aspecto; ver README) ── */
 
-}
-
-.asist-header {
+:where(.adm-asistencia) .tab-btn {
+    padding: 7px 18px;
+    border-radius: 6px;
+    font-size: var(--texto-sm);
+    font-weight: 600;
+    color: var(--texto-muted);
+    transition: var(--transicion);}
+:where(.adm-asistencia) .tab-btn:hover { color: var(--texto-dark);}
+:where(.adm-asistencia) .btn-accion {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radio-sm);
+    transition: var(--transicion);}
+:where(.adm-asistencia) .tab-btn {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 0 0 10px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--gris-suave);
+  cursor: pointer;}
+:where(.adm-asistencia) .btn-cerrar-circular {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1.5px solid var(--carbon-oscuro);
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--carbon-oscuro);
+  flex-shrink: 0;}
+:where(.adm-asistencia) .btn-cerrar-circular:hover {
+  background: var(--gris-fondo-suave);}
+:where(.adm-asistencia) .tab-btn {
+    padding: 10px 22px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    color: #858585;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;}:where(.adm-asistencia) .asist-header {
     display: flex;
     align-items: flex-start;
     flex-direction: column;
@@ -21,26 +63,25 @@
     animation: entrada-abajo 0.7s ease 0.05s forwards;
 }
 
-.asist-header h1 {
-    font-family: 'Varela Round', sans-serif;
+:where(.adm-asistencia) .asist-header h1 {
     font-size: 1.75rem;
     color: #1a202c;
     font-weight: 700;
     margin: 0 0 4px;
 }
 
-.asist-header p {
+:where(.adm-asistencia) .asist-header p {
     color: var(--color-texto-suave);
     font-size: 0.95rem;
     margin: 0 0 20px;
 }
 
-.asist-header__tabs-bloque {
+:where(.adm-asistencia) .asist-header__tabs-bloque {
     width: 100%;
     border-bottom: 1.5px solid #e5e7eb;
 }
 
-.tabla-contenido {
+:where(.adm-asistencia) .tabla-contenido {
     display: flex;
     align-items: center;
     flex-wrap: nowrap;
@@ -49,12 +90,11 @@
     padding-bottom: 2px;
 }
 
-.tab-btn {
+:where(.adm-asistencia) .tab-btn {
     display: inline-block;
     padding: 10px 20px;
     font-size: 0.9rem;
     font-weight: 600;
-    font-family: 'Arimo', sans-serif;
     color: #666;
     cursor: pointer;
     border: none;
@@ -65,23 +105,23 @@
     white-space: nowrap;
 }
 
-.tab-btn:hover {
+:where(.adm-asistencia) .tab-btn:hover {
     color: var(--color-primario);
 }
 
-.tab-btn-activo {
+:where(.adm-asistencia) .tab-btn-activo {
     color: var(--color-primario);
     border-bottom-color: var(--color-primario);
 }
 
-.panel-categoria {
+:where(.adm-asistencia) .panel-categoria {
     background: white;
     border: 1.5px solid #e5e7eb;
     border-top: none;
     border-radius: 0 0 10px 10px;
 }
 
-.badge-categoria {
+:where(.adm-asistencia) .badge-categoria {
     background-color: #fdeaea;
     color: #d71920;
     font-weight: 600;
@@ -90,13 +130,13 @@
     border-radius: 8px;
 }
 
-.selector-mes {
+:where(.adm-asistencia) .selector-mes {
     display: flex;
     align-items: center;
     gap: 16px;
 }
 
-.btn-mes-nav {
+:where(.adm-asistencia) .btn-mes-nav {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -113,15 +153,15 @@
     transition: background-color 0.2s;
 }
 
-.btn-mes-nav:hover {
+:where(.adm-asistencia) .btn-mes-nav:hover {
     background-color: #f5f5f5;
 }
 
-.asist-controles {
+:where(.adm-asistencia) .asist-controles {
     padding: 16px 20px;
 }
 
-.asist-fecha {
+:where(.adm-asistencia) .asist-fecha {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -134,7 +174,7 @@
     font-weight: 500;
 }
 
-.btn-consultar {
+:where(.adm-asistencia) .btn-consultar {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -148,7 +188,7 @@
     cursor: pointer;
 }
 
-.asist-contador {
+:where(.adm-asistencia) .asist-contador {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -161,50 +201,50 @@
     min-width: 130px;
 }
 
-.asist-contador-sm {
+:where(.adm-asistencia) .asist-contador-sm {
     min-width: unset;
     padding: 6px 12px;
 }
 
-.asist-contador svg {
+:where(.adm-asistencia) .asist-contador svg {
     padding: 3px;
     border-radius: 50%;
     color: white;
     flex-shrink: 0;
 }
 
-.contador-presente svg {
+:where(.adm-asistencia) .contador-presente svg {
     background-color: #1eaf52;
 }
 
-.contador-inpuntual svg {
+:where(.adm-asistencia) .contador-inpuntual svg {
     background-color: #f59e0b;
 }
 
-.contador-falta svg {
+:where(.adm-asistencia) .contador-falta svg {
     background-color: #cc0000;
     border-radius: 6px;
 }
 
-.asist-contador .num {
+:where(.adm-asistencia) .asist-contador .num {
     font-size: 1.1rem;
     font-weight: 700;
     color: var(--color-texto);
 }
 
-.asist-contador .label {
+:where(.adm-asistencia) .asist-contador .label {
     color: #555;
     font-weight: 500;
 }
 
-.asist-tabla-wrapper {
+:where(.adm-asistencia) .asist-tabla-wrapper {
     padding: 0 20px;
     overflow-x: auto;
     opacity: 0;
     animation: solo-fade 0.9s ease 0.45s forwards;
 }
 
-.asist-tabla {
+:where(.adm-asistencia) .asist-tabla {
     width: 100%;
     border-collapse: collapse;
     background: white;
@@ -212,11 +252,11 @@
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 }
 
-.asist-tabla thead tr {
+:where(.adm-asistencia) .asist-tabla thead tr {
     background-color: #e5e7eb;
 }
 
-.asist-tabla th {
+:where(.adm-asistencia) .asist-tabla th {
     padding: 12px 20px;
     text-align: left;
     font-size: 0.9rem;
@@ -224,26 +264,26 @@
     color: var(--color-texto);
 }
 
-.asist-tabla td {
+:where(.adm-asistencia) .asist-tabla td {
     padding: 14px 20px;
     font-size: 0.95rem;
     color: var(--color-texto);
     border-bottom: 1px solid #f0f0f0;
 }
 
-.asist-tabla tbody tr:last-child td {
+:where(.adm-asistencia) .asist-tabla tbody tr:last-child td {
     border-bottom: none;
 }
 
-.asist-tabla tbody tr {
+:where(.adm-asistencia) .asist-tabla tbody tr {
     transition: background 0.2s ease;
 }
 
-.asist-tabla tbody tr:hover {
+:where(.adm-asistencia) .asist-tabla tbody tr:hover {
     background: #f9fafb;
 }
 
-.estado-badge {
+:where(.adm-asistencia) .estado-badge {
     display: inline-block;
     padding: 5px 16px;
     border-radius: 6px;
@@ -252,23 +292,23 @@
     color: white;
 }
 
-.estado-presente {
+:where(.adm-asistencia) .estado-presente {
     background-color: #1eaf52;
 }
 
-.estado-falta {
+:where(.adm-asistencia) .estado-falta {
     background-color: #cc0000;
 }
 
-.estado-inpuntual {
+:where(.adm-asistencia) .estado-inpuntual {
     background-color: #f59e0b;
 }
 
-.estado-justificado {
+:where(.adm-asistencia) .estado-justificado {
     background-color: #2563eb;
 }
 
-.btn-accion {
+:where(.adm-asistencia) .btn-accion {
     width: 36px;
     height: 36px;
     border: none;
@@ -281,48 +321,48 @@
     color: white;
 }
 
-.btn-accion:hover {
+:where(.adm-asistencia) .btn-accion:hover {
     opacity: 0.85;
 }
 
-.btn-accion:disabled {
+:where(.adm-asistencia) .btn-accion:disabled {
     opacity: 0.4;
     cursor: not-allowed;
 }
 
-.btn-presente {
+:where(.adm-asistencia) .btn-presente {
     background: var(--verde-light);
     color: var(--verde);
     border: 1.5px solid #bbf7d0;
 }
 
-.btn-presente:hover {
+:where(.adm-asistencia) .btn-presente:hover {
     background: var(--verde);
     color: var(--blanco);
     border-color: var(--verde);
 
 }
 
-.btn-falta {
+:where(.adm-asistencia) .btn-falta {
     background: var(--rojo-light);
     color: var(--rojo);
     border: 1.5px solid #fecaca;
 
 }
 
-.btn-falta:hover {
+:where(.adm-asistencia) .btn-falta:hover {
     background: var(--rojo);
     color: var(--blanco);
     border-color: var(--rojo);
 
 }
 
-.btn-mas {
+:where(.adm-asistencia) .btn-mas {
     background-color: #e5e7eb;
     color: #444;
 }
 
-.asist-footer-bar {
+:where(.adm-asistencia) .asist-footer-bar {
     display: flex;
     align-items: center;
     gap: 16px;
@@ -333,7 +373,7 @@
     animation: entrada-arriba 0.8s ease 0.60s forwards;
 }
 
-.btn-guardar {
+:where(.adm-asistencia) .btn-guardar {
     display: inline-flex;
     align-items: center;
     gap: 8px;
@@ -348,19 +388,19 @@
     transition: background-color 0.2s;
 }
 
-.btn-guardar:hover {
+:where(.adm-asistencia) .btn-guardar:hover {
     background-color: #1d4ed8;
 }
 
-.btn-editar-guardado {
+:where(.adm-asistencia) .btn-editar-guardado {
     background: #f5d20b;
 }
 
-.btn-editar-guardado:hover {
+:where(.adm-asistencia) .btn-editar-guardado:hover {
     background: #f59e0b;
 }
 
-.asist-paginacion-footer {
+:where(.adm-asistencia) .asist-paginacion-footer {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -369,13 +409,13 @@
     color: #777;
 }
 
-.paginacion-btns {
+:where(.adm-asistencia) .paginacion-btns {
     display: flex;
     gap: 6px;
     align-items: center;
 }
 
-.btn-pag {
+:where(.adm-asistencia) .btn-pag {
     padding: 7px 14px;
     border: 1.5px solid var(--color-borde);
     background: white;
@@ -386,17 +426,18 @@
     transition: all 0.2s;
 }
 
-.btn-pag:disabled {
+:where(.adm-asistencia) .btn-pag:disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
 
-.btn-pag:hover:not(:disabled) {
+/* La página activa (.btn-pag-num-activo) no cambia de color: antes el texto rojo se perdía sobre su fondo rojo */
+:where(.adm-asistencia) .btn-pag:hover:not(:disabled, .btn-pag-num-activo) {
     border-color: var(--color-primario);
     color: var(--color-primario);
 }
 
-.btn-pag-num-activo {
+:where(.adm-asistencia) .btn-pag-num-activo {
     padding: 7px 14px;
     border: 1.5px solid var(--color-borde);
     background: var(--color-primario);
@@ -407,7 +448,7 @@
     text-align: center;
 }
 
-.asist-tip {
+:where(.adm-asistencia) .asist-tip {
     margin: 0 20px 20px;
     background: #eff6ff;
     border: 1px solid #bfdbfe;
@@ -422,18 +463,18 @@
     animation: entrada-arriba 0.7s ease 0.70s forwards;
 }
 
-.asist-tip-ok {
+:where(.adm-asistencia) .asist-tip-ok {
     background: #ecfdf5;
     border-color: #1eaf52;
     color: #166534;
 }
 
-.resumen-cards {
+:where(.adm-asistencia) .resumen-cards {
     padding: 0 20px 16px;
     margin-top: 16px;
 }
 
-.rcard {
+:where(.adm-asistencia) .rcard {
     background: white;
     border-radius: 10px;
     padding: 14px 16px;
@@ -450,12 +491,12 @@
     animation: entrada-escala 0.7s ease 0.15s forwards;
 }
 
-.rcard:hover {
+:where(.adm-asistencia) .rcard:hover {
     transform: translateY(-4px);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.10);
 }
 
-.rcard-icon {
+:where(.adm-asistencia) .rcard-icon {
     width: 42px;
     height: 42px;
     border-radius: 10px;
@@ -467,48 +508,48 @@
     color: #555;
 }
 
-.rcard-icon-pct {
+:where(.adm-asistencia) .rcard-icon-pct {
     background: #e0f2fe;
 }
 
-.rcard-icon-presente {
+:where(.adm-asistencia) .rcard-icon-presente {
     background: #dcfce7;
 }
 
-.rcard-icon-falta {
+:where(.adm-asistencia) .rcard-icon-falta {
     background: #fee2e2;
 }
 
-.rcard-info {
+:where(.adm-asistencia) .rcard-info {
     gap: 2px;
 }
 
-.rcard-num {
+:where(.adm-asistencia) .rcard-num {
     font-size: 1.5rem;
     font-weight: 700;
     color: var(--color-texto);
     line-height: 1;
 }
 
-.rcard-num-pct {
+:where(.adm-asistencia) .rcard-num-pct {
     color: #0284c7;
 }
 
-.rcard-num-presente {
+:where(.adm-asistencia) .rcard-num-presente {
     color: #1eaf52;
 }
 
-.rcard-num-falta {
+:where(.adm-asistencia) .rcard-num-falta {
     color: #cc0000;
 }
 
-.rcard-label {
+:where(.adm-asistencia) .rcard-label {
     font-size: 0.78rem;
     color: #777;
     font-weight: 500;
 }
 
-.rcard-bar-wrap {
+:where(.adm-asistencia) .rcard-bar-wrap {
     width: 100%;
     height: 4px;
     background: #f0f0f0;
@@ -519,26 +560,26 @@
     bottom: 0;
 }
 
-.rcard-bar {
+:where(.adm-asistencia) .rcard-bar {
     height: 4px;
     border-radius: 4px;
     transition: width 0.6s ease;
 }
 
-.rcard-bar-pct {
+:where(.adm-asistencia) .rcard-bar-pct {
     background: #0284c7;
 }
 
-.rcard-bar-presente {
+:where(.adm-asistencia) .rcard-bar-presente {
     background: #1eaf52;
 }
 
-.rcard-bar-falta {
+:where(.adm-asistencia) .rcard-bar-falta {
     background: #cc0000;
 }
 
 /*  MODAL: Asistencia registrada */
-#modal-guardado {
+.adm-asistencia-modal-guardado {
     border: none;
     border-radius: 16px;
     padding: 0;
@@ -553,20 +594,20 @@
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
 }
 
-#modal-guardado::backdrop {
+.adm-asistencia-modal-guardado::backdrop {
     background: rgba(0, 0, 0, 0.4);
     backdrop-filter: blur(2px);
 }
 
-#modal-guardado[open] {
+.adm-asistencia-modal-guardado[open] {
     animation: modal-in 0.3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
-#modal-guardado[open]::backdrop {
+.adm-asistencia-modal-guardado[open]::backdrop {
     animation: modal-overlay-in 0.22s ease forwards;
 }
 
-.modal-exito {
+:where(.adm-asistencia) .modal-exito {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -575,7 +616,7 @@
     gap: 16px;
 }
 
-.modal-exito-icono {
+:where(.adm-asistencia) .modal-exito-icono {
     width: 72px;
     height: 72px;
     background-color: #4ADE80;
@@ -586,21 +627,21 @@
     animation: exito-icono-in 0.45s cubic-bezier(0.34, 1.28, 0.64, 1) 0.10s both;
 }
 
-.modal-exito h2 {
+:where(.adm-asistencia) .modal-exito h2 {
     font-size: 1.2rem;
     font-weight: 700;
     color: var(--color-texto);
     margin: 0;
 }
 
-.modal-exito p {
+:where(.adm-asistencia) .modal-exito p {
     font-size: 0.9rem;
     color: #555;
     margin: 0;
     line-height: 1.5;
 }
 
-.btn-aceptar {
+:where(.adm-asistencia) .btn-aceptar {
     background-color: #1eaf52;
     color: white;
     border: none;
@@ -612,11 +653,11 @@
     transition: background-color 0.2s;
 }
 
-.btn-aceptar:hover {
+:where(.adm-asistencia) .btn-aceptar:hover {
     background-color: #17923f;
 }
 
-#modal-consultar {
+.adm-asistencia-modal-consultar {
     border: none;
     border-radius: 16px;
     padding: 0;
@@ -631,24 +672,24 @@
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
 }
 
-#modal-consultar::backdrop {
+.adm-asistencia-modal-consultar::backdrop {
     background: rgba(0, 0, 0, 0.4);
     backdrop-filter: blur(2px);
 }
 
-#modal-consultar[open] {
+.adm-asistencia-modal-consultar[open] {
     animation: modal-in 0.3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
-#modal-consultar[open]::backdrop {
+.adm-asistencia-modal-consultar[open]::backdrop {
     animation: modal-overlay-in 0.22s ease forwards;
 }
 
-.modal-consultar-contenido {
+:where(.adm-asistencia) .modal-consultar-contenido {
     padding: 20px 24px;
 }
 
-.modal-consultar-header h2 {
+:where(.adm-asistencia) .modal-consultar-header h2 {
     font-size: 1.1rem;
     font-weight: 700;
     color: var(--color-texto);
@@ -656,15 +697,15 @@
     margin: 20px;
 }
 
-.consultar-mes-selector {
+:where(.adm-asistencia) .consultar-mes-selector {
     margin-bottom: 14px;
 }
 
-.consultar-tabla-wrapper {
+:where(.adm-asistencia) .consultar-tabla-wrapper {
     overflow-x: auto;
 }
 
-.consultar-tabla-mes {
+:where(.adm-asistencia) .consultar-tabla-mes {
     width: 100%;
     border-collapse: collapse;
     background: white;
@@ -674,11 +715,11 @@
     font-size: 0.82rem;
 }
 
-.consultar-tabla-mes thead tr {
+:where(.adm-asistencia) .consultar-tabla-mes thead tr {
     background-color: #e5e7eb;
 }
 
-.consultar-tabla-mes th {
+:where(.adm-asistencia) .consultar-tabla-mes th {
     padding: 8px 4px;
     text-align: center;
     font-size: 0.8rem;
@@ -689,14 +730,14 @@
     min-width: 34px;
 }
 
-.consultar-tabla-mes th.col-nombre-mes {
+:where(.adm-asistencia) .consultar-tabla-mes th.col-nombre-mes {
     text-align: left;
     padding-left: 14px;
     min-width: 180px;
     width: auto;
 }
 
-.consultar-tabla-mes td {
+:where(.adm-asistencia) .consultar-tabla-mes td {
     padding: 8px 4px;
     text-align: center;
     color: var(--color-texto);
@@ -706,7 +747,7 @@
     width: 34px;
 }
 
-.consultar-tabla-mes td.col-nombre-mes {
+:where(.adm-asistencia) .consultar-tabla-mes td.col-nombre-mes {
     text-align: left;
     padding-left: 14px;
     font-size: 0.85rem;
@@ -714,20 +755,20 @@
     width: auto;
 }
 
-.consultar-tabla-mes tbody tr:last-child td {
+:where(.adm-asistencia) .consultar-tabla-mes tbody tr:last-child td {
     border-bottom: none;
 }
 
-.consultar-tabla-mes th.dia-hoy,
-.consultar-tabla-mes td.dia-hoy {
+:where(.adm-asistencia) .consultar-tabla-mes th.dia-hoy,
+:where(.adm-asistencia) .consultar-tabla-mes td.dia-hoy {
     background-color: #f0f0f0;
     border-left: 2px solid #555;
     border-right: 2px solid #555;
 }
 
-.ico-presente,
-.ico-falta,
-.ico-inpuntual {
+:where(.adm-asistencia) .ico-presente,
+:where(.adm-asistencia) .ico-falta,
+:where(.adm-asistencia) .ico-inpuntual {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -738,20 +779,20 @@
     flex-shrink: 0;
 }
 
-.ico-presente {
+:where(.adm-asistencia) .ico-presente {
     background-color: #1eaf52;
 }
 
-.ico-falta {
+:where(.adm-asistencia) .ico-falta {
     background-color: #cc0000;
 }
 
-.ico-inpuntual {
+:where(.adm-asistencia) .ico-inpuntual {
     background-color: #f59e0b;
     border-radius: 50%;
 }
 
-.calendario-leyenda {
+:where(.adm-asistencia) .calendario-leyenda {
     display: flex;
     gap: 16px;
     font-size: 0.82rem;
@@ -760,33 +801,33 @@
     margin-top: 14px;
 }
 
-.leyenda-item {
+:where(.adm-asistencia) .leyenda-item {
     display: flex;
     align-items: center;
     gap: 6px;
 }
 
-.leyenda-circulo {
+:where(.adm-asistencia) .leyenda-circulo {
     width: 14px;
     height: 14px;
     border-radius: 50%;
     display: inline-block;
 }
 
-.leyenda-presente {
+:where(.adm-asistencia) .leyenda-presente {
     background: #1eaf52;
 }
 
-.leyenda-inpuntual {
+:where(.adm-asistencia) .leyenda-inpuntual {
     background: #f59e0b;
 }
 
-.leyenda-falta {
+:where(.adm-asistencia) .leyenda-falta {
     background: #cc0000;
     border-radius: 50%;
 }
 
-.leyenda-hoy {
+:where(.adm-asistencia) .leyenda-hoy {
     background: #e5e7eb;
     border: 2px solid #222;
     border-radius: 4px;
@@ -879,25 +920,25 @@
 
 @media (prefers-reduced-motion: reduce) {
 
-    .asist-header,
-    .rcard,
-    .asist-tabla-wrapper,
-    .asist-footer-bar,
-    .asist-tip,
-    #modal-guardado[open],
-    #modal-consultar[open],
-    .modal-exito-icono {
+    :where(.adm-asistencia) .asist-header,
+    :where(.adm-asistencia) .rcard,
+    :where(.adm-asistencia) .asist-tabla-wrapper,
+    :where(.adm-asistencia) .asist-footer-bar,
+    :where(.adm-asistencia) .asist-tip,
+    .adm-asistencia-modal-guardado[open],
+    .adm-asistencia-modal-consultar[open],
+    :where(.adm-asistencia) .modal-exito-icono {
         animation: none;
         opacity: 1;
     }
 
-    .rcard,
-    .asist-tabla tbody tr {
+    :where(.adm-asistencia) .rcard,
+    :where(.adm-asistencia) .asist-tabla tbody tr {
         transition: none;
     }
 }
 
-.btn-cerrar-circular {
+:where(.adm-asistencia) .btn-cerrar-circular {
     width: 32px;
     height: 32px;
     border-radius: 50%;
@@ -911,12 +952,12 @@
     transition: background-color 0.2s, border-color 0.2s;
 }
 
-.btn-cerrar-circular:hover {
+:where(.adm-asistencia) .btn-cerrar-circular:hover {
     background: #f5f5f5;
     border-color: #bbb;
 }
 
-.resumen-mes-box {
+:where(.adm-asistencia) .resumen-mes-box {
     background: #f7f6f4;
     border-radius: 14px;
     padding: 18px 22px;
@@ -928,7 +969,7 @@
     margin-bottom: 16px;
 }
 
-.resumen-mes-pct {
+:where(.adm-asistencia) .resumen-mes-pct {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -936,20 +977,20 @@
     grid-row: 1 / span 2;
 }
 
-.resumen-mes-num {
+:where(.adm-asistencia) .resumen-mes-num {
     font-size: 2rem;
     font-weight: 800;
     color: var(--color-texto);
     line-height: 1;
 }
 
-.resumen-mes-label {
+:where(.adm-asistencia) .resumen-mes-label {
     font-size: 0.8rem;
     color: #888;
     margin-top: 4px;
 }
 
-.resumen-mes-barra {
+:where(.adm-asistencia) .resumen-mes-barra {
     align-self: center;
     height: 10px;
     background: #e5e3df;
@@ -960,14 +1001,14 @@
     align-self: end;
 }
 
-.resumen-mes-barra-fill {
+:where(.adm-asistencia) .resumen-mes-barra-fill {
     height: 100%;
     background: #1eaf52;
     border-radius: 999px;
     transition: width 0.3s ease;
 }
 
-.resumen-mes-leyenda {
+:where(.adm-asistencia) .resumen-mes-leyenda {
     grid-column: 1 / -1;
     display: flex;
     gap: 18px;
@@ -979,11 +1020,11 @@
     align-self: start;
 }
 
-.resumen-mes-leyenda .leyenda-circulo {
+:where(.adm-asistencia) .resumen-mes-leyenda .leyenda-circulo {
     margin-right: 4px;
 }
 
-.buscar-atleta {
+:where(.adm-asistencia) .buscar-atleta {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -994,7 +1035,7 @@
     min-width: 220px;
 }
 
-.buscar-atleta input {
+:where(.adm-asistencia) .buscar-atleta input {
     border: none;
     outline: none;
     font-size: 0.85rem;
@@ -1003,7 +1044,7 @@
     color: var(--color-texto);
 }
 
-.avatar-iniciales {
+:where(.adm-asistencia) .avatar-iniciales {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -1018,20 +1059,20 @@
     vertical-align: middle;
 }
 
-.calendario-leyenda {
+:where(.adm-asistencia) .calendario-leyenda {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
     gap: 16px;
 }
 
-.leyenda-icono-check,
-.leyenda-icono-reloj,
-.leyenda-icono-x {
+:where(.adm-asistencia) .leyenda-icono-check,
+:where(.adm-asistencia) .leyenda-icono-reloj,
+:where(.adm-asistencia) .leyenda-icono-x {
     margin-right: 4px;
 }
 
-.leyenda-dia-hoy-num {
+:where(.adm-asistencia) .leyenda-dia-hoy-num {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -1045,7 +1086,7 @@
     margin-right: 4px;
 }
 
-.btn-exportar {
+:where(.adm-asistencia) .btn-exportar {
     display: inline-flex;
     align-items: center;
     gap: 6px;
@@ -1059,23 +1100,23 @@
     cursor: pointer;
 }
 
-.btn-exportar:hover {
+:where(.adm-asistencia) .btn-exportar:hover {
     background: #000;
 }
 
-.badge-categoria {
+:where(.adm-asistencia) .badge-categoria {
     text-transform: uppercase;
 }
 
 /* ===== Switch: Tomar asistencia / Justificaciones ===== */
-.vista-switch {
+:where(.adm-asistencia) .vista-switch {
     display: flex;
     gap: 10px;
     margin-bottom: 16px;
     flex-wrap: wrap;
 }
 
-.vista-btn {
+:where(.adm-asistencia) .vista-btn {
     display: inline-flex;
     align-items: center;
     gap: 8px;
@@ -1091,19 +1132,19 @@
     position: relative;
 }
 
-.vista-btn:hover {
+:where(.adm-asistencia) .vista-btn:hover {
     border-color: var(--color-primario);
     color: var(--color-primario);
 }
 
-.vista-btn-activo,
-.vista-btn-activo:hover {
+:where(.adm-asistencia) .vista-btn-activo,
+:where(.adm-asistencia) .vista-btn-activo:hover {
     background: var(--color-primario);
     border-color: var(--color-primario);
     color: white;
 }
 
-.vista-dot {
+:where(.adm-asistencia) .vista-dot {
     width: 9px;
     height: 9px;
     border-radius: 50%;
@@ -1114,13 +1155,13 @@
 }
 
 /* ===== Tab extra "Justificaciones" dentro del header de niveles ===== */
-.tab-btn-justificaciones {
+:where(.adm-asistencia) .tab-btn-justificaciones {
     display: inline-flex;
     align-items: center;
     gap: 6px;
 }
 
-.tab-badge {
+:where(.adm-asistencia) .tab-badge {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -1135,20 +1176,20 @@
 }
 
 /* ===== Filtros de justificaciones ===== */
-.just-filtros {
+:where(.adm-asistencia) .just-filtros {
     padding: 16px 20px 4px;
     display: flex;
     flex-direction: column;
     gap: 12px;
 }
 
-.just-filtros-estado {
+:where(.adm-asistencia) .just-filtros-estado {
     display: flex;
     gap: 10px;
     flex-wrap: wrap;
 }
 
-.just-filtro-pill {
+:where(.adm-asistencia) .just-filtro-pill {
     display: inline-flex;
     align-items: center;
     gap: 6px;
@@ -1163,7 +1204,7 @@
     transition: all 0.2s;
 }
 
-.just-filtro-num {
+:where(.adm-asistencia) .just-filtro-num {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -1177,58 +1218,58 @@
     font-weight: 700;
 }
 
-.just-filtro-dot {
+:where(.adm-asistencia) .just-filtro-dot {
     width: 8px;
     height: 8px;
     border-radius: 50%;
     display: inline-block;
 }
 
-.just-filtro-dot-verde {
+:where(.adm-asistencia) .just-filtro-dot-verde {
     background: #1eaf52;
 }
 
-.just-filtro-dot-gris {
+:where(.adm-asistencia) .just-filtro-dot-gris {
     background: #9ca3af;
 }
 
-.just-filtro-pendiente.activo {
+:where(.adm-asistencia) .just-filtro-pendiente.activo {
     background: #fef2f2;
     border-color: #f87171;
     color: #991b1b;
 }
 
-.just-filtro-pendiente.activo .just-filtro-num {
+:where(.adm-asistencia) .just-filtro-pendiente.activo .just-filtro-num {
     background: #e5e7eb;
     color: rgb(9, 10, 10);
 }
 
-.just-filtro-aprobada.activo {
+:where(.adm-asistencia) .just-filtro-aprobada.activo {
     background: #ecfdf5;
     border-color: #1eaf52;
     color: #166534;
 }
 
-.just-filtro-rechazada.activo {
+:where(.adm-asistencia) .just-filtro-rechazada.activo {
     background: #f3f4f6;
     border-color: #9ca3af;
     color: #374151;
 }
 
-.just-filtro-pill.activo:not(.just-filtro-pendiente):not(.just-filtro-aprobada):not(.just-filtro-rechazada) {
+:where(.adm-asistencia) .just-filtro-pill.activo:not(.just-filtro-pendiente):not(.just-filtro-aprobada):not(.just-filtro-rechazada) {
     background: #e0f2fe;
     border-color: #38bdf8; 
     color: #0369a1;
 }
 
-.just-filtros-nivel {
+:where(.adm-asistencia) .just-filtros-nivel {
     display: flex;
     align-items: center;
     gap: 8px;
     flex-wrap: wrap;
 }
 
-.just-filtros-nivel-label {
+:where(.adm-asistencia) .just-filtros-nivel-label {
     display: inline-flex;
     align-items: center;
     gap: 6px;
@@ -1237,7 +1278,7 @@
     font-weight: 600;
 }
 
-.just-chip {
+:where(.adm-asistencia) .just-chip {
     padding: 6px 14px;
     border-radius: 999px;
     border: 1.5px solid var(--color-borde);
@@ -1249,30 +1290,30 @@
     transition: all 0.2s;
 }
 
-.just-chip:hover {
+:where(.adm-asistencia) .just-chip:hover {
     border-color: var(--color-primario);
     color: var(--color-primario);
 }
 
-.just-chip-activo,
-.just-chip-activo:hover {
+:where(.adm-asistencia) .just-chip-activo,
+:where(.adm-asistencia) .just-chip-activo:hover {
     background: #111;
     border-color: #111;
     color: white;
 }
 
 /* ===== Grid de tarjetas de justificación ===== */
-.just-grid-wrapper {
+:where(.adm-asistencia) .just-grid-wrapper {
     padding: 8px 20px 20px;
 }
 
-.just-grid {
+:where(.adm-asistencia) .just-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 16px;
 }
 
-.just-card {
+:where(.adm-asistencia) .just-card {
     background: white;
     border: 1.5px solid var(--color-borde);
     border-left: 4px solid var(--color-borde);
@@ -1283,25 +1324,25 @@
     gap: 10px;
 }
 
-.just-card-pendiente {
+:where(.adm-asistencia) .just-card-pendiente {
     border-left-color: var(--color-primario);
 }
 
-.just-card-aprobada {
+:where(.adm-asistencia) .just-card-aprobada {
     border-left-color: #1eaf52;
 }
 
-.just-card-rechazada {
+:where(.adm-asistencia) .just-card-rechazada {
     border-left-color: #9ca3af;
 }
 
-.just-card-header {
+:where(.adm-asistencia) .just-card-header {
     display: flex;
     align-items: flex-start;
     gap: 10px;
 }
 
-.just-avatar {
+:where(.adm-asistencia) .just-avatar {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -1315,7 +1356,7 @@
     flex-shrink: 0;
 }
 
-.just-card-nombre-bloque {
+:where(.adm-asistencia) .just-card-nombre-bloque {
     display: flex;
     flex-direction: column;
     gap: 2px;
@@ -1323,19 +1364,19 @@
     min-width: 0;
 }
 
-.just-card-nombre {
+:where(.adm-asistencia) .just-card-nombre {
     font-weight: 700;
     font-size: 0.92rem;
     color: var(--color-texto);
 }
 
-.just-card-nivel {
+:where(.adm-asistencia) .just-card-nivel {
     font-size: 0.78rem;
     color: var(--color-primario);
     font-weight: 600;
 }
 
-.just-estado-badge {
+:where(.adm-asistencia) .just-estado-badge {
     padding: 4px 12px;
     border-radius: 999px;
     font-size: 0.75rem;
@@ -1343,22 +1384,22 @@
     white-space: nowrap;
 }
 
-.just-estado-pendiente {
+:where(.adm-asistencia) .just-estado-pendiente {
     background: var(--color-primario-claro, #fdeaea);
     color: var(--color-primario);
 }
 
-.just-estado-aprobada {
+:where(.adm-asistencia) .just-estado-aprobada {
     background: #dcfce7;
     color: #166534;
 }
 
-.just-estado-rechazada {
+:where(.adm-asistencia) .just-estado-rechazada {
     background: #f3f4f6;
     color: #4b5563;
 }
 
-.just-card-meta {
+:where(.adm-asistencia) .just-card-meta {
     display: flex;
     gap: 16px;
     flex-wrap: wrap;
@@ -1366,13 +1407,13 @@
     color: #666;
 }
 
-.just-meta-item {
+:where(.adm-asistencia) .just-meta-item {
     display: inline-flex;
     align-items: center;
     gap: 6px;
 }
 
-.just-card-motivo {
+:where(.adm-asistencia) .just-card-motivo {
     font-size: 0.88rem;
     color: var(--color-texto);
     font-style: italic;
@@ -1380,7 +1421,7 @@
     line-height: 1.4;
 }
 
-.just-card-archivo {
+:where(.adm-asistencia) .just-card-archivo {
     display: flex;
     align-items: center;
     gap: 6px;
@@ -1392,12 +1433,12 @@
     color: #555;
 }
 
-.just-card-archivo-vacio {
+:where(.adm-asistencia) .just-card-archivo-vacio {
     color: #999;
     font-style: italic;
 }
 
-.just-card-archivo-nombre {
+:where(.adm-asistencia) .just-card-archivo-nombre {
     font-weight: 600;
     color: var(--color-texto);
     overflow: hidden;
@@ -1405,12 +1446,12 @@
     white-space: nowrap;
 }
 
-.just-card-archivo-tamano {
+:where(.adm-asistencia) .just-card-archivo-tamano {
     flex-shrink: 0;
     color: #888;
 }
 
-.just-card-archivo-link {
+:where(.adm-asistencia) .just-card-archivo-link {
     margin-left: auto;
     color: #2563eb;
     font-weight: 600;
@@ -1418,11 +1459,11 @@
     flex-shrink: 0;
 }
 
-.just-card-archivo-link:hover {
+:where(.adm-asistencia) .just-card-archivo-link:hover {
     text-decoration: underline;
 }
 
-.just-card-observacion {
+:where(.adm-asistencia) .just-card-observacion {
     font-size: 0.8rem;
     color: #555;
     margin: 0;
@@ -1431,14 +1472,14 @@
     padding: 8px 10px;
 }
 
-.just-card-acciones {
+:where(.adm-asistencia) .just-card-acciones {
     display: flex;
     gap: 10px;
     margin-top: 2px;
 }
 
-.btn-just-rechazar,
-.btn-just-aprobar {
+:where(.adm-asistencia) .btn-just-rechazar,
+:where(.adm-asistencia) .btn-just-aprobar {
     flex: 1;
     display: inline-flex;
     align-items: center;
@@ -1452,30 +1493,30 @@
     transition: all 0.2s;
 }
 
-.btn-just-rechazar {
+:where(.adm-asistencia) .btn-just-rechazar {
     background: white;
     border: 1.5px solid var(--color-borde);
     color: #555;
 }
 
-.btn-just-rechazar:hover {
+:where(.adm-asistencia) .btn-just-rechazar:hover {
     border-color: var(--rojo);
     color: var(--rojo);
     background: var(--rojo-light);
 }
 
-.btn-just-aprobar {
+:where(.adm-asistencia) .btn-just-aprobar {
     background: var(--verde);
     border: 1.5px solid var(--verde);
     color: white;
 }
 
-.btn-just-aprobar:hover {
+:where(.adm-asistencia) .btn-just-aprobar:hover {
     background: #17923f;
 }
 
 /* ===== Modal de revisión (aprobar / rechazar) ===== */
-#modal-revision-justificacion {
+.adm-asistencia-modal-revision-justificacion {
     border: none;
     border-radius: 16px;
     padding: 0;
@@ -1490,20 +1531,20 @@
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
 }
 
-#modal-revision-justificacion::backdrop {
+.adm-asistencia-modal-revision-justificacion::backdrop {
     background: rgba(0, 0, 0, 0.4);
     backdrop-filter: blur(2px);
 }
 
-#modal-revision-justificacion[open] {
+.adm-asistencia-modal-revision-justificacion[open] {
     animation: modal-in 0.3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
-#modal-revision-justificacion[open]::backdrop {
+.adm-asistencia-modal-revision-justificacion[open]::backdrop {
     animation: modal-overlay-in 0.22s ease forwards;
 }
 
-.modal-revision {
+:where(.adm-asistencia) .modal-revision {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -1512,7 +1553,7 @@
     gap: 6px;
 }
 
-.modal-revision-icono {
+:where(.adm-asistencia) .modal-revision-icono {
     width: 60px;
     height: 60px;
     border-radius: 50%;
@@ -1523,34 +1564,34 @@
     animation: exito-icono-in 0.45s cubic-bezier(0.34, 1.28, 0.64, 1) 0.10s both;
 }
 
-.modal-revision-icono-ok {
+:where(.adm-asistencia) .modal-revision-icono-ok {
     background-color: #4ADE80; 
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.modal-revision-icono-no {
+:where(.adm-asistencia) .modal-revision-icono-no {
     background-color:#F87171 ;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.modal-revision h2 {
+:where(.adm-asistencia) .modal-revision h2 {
     font-size: 1.15rem;
     font-weight: 700;
     color: var(--color-texto);
     margin: 0;
 }
 
-.modal-revision-subtitulo {
+:where(.adm-asistencia) .modal-revision-subtitulo {
     font-size: 0.85rem;
     color: #666;
     margin: 0 0 8px;
 }
 
-.modal-revision-atleta {
+:where(.adm-asistencia) .modal-revision-atleta {
     width: 100%;
     display: flex;
     align-items: center;
@@ -1562,12 +1603,12 @@
     margin-bottom: 12px;
 }
 
-.modal-revision-atleta-meta {
+:where(.adm-asistencia) .modal-revision-atleta-meta {
     font-size: 0.78rem;
     color: #777;
 }
 
-.modal-revision-label {
+:where(.adm-asistencia) .modal-revision-label {
     width: 100%;
     text-align: left;
     font-size: 0.85rem;
@@ -1576,12 +1617,12 @@
     margin-bottom: 6px;
 }
 
-.modal-revision-opcional {
+:where(.adm-asistencia) .modal-revision-opcional {
     font-weight: 400;
     color: #999;
 }
 
-.modal-revision-textarea {
+:where(.adm-asistencia) .modal-revision-textarea {
     width: 100%;
     border-radius: 10px;
     border: 1.5px solid var(--color-borde);
@@ -1594,23 +1635,23 @@
     outline: none;
 }
 
-.modal-revision-textarea-ok:focus {
+:where(.adm-asistencia) .modal-revision-textarea-ok:focus {
     border-color: #1eaf52;
 }
 
-.modal-revision-textarea-no:focus {
+:where(.adm-asistencia) .modal-revision-textarea-no:focus {
     border-color: var(--rojo);
 }
 
-.modal-revision-botones {
+:where(.adm-asistencia) .modal-revision-botones {
     width: 100%;
     display: flex;
     gap: 12px;
 }
 
-.btn-modal-cancelar,
-.btn-modal-confirmar-ok,
-.btn-modal-confirmar-no {
+:where(.adm-asistencia) .btn-modal-cancelar,
+:where(.adm-asistencia) .btn-modal-confirmar-ok,
+:where(.adm-asistencia) .btn-modal-confirmar-no {
     flex: 1;
     padding: 10px 0;
     border-radius: 8px;
@@ -1621,45 +1662,45 @@
     border: 1.5px solid var(--color-borde);
 }
 
-.btn-modal-cancelar {
+:where(.adm-asistencia) .btn-modal-cancelar {
     background: white;
     color: var(--color-texto);
 }
 
-.btn-modal-cancelar:hover {
+:where(.adm-asistencia) .btn-modal-cancelar:hover {
     background: #f5f5f5;
 }
 
-.btn-modal-confirmar-ok {
+:where(.adm-asistencia) .btn-modal-confirmar-ok {
     background: #1eaf52;
     border-color: #1eaf52;
     color: white;
 }
 
-.btn-modal-confirmar-ok:hover {
+:where(.adm-asistencia) .btn-modal-confirmar-ok:hover {
     background: #17923f;
 }
 
-.btn-modal-confirmar-no {
+:where(.adm-asistencia) .btn-modal-confirmar-no {
     background: var(--rojo);
     border-color: var(--rojo);
     color: white;
 }
 
-.btn-modal-confirmar-no:hover {
+:where(.adm-asistencia) .btn-modal-confirmar-no:hover {
     background: var(--rojo-hover);
 }
 
-#modal-consultar {
+.adm-asistencia-modal-consultar {
     max-height: 80vh;
 }
 
-.modal-consultar-contenido {
+:where(.adm-asistencia) .modal-consultar-contenido {
     max-height: 80vh;
     overflow-y: auto;
 }
 
-.ico-justificado {
+:where(.adm-asistencia) .ico-justificado {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -1671,20 +1712,20 @@
     flex-shrink: 0;
 }
 
-.leyenda-icono-doc {
+:where(.adm-asistencia) .leyenda-icono-doc {
     display: inline-flex;
     align-items: center;
     margin-right: 4px;
 }
 
-.justificaciones-lista {
+:where(.adm-asistencia) .justificaciones-lista {
     margin-top: 16px;
     padding: 14px 18px;
     background: #f7f6f4;
     border-radius: 12px;
 }
 
-.justificaciones-lista h3 {
+:where(.adm-asistencia) .justificaciones-lista h3 {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -1694,7 +1735,7 @@
     color: var(--color-texto);
 }
 
-.justificaciones-count {
+:where(.adm-asistencia) .justificaciones-count {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -1708,13 +1749,13 @@
     font-weight: 700;
 }
 
-.justificaciones-lista ul {
+:where(.adm-asistencia) .justificaciones-lista ul {
     list-style: none;
     margin: 0;
     padding: 0;
 }
 
-.justificaciones-lista li {
+:where(.adm-asistencia) .justificaciones-lista li {
     display: grid;
     grid-template-columns: auto auto 1fr;
     align-items: center;
@@ -1724,11 +1765,11 @@
     font-size: 0.85rem;
 }
 
-.justificaciones-lista li:first-child {
+:where(.adm-asistencia) .justificaciones-lista li:first-child {
     border-top: none;
 }
 
-.justificacion-fecha {
+:where(.adm-asistencia) .justificacion-fecha {
     background: #e0edff;
     color: #1d4ed8;
     font-size: 0.75rem;
@@ -1738,64 +1779,106 @@
     white-space: nowrap;
 }
 
-.justificacion-atleta {
+:where(.adm-asistencia) .justificacion-atleta {
     font-weight: 600;
     color: var(--color-texto);
 }
 
-.justificacion-motivo {
+:where(.adm-asistencia) .justificacion-motivo {
     color: #666;
     font-style: italic;
 }
 
 @media (max-width: 600px) {
-    .justificaciones-lista li {
+    :where(.adm-asistencia) .justificaciones-lista li {
         grid-template-columns: auto 1fr;
         row-gap: 4px;
     }
 
-    .justificacion-motivo {
+    :where(.adm-asistencia) .justificacion-motivo {
         grid-column: 1 / -1;
     }
 }
 
-.consultar-tabla-mes th .dia-num,
-.consultar-tabla-mes th .dia-letra {
+:where(.adm-asistencia) .consultar-tabla-mes th .dia-num,
+:where(.adm-asistencia) .consultar-tabla-mes th .dia-letra {
     display: block;
     line-height: 1.2;
 }
 
-.consultar-tabla-mes th .dia-letra {
+:where(.adm-asistencia) .consultar-tabla-mes th .dia-letra {
     font-size: 0.7rem;
     font-weight: 500;
     color: #666;
 }
 
-.ico-presente,
-.ico-falta,
-.ico-inpuntual,
-.ico-justificado {
+:where(.adm-asistencia) .ico-presente,
+:where(.adm-asistencia) .ico-falta,
+:where(.adm-asistencia) .ico-inpuntual,
+:where(.adm-asistencia) .ico-justificado {
     width: 26px;
     height: 26px;
     border-radius: 50%;
 }
 
-.ico-presente {
+:where(.adm-asistencia) .ico-presente {
     background-color: #dcfce7;
     color: #1eaf52;
 }
 
-.ico-inpuntual {
+:where(.adm-asistencia) .ico-inpuntual {
     background-color: #fef3c7;
     color: #d97706;
 }
 
-.ico-falta {
+:where(.adm-asistencia) .ico-falta {
     background-color: #fee2e2;
     color: #cc0000;
 }
 
-.ico-justificado {
+:where(.adm-asistencia) .ico-justificado {
     background-color: #dbeafe;
     color: #2563eb;
 }
+
+/* ── Estilos de otros módulos que ya afectaban a este (copiados para conservar el aspecto; ver README) ── */
+
+:where(.adm-asistencia) .tabla-contenido {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 28px;
+    border-bottom: 2px solid var(--gris-borde);}
+:where(.adm-asistencia) .tab-btn {
+    position: relative;
+    padding: 11px 22px 13px;
+    background: transparent;
+    border: none;
+    color: var(--gris-texto);
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: color var(--trans);
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;}
+:where(.adm-asistencia) .tab-btn:hover {
+    color: var(--carbon);}
+
+/* ── Modal "Consultar asistencia": columnas fijas, día de hoy más sutil, exportar ── */
+:where(.adm-asistencia) .consultar-tabla-mes th.dia-hoy,
+:where(.adm-asistencia) .consultar-tabla-mes td.dia-hoy {
+    border-left: 1px solid #d6d6d6;
+    border-right: 1px solid #d6d6d6;
+    background-color: #fdeeee;
+}
+:where(.adm-asistencia) .consultar-tabla-mes th.col-nombre-mes,
+:where(.adm-asistencia) .consultar-tabla-mes td.col-nombre-mes {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    background: #fff;
+}
+:where(.adm-asistencia) .consultar-tabla-mes thead th.col-nombre-mes { background: #e5e7eb; }
+:where(.adm-asistencia) .consultar-tabla-mes td.col-porcentaje { font-weight: 700; min-width: 46px; }
+:where(.adm-asistencia) .btn-exportar--sec { background: #fff; color: #1f2430; border: 1px solid #d4d4d4; }
+:where(.adm-asistencia) .btn-exportar--sec:hover { background: #f4f4f4; }
+:where(.adm-asistencia) .calendario-leyenda { flex-wrap: wrap; }

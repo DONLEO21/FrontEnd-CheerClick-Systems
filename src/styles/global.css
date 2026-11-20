@@ -1,0 +1,817 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   global.css — ÚNICO CSS global de la aplicación (se importa solo en main.jsx)
+
+   Aquí viven, y SOLO aquí:
+     1. Fuentes y variables (:root)
+     2. Base: reset y etiquetas (body, h1-h6, a, button, input…)
+     3. Layout: navbar + sidebar + área de contenido
+     4. Componentes compartidos con prefijo "ui-" (toast, contenido…)
+
+   Los CSS de cada módulo NO redefinen nada de esto. Ver src/styles/README.md
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ───────────────────────────── 1. FUENTES ─────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Arimo:ital,wght@0,400..700;1,400..700&display=swap');
+
+:root {
+  /* UNA fuente para títulos y UNA para texto. Se cambian SOLO aquí (hoy ambas son Arimo).
+     Ningún CSS de módulo debe declarar font-family: heredan del body / h1-h6. */
+  --fuente-texto: 'Arimo', 'Segoe UI', Arial, sans-serif;
+  --fuente-titulo: 'Arimo', 'Segoe UI', Arial, sans-serif;
+
+  /* capas (z-index) */
+  --z-toast: 4000;
+
+  /* ── Colores base (marca, fondos, textos) ── */
+  --color-primario: #d71920;
+  --color-primario-oscuro: #b8141a;
+  --color-primario-claro: #fdeaea;
+  --color-blanco: #ffffff;
+  --color-fondo: #f5f5f5;
+  --color-borde: #dcdcdc;
+  --color-texto: #222222;
+  --color-texto-suave: #777777;
+  --rojo: #cc0000;
+  --rojo-hover: #b8141a;
+  --rojo-light: #fdeaea;
+  --verde: #16a34a;
+  --verde-light: #e6f9ee;
+  --amarillo: #f59e0b;
+  --amarillo-light: #fef3c7;
+  --azul: #2f80ed;
+  --azul-light: #dbeafe;
+  --azul-oscuro: #1d4ed8;
+  --blanco: #ffffff;
+  --gris-fondo: #f5f5f5;
+  --gris-borde: #e2e8f0;
+  --gris-claro: #c9c9c9;
+  --gris-oscuro: #4d4d4d;
+  --texto-dark: #1e1e1e;
+  --texto-muted: #888888;
+  --rojo-noso: #cc0000;
+  --verde-noso: #1eaf52;
+  --amarillo-noso: #fad755;
+  --gris-noso: #dddddd;
+  --azul-noso: #3b82f6;
+  --rojo-primario: #d92b2b;
+  --rojo-oscuro: #a80000;
+  --gris-texto: #64748b;
+  --gris-suave: #94a3b8;
+  --fondo-app: #f4f5f7;
+  --borde-suave: #eee;
+  --texto-sm: 14px;
+  --texto-md: 16px;
+  --texto-lg: 20px;
+  --texto-xl: 28px;
+  --color-primario-badge: #f9dede;
+  --dorado: #fad755;
+  --dorado-oscuro: #d4aa00;
+  --carbon: #1a1a1a;
+  --gris-hielo: #f4f6f8;
+  --verde-claro: #dcfce7;
+  --azul-info: #3b82f6;
+  --azul-info-bg: #eff6ff;
+  --carbon-oscuro: #1a202c;
+  --gris-texto-oscuro: #475569;
+  --gris-texto-tenue: #6f7783;
+  --gris-borde-claro: #e5e7eb;
+  --gris-borde-suave: #edf2f7;
+  --gris-borde-input: #dcdcdc;
+  --gris-borde-caja: #eef2f6;
+  --gris-fondo-claro: #f8fafc;
+  --gris-fondo-suave: #f1f5f9;
+  --rojo-bootstrap: #dc3545;
+  --rojo-bootstrap-bg: #fdecea;
+  --rojo-hover-bg: #fffafa;
+  --rojo-hover-bg-suave: #fff8f8;
+  --ambar: #d97706;
+  --ambar-bg: #fef3c7;
+  --ambar-bg-suave: #fffbeb;
+  --ambar-disabled: #fbe3ba;
+  --naranja: #e67e22;
+  --azul-visualizar: #067fe2;
+  --verde-bg-suave: #eafaf1;
+  --rojo-badge: #f9dede;
+  --verde-dark: #27ae60;
+  --azul-claro: #dbeafe;
+  --magenta: #d6336c;
+  --morado: #a847e0;
+  --morado-claro: #f3e8ff;
+  --morado-oscuro: #6b21a8;
+  --partner-color: #000000;
+  --gimnasia-color: #059669;
+  --baile-color: #33b9f7;
+  --camp-color: #6d28d9;
+  --pasado-color: #9ca3af;
+  --pago-color: #221c4d;
+
+  /* ── Espaciado y tamaños de texto ── */
+  --ancho-barra: 56px;
+  --alto-encabezado: 55px;
+  --ancho-menu-abierto: 250px;   /* sidebar desplegado */
+  --ancho-contenido: 1500px;     /* ancho máximo (centrado) del contenido de las vistas */
+  --ancho-sidebar: 60px;
+  --sidebar-width: 62px;
+  --header-height: 55px;
+  --espacio-xs: 8px;
+  --espacio-sm: 16px;
+  --espacio-md: 24px;
+  --espacio-lg: 32px;
+
+  /* ── Radios, sombras y transiciones ── */
+  --radio-enlace: 6px;
+  --radio-boton: 5px;
+  --sombra-tarjeta: 0 2px 10px rgba(0, 0, 0, .07);
+  --sombra-boton: 0 2px 8px rgba(215, 25, 32, .25);
+  --radio-sm: 8px;
+  --radio-md: 10px;
+  --sombra-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --sombra-md: 0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
+  --transicion: 0.3s ease;
+  --radio-tarjeta: 4px;
+  --radio: 12px;
+  --radio-pill: 999px;
+  --trans: 0.2s ease;
+
+  /* ── Otros (usados por módulos concretos) ── */
+  --bs-danger: #d71920;
+  --bs-danger-rgb: 215, 25, 32;
+}
+
+/* ───────────────────────────── 2. BASE ────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--fuente-texto);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--color-texto);
+  background-color: var(--color-fondo);
+  min-height: 100vh;
+}
+
+/* contenedor de React (única excepción permitida al "sin IDs") */
+#root {
+  min-height: 100vh;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--fuente-titulo);
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+ul {
+  list-style: none;
+}
+
+button {
+  border: none;
+  background: none;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  outline: none;
+}
+
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+input,
+select {
+  outline: none;
+}
+
+/* ───────────────────────────── 3. LAYOUT ──────────────────────────────── */
+/* Estructura única de los paneles (admin / entrenador / atleta):
+     <Sidebar/>  barra lateral fija      → Sidebar.css
+     <Header/>   navbar superior fijo    → Header.css
+     <main class="contenido-principal">  área donde se pintan las páginas
+   Los módulos NO deben poner margin-left / margin-top / min-height de 100vh
+   en su contenedor raíz: ya los aplica este contenedor. */
+.contenido-principal {
+  margin-left: var(--ancho-lateral, var(--ancho-barra));
+  padding-top: var(--alto-encabezado);
+  min-height: 100vh;
+  transition: margin-left 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Ancho máximo centrado del contenido (una sola vez, aquí). Una vista que necesite todo el ancho
+   incluye un elemento con la clase .ui-ancho-total (p. ej. Gestión de habilidades). */
+.contenido-ancho {
+  width: 100%;
+  max-width: var(--ancho-contenido);
+  margin-inline: auto;
+}
+
+.contenido-ancho:has(.ui-ancho-total) {
+  max-width: none;
+}
+
+/* Sidebar desplegado: el header y el contenido se corren con transición para que el menú no los cubra */
+.panel {
+  --ancho-lateral: var(--ancho-barra);
+}
+
+.panel--menu-abierto {
+  --ancho-lateral: var(--ancho-menu-abierto);
+}
+
+.panel .encabezado {
+  left: var(--ancho-lateral);
+  transition: left 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Pantallas pequeñas: el menú se superpone (no hay espacio para correr el contenido) con fondo oscuro */
+@media (max-width: 768px) {
+  .panel--menu-abierto {
+    --ancho-lateral: var(--ancho-barra);
+  }
+
+  .panel--menu-abierto::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 1000;
+  }
+
+  .panel--menu-abierto .barra-lateral {
+    z-index: 1001;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .contenido-principal,
+  .panel .encabezado {
+    transition: none;
+  }
+}
+
+/* Contenedor de página con el espaciado estándar (antes ".contenido") */
+.ui-contenido {
+  padding: 28px;
+}
+
+@media (max-width: 680px) {
+  .ui-contenido {
+    padding: 16px;
+  }
+}
+
+/* ───────────────────── 4. COMPONENTES COMPARTIDOS (ui-) ───────────────── */
+/* Utilidades de accesibilidad */
+.ui-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.ui-oculto {
+  display: none !important;
+}
+
+/* Toast / aviso (components/Compartidos/AvisoToast.jsx)
+   Tipos: ui-toast--ok | ui-toast--advertencia | ui-toast--error */
+.ui-toast {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 11px 22px;
+  background: #222222;
+  color: #fff;
+  border-radius: 8px;
+  font-size: 13.5px;
+  font-weight: 500;
+  line-height: 1.4;
+  white-space: nowrap;
+  z-index: var(--z-toast);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.22);
+}
+
+.ui-toast--visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+  pointer-events: auto;
+}
+
+.ui-toast--ok {
+  background: #1d8348;
+}
+
+.ui-toast--advertencia {
+  background: #b7770d;
+  color: #4a3200;
+  border: 1.5px solid #f6db78;
+}
+
+.ui-toast--error {
+  background: var(--color-primario);
+}
+
+.ui-toast svg {
+  display: block;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  margin: 0;
+}
+
+/* SweetAlert2 (alertas de confirmación de Rendimiento) */
+.swal-atl-popup {
+  border-radius: 18px !important;
+  font-family: var(--fuente-texto);
+}
+.swal-atl-titulo {
+  font-family: var(--fuente-titulo) !important;
+  font-size: 22px !important;
+}
+.swal-atl-confirmar {
+  font-family: var(--fuente-texto);
+  font-weight: 700;
+  border-radius: 10px !important;
+  padding: 10px 22px !important;
+  font-size: 15px !important;
+}
+.swal-atl-cancelar {
+  font-family: var(--fuente-texto);
+  font-weight: 700;
+  border-radius: 10px !important;
+  padding: 10px 22px !important;
+  font-size: 15px !important;
+  color: #696969 !important;
+}
+
+/* ───────────────────── 5. TÍTULOS (misma tipografía y negrilla) ───────────── */
+/* Todos los títulos de la app: h1-h6, encabezados de tabla y títulos de tarjetas/modales
+   escritos como <span>/<strong> con clase "…titu…". Se cambian desde las variables. */
+:root {
+  --peso-titulo: 700;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.h1,
+.h2,
+.h3,
+.h4,
+.h5,
+.h6,
+th,
+:is(span, strong, legend)[class*="titu"] {
+  font-family: var(--fuente-titulo) !important;
+  font-weight: var(--peso-titulo) !important;
+}
+
+/* ───────────────────── 6. MODALES ─────────────────────────────────────────── */
+/* Nada se puede redimensionar con el mouse, salvo los campos de texto largo */
+:not(textarea) {
+  resize: none !important;
+}
+
+/* Los textarea dentro de modales (dialog, .modal, SweetAlert) tampoco se redimensionan:
+   altura fija y scroll interno si el texto es largo */
+dialog textarea,
+.modal textarea,
+.swal2-textarea {
+  resize: none !important;
+  overflow-y: auto;
+}
+
+/* Controles de cantidad con "+" y "−" propios: sin las flechas nativas del input number */
+.control-cantidad input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.control-cantidad input[type="number"]::-webkit-inner-spin-button,
+.control-cantidad input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Todo <dialog> modal queda centrado, dentro de la pantalla y con scroll interno si es largo.
+   (anula los top/left/height fijos que traían algunos módulos). El carrito es un panel lateral. */
+dialog:modal:not(.dialog-carrito) {
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  transform: none;
+  height: fit-content;
+  max-height: calc(100dvh - 24px);
+  max-width: calc(100vw - 24px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+@media (max-width: 560px) {
+  dialog:modal:not(.dialog-carrito) {
+    min-width: 0 !important;
+    width: calc(100vw - 24px);
+  }
+}
+
+/* Botones primarios propios (.btn de Bootstrap + .btn-primario, .btn-azul…): en hover/foco/activo el texto
+   debe seguir BLANCO. Sin esto, `.btn:hover` de Bootstrap (mayor especificidad que las reglas con :where
+   de cada módulo) lo vuelve negro. */
+.btn:is(.btn-primario, .btn-azul, .btn-amarillo, .btn-verde, .pqa-btn-primario, .pqrs-btn-primario):is(:hover, :focus, :active, :focus-visible) {
+  color: var(--blanco);
+}
+
+/* ───────────────────── 7. PESTAÑAS (.ui-tabs) ─────────────────────────────── */
+/* <div class="ui-tabs" role="tablist">
+     <button class="ui-tab ui-tab--activa" role="tab" aria-selected="true">Texto <span class="ui-tab__conteo">3</span></button>
+   </div> */
+.ui-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 28px;
+  border-bottom: 1px solid var(--gris-borde-claro);
+  margin-bottom: 20px;
+  max-width: 100%;
+}
+
+.ui-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: -1px;
+  padding: 0 2px 10px;
+  border: none;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  background: none;
+  color: var(--texto-muted);
+  font-size: 0.9rem;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.ui-tab:hover {
+  color: var(--texto-dark);
+  border-bottom-color: var(--gris-borde);
+}
+
+.ui-tab:focus-visible {
+  outline: 2px solid var(--rojo);
+  outline-offset: 2px;
+}
+
+.ui-tab--activa,
+.ui-tab--activa:hover {
+  color: var(--bs-danger);
+  border-bottom-color: var(--bs-danger);
+}
+
+.ui-tab__conteo {
+  min-width: 20px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: var(--gris-fondo);
+  color: var(--texto-dark);
+  font-size: 11px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.ui-tab--activa .ui-tab__conteo {
+  background: var(--rojo-light);
+  color: var(--bs-danger);
+}
+
+/* ───────────────────── 8. AVISO DE BIENVENIDA (primer ingreso) ────────────── */
+.ui-bienvenida {
+  width: min(440px, calc(100vw - 24px));
+  padding: 32px 28px 26px;
+  border: none;
+  border-radius: 18px;
+  background: var(--blanco);
+  text-align: center;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+}
+
+.ui-bienvenida::backdrop {
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(2px);
+}
+
+.ui-bienvenida__icono {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 14px;
+  border-radius: 50%;
+  background: var(--rojo-light);
+  color: var(--rojo);
+}
+
+.ui-bienvenida__titulo { font-size: 20px; margin: 0 0 8px; }
+.ui-bienvenida__texto { color: var(--texto-muted); font-size: 14px; line-height: 1.5; margin: 0 0 22px; }
+
+.ui-bienvenida__acciones { display: flex; flex-direction: column; gap: 8px; }
+
+.ui-bienvenida__btn {
+  padding: 11px 18px;
+  border: 1.5px solid var(--gris-borde);
+  border-radius: 10px;
+  background: var(--blanco);
+  color: var(--texto-dark);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.ui-bienvenida__btn:hover { background: var(--gris-fondo); }
+
+.ui-bienvenida__btn--primario,
+.ui-bienvenida__btn--primario:hover {
+  border-color: var(--rojo);
+  background: var(--rojo);
+  color: var(--blanco);
+}
+
+/* ───────────────────── 9. BOTONES DE ACCIÓN DE TABLA (.ui-accion) ─────────── */
+/* <div class="ui-acciones"><button class="ui-accion ui-accion--editar" title="Editar">…icono…</button></div> */
+.ui-acciones {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.ui-accion {
+  display: inline-grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  background: var(--gris-fondo);
+  color: var(--texto-dark);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, opacity 0.15s ease;
+}
+
+.ui-accion:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.ui-accion--info { background: #dbeafe; color: #2563eb; }
+.ui-accion--info:not(:disabled):hover { background: #c3dafc; }
+.ui-accion--editar { background: #fff3c4; color: #b88a00; }
+.ui-accion--editar:not(:disabled):hover { background: #ffe9a0; }
+.ui-accion--peligro { background: var(--rojo-light); color: var(--rojo); }
+.ui-accion--peligro:not(:disabled):hover { background: #f8d4d4; }
+.ui-accion--ok { background: #e3f7ea; color: #1a9a4b; }
+.ui-accion--ok:not(:disabled):hover { background: #cdeed9; }
+
+/* Solicitudes y pedidos: aprobar (verde), rechazar (rojo) y ver detalle (azul secundario, como el resto de tablas) */
+.ui-accion--aprobar { background: var(--verde); color: var(--blanco); }
+.ui-accion--aprobar:not(:disabled):hover { background: #12853d; }
+.ui-accion--rechazar { background: var(--rojo); color: var(--blanco); }
+.ui-accion--rechazar:not(:disabled):hover { background: #a80000; }
+.ui-accion--detalle { background: var(--azul-light); color: var(--azul-oscuro); border-color: #bfdbfe; }
+.ui-accion--detalle:not(:disabled):hover { background: var(--azul); color: var(--blanco); border-color: var(--azul); }
+
+.ui-accion:focus-visible { outline: 2px solid var(--rojo); outline-offset: 2px; }
+
+/* ───────────── 10. PÁGINA DE MÓDULO A ANCHO COMPLETO (.ui-pagina) ─────────── */
+/* Se usa junto a .ui-contenido en la raíz de una vista con tarjetas + filtros + tabla
+   (Rendimiento, Pagos). Anula el tope y el centrado del .container de Bootstrap y los
+   márgenes sueltos de 30/60 px, de modo que título, tarjetas, filtros, tabla y paginación
+   comparten el mismo borde izquierdo y derecho y ocupan todo el espacio del contenido. */
+.ui-pagina .container {
+  max-width: none;
+  width: 100%;
+  margin-inline: 0;
+  padding-inline: 0;
+}
+
+.ui-pagina .ui-pagina__titulo {
+  margin: 0 0 20px;
+}
+
+.ui-pagina .ui-pagina__titulo h3 {
+  margin-top: 0;
+}
+
+.ui-pagina .ui-pagina__titulo p {
+  margin-bottom: 0;
+}
+
+.ui-pagina .select {
+  margin: 0;
+  width: 100%;
+}
+
+.ui-pagina .footer-cont {
+  margin: 20px 0;
+}
+
+/* Fila de tarjetas de resumen: columnas iguales que se reparten todo el ancho */
+.ui-tarjetas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.ui-tarjetas > * {
+  min-width: 0;
+}
+
+.ui-pagina .ui-tarjetas .targe-ren {
+  height: auto;
+  min-height: 120px;
+}
+
+.ui-tarjetas .conte-targe {
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* ───────────────────── 11. MODAL DE CONFIRMACIÓN (.ui-confirmar) ──────────── */
+/* components/Compartidos/ModalConfirmar.jsx. El centrado lo da la regla global de <dialog> (sección 6). */
+.ui-confirmar {
+  width: min(420px, calc(100vw - 24px));
+  padding: 24px;
+  border: 0;
+  border-radius: 14px;
+  background: var(--blanco);
+  color: var(--color-texto);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+}
+
+.ui-confirmar::backdrop {
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+}
+
+.ui-confirmar__cabeza {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.ui-confirmar__icono {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  border-radius: 50%;
+}
+
+.ui-confirmar__icono--peligro,
+.ui-confirmar__icono--normal { background: var(--rojo-light); color: var(--rojo); }
+.ui-confirmar__icono--ok { background: var(--verde-light); color: var(--verde); }
+
+.ui-confirmar__titulo {
+  flex: 1;
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.ui-confirmar__cerrar {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--texto-muted);
+  cursor: pointer;
+}
+
+.ui-confirmar__cerrar:hover:not(:disabled) { background: var(--gris-fondo); color: var(--color-texto); }
+
+.ui-confirmar__mensaje {
+  margin: 0 0 8px;
+  line-height: 1.5;
+}
+
+.ui-confirmar__error {
+  margin: 8px 0 0;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: var(--rojo-light);
+  color: var(--rojo);
+  font-size: 0.9rem;
+}
+
+.ui-confirmar__pie {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.ui-confirmar__btn {
+  padding: 10px 20px;
+  border: 1.5px solid transparent;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.ui-confirmar__btn:disabled { opacity: 0.6; cursor: not-allowed; }
+.ui-confirmar__btn--sec { background: var(--blanco); border-color: var(--gris-borde); color: var(--color-texto); }
+.ui-confirmar__btn--sec:hover:not(:disabled) { background: var(--gris-fondo); }
+.ui-confirmar__btn--peligro { background: var(--rojo); color: var(--blanco); }
+.ui-confirmar__btn--peligro:hover:not(:disabled) { background: var(--rojo-hover, #a80000); }
+.ui-confirmar__btn--ok { background: var(--verde); color: var(--blanco); }
+.ui-confirmar__btn--ok:hover:not(:disabled) { background: #12853d; }
+
+@media (max-width: 480px) {
+  .ui-confirmar__pie { flex-direction: column-reverse; }
+  .ui-confirmar__btn { width: 100%; }
+}
+
+/* ───────────────────── 12. SALUDO DE DASHBOARD (.ui-saludo) ───────────────── */
+/* components/Compartidos/SaludoDashboard.jsx — igual en admin, entrenador y atleta */
+.ui-saludo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+  padding: 24px 32px;
+  background: var(--blanco);
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+}
+
+.ui-saludo__titulo {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--color-texto);
+}
+
+.ui-saludo__fecha {
+  margin: 6px 0 0;
+  font-size: 0.95rem;
+  color: var(--texto-muted);
+}
+
+@media (max-width: 560px) {
+  .ui-saludo { padding: 18px 20px; }
+  .ui-saludo__titulo { font-size: 1.3rem; }
+}

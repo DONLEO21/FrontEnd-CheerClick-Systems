@@ -6,7 +6,7 @@ import ModalEditar from "./ModalEditar";
 import ModalConfirmarEstado from "./ModalConfirmarEstado";
 
 // Componente reútilizable para el filtro elegante
-function FiltroSelectCustom({ label, value, onChange, options }) {
+function FiltroSelectCustom({ label, value, onChange, options, alinearDerecha = false }) {
   const [open, setOpen] = useState(false);
   const containerRef = useRef(null);
 
@@ -51,7 +51,7 @@ function FiltroSelectCustom({ label, value, onChange, options }) {
         </button>
 
         {open && (
-          <ul className="custom-dropdown-menu">
+          <ul className={`custom-dropdown-menu${alinearDerecha ? " custom-dropdown-menu--derecha" : ""}`}>
             {options.map((opt) => (
               <li
                 key={opt.value}
@@ -86,7 +86,7 @@ export default function ListaImplementos({ onAviso }) {
 
   const modalAgregarRef = useRef(null);
   const modalEditarRef = useRef(null);
-  const modalEstadoRef = useRef(null);
+  const [confirmandoEstado, setConfirmandoEstado] = useState(false); // modal de inhabilitar/habilitar abierto
 
   const cargarImplementos = async () => {
     setCargando(true);
@@ -131,7 +131,7 @@ export default function ListaImplementos({ onAviso }) {
   const pedirCambioEstado = (implemento) => {
     setImplementoSeleccionado(implemento);
     setAccionEstado(implemento.estado === "Disponible" ? "inhabilitar" : "habilitar");
-    modalEstadoRef.current.showModal();
+    setConfirmandoEstado(true);
   };
 
   return (
@@ -182,6 +182,7 @@ export default function ListaImplementos({ onAviso }) {
         {/* Filtro Cantidad (Corregido el estado de filtroCantidad) */}
         <FiltroSelectCustom
           label="Cantidad"
+          alinearDerecha
           value={filtroCantidad}
           onChange={setFiltroCantidad}
           options={[
@@ -245,7 +246,8 @@ export default function ListaImplementos({ onAviso }) {
         }}
       />
       <ModalConfirmarEstado
-        ref={modalEstadoRef}
+        abierto={confirmandoEstado}
+        onCerrar={() => setConfirmandoEstado(false)}
         implemento={implementoSeleccionado}
         accion={accionEstado}
         onConfirmado={() => {

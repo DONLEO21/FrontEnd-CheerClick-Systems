@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 function Hero() {
   return (
-    <section id="hero">
+    <section id="hero" className="landing-hero">
       <div className="contenedor hero-layout">
         <div className="hero-contenido">
           <h1>

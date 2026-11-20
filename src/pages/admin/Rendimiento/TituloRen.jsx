@@ -1,6 +1,6 @@
 function TituloRen (){
     return(
-    <aside id="titu-ren">
+    <aside className="adm-rendimiento-titu-ren ui-pagina__titulo">
         <h3>Rendimiento de los Atletas</h3>
         <p>
         Esta sección te permite visualizar y gestionar el rendimiento

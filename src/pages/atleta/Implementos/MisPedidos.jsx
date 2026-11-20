@@ -52,7 +52,7 @@ export default function MisPedidos({ onAviso }) {
     const lista = pedidos.filter((p) => {
       const coincideBusqueda =
         !texto ||
-        p.id.toLowerCase().includes(texto) ||
+        (p.codigo ?? p.id).toLowerCase().includes(texto) ||
         (p.items ?? []).some((i) => i.implementoNombre.toLowerCase().includes(texto));
       const coincideEstado = filtroEstado === "todos" || p.estado.toLowerCase() === filtroEstado;
       return coincideBusqueda && coincideEstado;
@@ -133,7 +133,7 @@ export default function MisPedidos({ onAviso }) {
             <article className="tarjeta-pedido" key={p.id}>
               <header className="pedido-cabecera">
                 <div>
-                  <span className="pedido-codigo">{p.id}</span>
+                  <span className="pedido-codigo">{p.codigo ?? p.id}</span>
                   <span className="pedido-fecha">
                     {fechaCorta(p.fecha)} · {unidadesPedido(p)} unidad(es)
                   </span>

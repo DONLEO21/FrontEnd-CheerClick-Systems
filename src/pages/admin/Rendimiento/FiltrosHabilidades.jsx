@@ -6,11 +6,12 @@ function FiltrosHabilidades({
   tipoSeleccionado,
   setTipoSeleccionado,
   onNuevaHabilidad,
+  niveles = [],
 }) {
   return (
     <section id="filtros-h" className="container my-3">
       <div className="row g-3 align-items-center">
-        <div className="col-md-4">
+        <div className="col-md-6">
           <input
             type="search"
             placeholder="Buscar Habilidad..."
@@ -20,18 +21,19 @@ function FiltrosHabilidades({
           />
         </div>
 
-        <div className="col-md-3">
-          <select
-            className="select-h form-select"
-            value={nivelSeleccionado}
-            onChange={(e) => setNivelSeleccionado(e.target.value)}
-          >
-            <option value="">Nivel</option>
-            <option value="Nivel 1 Youth">Nivel 1 Youth</option>
-            <option value="Nivel 3 Open">Nivel 3 Open</option>
-            <option value="Nivel 4 Open Large">Nivel 4 Open Large</option>
-          </select>
-        </div>
+        {/* TODO(backend): la habilidad no guarda a qué nivel pertenece; el filtro por nivel solo se muestra si se le pasan niveles. */}
+        {niveles.length > 0 && (
+          <div className="col-md-3">
+            <select
+              className="select-h form-select"
+              value={nivelSeleccionado}
+              onChange={(e) => setNivelSeleccionado(e.target.value)}
+            >
+              <option value="">Nivel</option>
+              {niveles.map((n) => <option key={n} value={n}>{n}</option>)}
+            </select>
+          </div>
+        )}
 
         <div className="col-md-3">
           <select
@@ -43,14 +45,14 @@ function FiltrosHabilidades({
             <option value="apropiada">Apropiadas</option>
             <option value="avanzada">Avanzadas</option>
             <option value="elite">Élite</option>
-            <option value="inhabilitada">Inhabilitadas</option>
+            <option value="inhabilitada">Deshabilitadas</option>
           </select>
         </div>
 
-        <div className="col-md-2 text-end" id="conte-new">
-          <button onClick={onNuevaHabilidad} id="btn-habil">
+        <div className="col-md-3 text-end adm-rendimiento-conte-new" >
+          <button onClick={onNuevaHabilidad} className="adm-rendimiento-btn-habil">
             <svg
-              id="habil"
+              className="adm-rendimiento-habil"
               xmlns="http://www.w3.org/2000/svg"
               width="24"
               height="24"

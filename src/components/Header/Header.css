@@ -23,7 +23,6 @@
     text-decoration: none;
     border-radius: var(--radio-boton);
     font-size: 13px;
-    font-family: 'Arimo', sans-serif;
     font-weight: 500;
     transition: border-color .2s, color .2s;
     cursor: pointer;
@@ -58,7 +57,6 @@
 button.etiqueta-rol {
     border: none !important;
     cursor: pointer !important;
-    font-family: inherit !important;
     margin: 0 !important;
     appearance: none !important;
     -webkit-appearance: none !important;
@@ -68,7 +66,6 @@ button.etiqueta-rol:hover {
     background-color: var(--color-primario-oscuro, var(--color-primario)) !important;
     filter: brightness(0.92);
 }
-
 
 .selector-rol {
     position: relative;
@@ -112,7 +109,6 @@ button.etiqueta-rol:hover {
     border: none;
     background: none;
     font-size: 13px;
-    font-family: 'Arimo', sans-serif;
     font-weight: 600;
     color: #222;
     white-space: nowrap;
@@ -173,4 +169,77 @@ button.etiqueta-rol:hover {
     border-radius: 0;
     border: none;
     background: transparent;
+}
+
+.icono-accion img,
+.icono-accion svg {
+    height: 22px;
+    width: 22px;
+    color: #222;
+    stroke: #222;
+    transition: transform .25s, color .25s, stroke .25s, filter .25s;
+}
+
+.icono-accion:hover img,
+.icono-accion:hover svg {
+    transform: scale(1.1);
+    color: var(--color-primario);
+    stroke: var(--color-primario);
+}
+
+/* ── Campanita y panel de notificaciones ── */
+.encabezado__notif { position: relative; }
+
+.encabezado__notif .icono-accion { position: relative; background: none; border: none; color: #222; cursor: pointer; }
+
+.encabezado__notif-contador {
+    position: absolute; top: 0; right: 0;
+    min-width: 17px; height: 17px; padding: 0 4px;
+    background: var(--color-primario); color: var(--color-blanco);
+    border-radius: 999px; font-size: 10px; font-weight: 700; line-height: 17px; text-align: center;
+}
+
+.encabezado__notif-panel {
+    position: absolute; top: calc(100% + 10px); right: 0;
+    width: min(360px, calc(100vw - 24px));
+    background: var(--color-blanco); border: 1px solid var(--color-borde); border-radius: 14px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, .16); z-index: 1100; overflow: hidden;
+}
+
+.encabezado__notif-cabeza {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    padding: 14px 16px; border-bottom: 1px solid var(--color-borde);
+}
+
+.encabezado__notif-titulo { font-size: 15px; margin: 0; }
+
+.encabezado__notif-todas {
+    font-size: 12px; font-weight: 700; color: var(--color-primario); background: none; border: none; cursor: pointer;
+}
+.encabezado__notif-todas:disabled { color: var(--color-texto-suave); cursor: default; }
+
+.encabezado__notif-lista { max-height: 360px; overflow-y: auto; }
+
+.encabezado__notif-item {
+    display: flex; flex-direction: column; gap: 3px; width: 100%; text-align: left;
+    padding: 12px 16px; background: none; border: none; border-bottom: 1px solid #f0f0f0; cursor: pointer;
+}
+.encabezado__notif-item:hover { background: var(--color-fondo); }
+.encabezado__notif-item--nueva { background: var(--color-primario-claro); }
+.encabezado__notif-tipo { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; color: var(--color-primario); }
+.encabezado__notif-mensaje { font-size: 13px; color: var(--color-texto); }
+.encabezado__notif-fecha { font-size: 11px; color: var(--color-texto-suave); }
+.encabezado__notif-vacio { padding: 24px 16px; text-align: center; font-size: 13px; color: var(--color-texto-suave); }
+
+/* ── Pantallas pequeñas: el encabezado cabe completo y el panel de avisos no se sale ── */
+@media (max-width: 560px) {
+    .encabezado__contenedor { padding-left: 8px !important; padding-right: 8px !important; }
+    .encabezado__separador { margin: 0 6px; }
+    .boton-cerrar-sesion { padding: 6px 10px; font-size: 13px; }
+    .encabezado__notif-panel {
+        position: fixed;
+        top: calc(var(--alto-encabezado) + 6px);
+        left: calc(var(--ancho-barra) + 8px); right: 8px;
+        width: auto;
+    }
 }

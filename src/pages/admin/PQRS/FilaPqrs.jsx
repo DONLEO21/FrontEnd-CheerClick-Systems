@@ -1,5 +1,5 @@
 
-import React from "react";
+import { Reply, Pencil, Power } from "lucide-react";
 import { ESTADOS, PRIORIDADES, etiquetaDe, radicadoDe } from "./pqrsData";
 
 const formatearFecha = (iso) => {
@@ -36,30 +36,35 @@ export default function FilaPqrs({ pqrs, onResponder, onModificar, onInhabilitar
       </td>
       <td>{pqrs.remitente}</td>
       <td>
-        <div className="d-flex justify-content-center gap-2">
+        <div className="ui-acciones">
           <button
             type="button"
-            className="btn btn-sm pqrs-btn-accion"
+            className="ui-accion ui-accion--info"
             disabled={inhabilitada || resuelta}
-            title={motivoResponder}
+            title={motivoResponder ?? "Responder"}
+            aria-label="Responder PQRS"
             onClick={() => onResponder(pqrs)}
           >
-            Responder
+            <Reply size={16} />
           </button>
           <button
             type="button"
-            className="btn btn-sm pqrs-btn-accion"
+            className="ui-accion ui-accion--editar"
             disabled={inhabilitada}
+            title="Modificar"
+            aria-label="Modificar PQRS"
             onClick={() => onModificar(pqrs)}
           >
-            Modificar
+            <Pencil size={16} />
           </button>
           <button
             type="button"
-            className="btn btn-sm pqrs-btn-accion"
+            className={"ui-accion " + (inhabilitada ? "ui-accion--ok" : "ui-accion--peligro")}
+            title={inhabilitada ? "Habilitar" : "Inhabilitar"}
+            aria-label={inhabilitada ? "Habilitar PQRS" : "Inhabilitar PQRS"}
             onClick={() => onInhabilitar(pqrs)}
           >
-            {inhabilitada ? "Habilitar" : "Inhabilitar"}
+            <Power size={16} />
           </button>
         </div>
       </td>

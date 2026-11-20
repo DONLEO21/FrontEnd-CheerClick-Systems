@@ -1,76 +1,53 @@
-import { formatearTamano, horarioDelDia, mismoId, resolverNivel } from "./rendimientoCalculos";
-
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
-
-class ErrorNoEncontrado extends Error {}
-
-async function pedir(ruta, opciones) {
-  let res;
-  try {
-    res = await fetch(`${API_URL}${ruta}`, { cache: "no-store", ...opciones });
-  } catch {
-    throw new Error("No se pudo conectar con el servidor de datos. Verifica que json-server esté corriendo.");
-  }
-  if (res.status === 404) throw new ErrorNoEncontrado("No se encontró la información del atleta.");
-  if (!res.ok) throw new Error(`Error de red al hablar con json-server (${res.status})`);
-  return res.json();
-}
+// Rendimiento del atleta autenticado (habilidades, asistencia y justificaciones).
+// Backend: /api/rendimiento/atleta/:id, /api/habilidad, /api/asistencia, /api/justificacion, /api/niveles
+import { almacenSesion } from '../api/client'
+import { obtenerNivel } from './horariosService'
+import { listarHabilidades, listarProgresoAtleta } from './rendimientoAdminService'
+import { aRegistro } from './asistenciaService'
+import { aJustificacion } from './justificacionesService'
+import { cargarMiPerfil } from './perfil'
+import { calcularEdad } from '../utils/fechaNacimiento'
+import { asistenciaApi } from '../api/asistencia.api'
+import { justificacionesApi } from '../api/justificaciones.api'
 
 export async function obtenerDatosRendimiento(atletaId) {
-  const [atleta, habilidades, progreso, notas, asistencias, justificaciones, atletasAsistencia, niveles] =
-    await Promise.all([
-      pedir(`/atletas/${encodeURIComponent(atletaId)}`),
-      pedir("/habilidades"),
-      pedir("/progresoHabilidades"),
-      pedir("/notas"),
-      pedir("/asistencias"),
-      pedir("/justificaciones"),
-      pedir("/atletasAsistencia"),
-      pedir("/niveles"),
-    ]);
+  const usuario = almacenSesion.usuario()
+  const nivelId = usuario?.nivel ?? null
 
-  const delAtleta = (lista) => lista.filter((x) => mismoId(x.atletaId, atleta.id));
-  const nivel = resolverNivel(atleta, atletasAsistencia, niveles) ?? {
-    id: null,
-    categoria: atleta.nivel,
-    entrenador: "",
-    horarios: [],
-  };
+  const [habilidades, progreso, asistencias, justificaciones, nivel, miPerfil] = await Promise.all([
+    listarHabilidades(),
+    listarProgresoAtleta(atletaId),
+    asistenciaApi.list({ usuario: atletaId }).then((r) => (r.data ?? []).map(aRegistro)),
+    justificacionesApi.list().then((r) => (r.data ?? []).map(aJustificacion)),
+    nivelId ? obtenerNivel(nivelId).catch(() => null) : Promise.resolve(null),
+    cargarMiPerfil().catch(() => null),
+  ])
 
   return {
-    atleta,
-    nivel,
-    habilidades,
-    progreso: delAtleta(progreso),
-    notas: delAtleta(notas),
-    asistencias: delAtleta(asistencias),
-    justificaciones: delAtleta(justificaciones),
-  };
+    atleta: {
+      id: atletaId,
+      nombre: usuario?.nombre ?? '',
+      apellido: usuario?.apellido ?? '',
+      nivel: nivel?.categoria ?? '',
+      // la edad sale de la fecha de nacimiento del perfil (null si aún no la ha registrado)
+      edad: calcularEdad(String(miPerfil?.perfil?.fechaNacimiento ?? '').slice(0, 10)),
+    },
+    nivel: nivel ?? { id: null, categoria: '', entrenador: '', horarios: [] },
+    habilidades: habilidades.filter((h) => h.estado === 'activa'),
+    progreso,
+    // TODO(backend): las notas del entrenador no se pueden consultar (no hay endpoint de lectura).
+    notas: [],
+    asistencias,
+    justificaciones,
+  }
 }
 
-const comoEnSemilla = (id) => (/^\d+$/.test(String(id)) ? Number(id) : id);
-
-export async function enviarJustificacion({ atleta, nivel, nivelId, fechaISO, motivo, archivo }) {
-  const todas = await pedir("/justificaciones");
-  const yaEnviada = todas.some((j) => mismoId(j.atletaId, atleta.id) && j.fecha === fechaISO);
-  if (yaEnviada) throw new Error("Ya enviaste una justificación para esta fecha.");
-
-  const horario = horarioDelDia(nivel.horarios, fechaISO);
-  return pedir("/justificaciones", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      atletaId: comoEnSemilla(atleta.id),
-      nivelId: comoEnSemilla(nivelId ?? nivel.id),
-      fecha: fechaISO,
-      horaInicio: horario?.inicio ?? "",
-      horaFin: horario?.fin ?? "",
-      motivo: motivo.trim(),
-      archivoNombre: archivo?.name ?? "",
-      archivoTamano: archivo ? formatearTamano(archivo.size) : "",
-      estado: "pendiente",
-      observacion: "",
-      fechaRevision: "",
-    }),
-  });
+// El atleta justifica una inasistencia ya registrada en esa fecha.
+// TODO(backend): POST /justificacion no recibe el archivo adjunto (solo asistencia y motivo).
+export async function enviarJustificacion({ atleta, fechaISO, motivo }) {
+  const { data: registros } = await asistenciaApi.list({ usuario: atleta.id, fecha: fechaISO })
+  const asistencia = (registros ?? [])[0]
+  if (!asistencia) throw new Error('No hay una inasistencia registrada para esa fecha.')
+  const { data } = await justificacionesApi.create({ asistencia: asistencia._id, motivo: motivo.trim() })
+  return aJustificacion(data)
 }

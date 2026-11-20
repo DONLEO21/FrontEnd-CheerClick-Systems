@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import ListaImplementos from "./ListaImplementos";
 import PedidosImplementos from "./PedidosImplementos";
 import ResenasImplementos from "./ResenasImplementos";
 import AvisoToast from "../../../components/Compartidos/AvisoToast";
+import useAviso from "../../../hooks/useAviso";
 import "./Implementos.css";
 
 const PESTANAS = [
@@ -11,17 +12,9 @@ const PESTANAS = [
   { id: "resenas", titulo: "Reseñas" },
 ];
 
-export default function Implementos() {
+function ImplementosContenido() {
   // Aviso / toast 
-  const [aviso, setAviso] = useState({ visible: false, mensaje: "", tipo: "ok" });
-
-  useEffect(() => {
-    if (!aviso.visible) return;
-    const id = setTimeout(() => setAviso((a) => ({ ...a, visible: false })), 3000);
-    return () => clearTimeout(id);
-  }, [aviso.visible, aviso.mensaje]);
-
-  const mostrarAviso = (mensaje, tipo = "ok") => setAviso({ visible: true, mensaje, tipo });
+  const { aviso, mostrarAviso } = useAviso({ tipoPorDefecto: "ok" });
 
   const [pestana, setPestana] = useState("deportivos");
 
@@ -52,6 +45,15 @@ export default function Implementos() {
       {pestana === "resenas" && <ResenasImplementos />}
 
       <AvisoToast aviso={aviso} />
+    </div>
+  );
+}
+
+// Clase raíz del módulo: todos sus estilos viven bajo .adm-implementos
+export default function Implementos(props) {
+  return (
+    <div className="adm-implementos">
+      <ImplementosContenido {...props} />
     </div>
   );
 }

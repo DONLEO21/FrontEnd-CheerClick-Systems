@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
+import { listarHabilidades, listarProgresoAtleta, guardarProgresoAtleta } from "../../../services/rendimientoAdminService";
 import imgusuario from "../../../assets/icons/usuarios.png";
 import { obtenerEstiloNivel } from "../../../components/utils/nivelEstilos";
 import "./EditarRendimiento.css";
 
-const API = "http://localhost:3001";
 
 const PESTANAS = [
   { key: "apropiada", label: "Apropiadas", icon: <i className="bi bi-stars"></i> },
@@ -11,7 +11,7 @@ const PESTANAS = [
   { key: "elite", label: "Élite", icon: <i className="bi bi-trophy"></i> },
 ];
 
-function EditarRendimiento({ atleta, onVolver }) {
+function EditarRendimiento({ atleta, onVolver, onAviso }) {
   const [habilidades, setHabilidades] = useState([]);
   const [progresoOriginal, setProgresoOriginal] = useState([]);
   const [progresoEditado, setProgresoEditado] = useState([]);
@@ -28,16 +28,11 @@ function EditarRendimiento({ atleta, onVolver }) {
     setCargando(true);
 
     Promise.all([
-      fetch(`${API}/habilidades`, { cache: "no-store" }).then((res) => res.json()),
-      fetch(`${API}/progresoHabilidades`, { cache: "no-store" }).then((res) => res.json()),
+      listarHabilidades(),
+      listarProgresoAtleta(atleta.id),
     ])
-      .then(([datosHabilidades, datosProgreso]) => {
-        // Se comparan como texto para que "1" y 1 cuenten como el mismo atleta
-        const progresoDelAtleta = Array.isArray(datosProgreso)
-          ? datosProgreso.filter((p) => String(p.atletaId) === String(atleta.id))
-          : [];
-
-        setHabilidades(Array.isArray(datosHabilidades) ? datosHabilidades : []);
+      .then(([datosHabilidades, progresoDelAtleta]) => {
+        setHabilidades(datosHabilidades);
         setProgresoOriginal(progresoDelAtleta);
         setProgresoEditado(progresoDelAtleta);
       })
@@ -105,34 +100,13 @@ function EditarRendimiento({ atleta, onVolver }) {
   const handleGuardar = async () => {
     setGuardando(true);
     try {
-      const respuestas = await Promise.all(
-        cambios.map((registro) => {
-          const existe = progresoOriginal.some((o) => o.id === registro.id);
-
-          return existe
-            ? fetch(`${API}/progresoHabilidades/${registro.id}`, {
-                method: "PATCH",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ completado: registro.completado }),
-              })
-            : fetch(`${API}/progresoHabilidades`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(registro),
-              });
-        })
-      );
-
-      // fetch no lanza error con respuestas 4xx/5xx, así que se revisan
-      if (respuestas.some((r) => !r.ok)) {
-        throw new Error("El servidor rechazó algunos cambios");
-      }
+      await guardarProgresoAtleta(atleta.id, { cambios });
 
       // El aviso se muestra en el padre, porque este componente se desmonta al volver
       onVolver("Cambios guardados correctamente");
     } catch (error) {
       console.error("Error al guardar cambios:", error);
-      alert("Hubo un error al guardar los cambios. Intenta de nuevo.");
+      onAviso?.(error.message || "Hubo un error al guardar los cambios. Intenta de nuevo.", "error");
     } finally {
       setGuardando(false);
     }
@@ -145,11 +119,11 @@ function EditarRendimiento({ atleta, onVolver }) {
   if (!atleta) return null;
 
   return (
-    <main id="contenido-editar" className="mt-3">
+    <main className="mt-3 adm-rendimiento-contenido-editar">
 
-      <aside id="conte-infor">
+      <aside className="adm-rendimiento-conte-infor">
         <div>
-          <img id="foto" src={imgusuario} alt="Foto Atleta" />
+          <img className="adm-rendimiento-foto" src={imgusuario} alt="Foto Atleta" />
         </div>
         <div>
           <h3>Detalle del Atleta</h3>
@@ -163,28 +137,28 @@ function EditarRendimiento({ atleta, onVolver }) {
         </div>
       </aside>
 
-      <section id="panel-input">
+      <section className="adm-rendimiento-panel-input">
         <h4 className="titu-conte">Observaciones y habilidades</h4>
-        <div id="conte-input">
+        <div className="adm-rendimiento-conte-input">
           <div className="conte-ob">
-            <label id="titu-input" htmlFor="nota-sesion">
+            <label className="adm-rendimiento-titu-input" htmlFor="nota-sesion">
               Notas de la sesión
             </label>
             <textarea
               id="nota-sesion"
-              className="input-con"
+              className="input-con adm-rendimiento-nota-sesion"
               value={notaSesion}
               onChange={(e) => setNotaSesion(e.target.value)}
               placeholder="Escribe aquí observaciones sobre la sesión..."
             />
           </div>
           <div className="conte-ob">
-            <label id="titu-input" htmlFor="nota-sesion">
+            <label className="adm-rendimiento-titu-input" htmlFor="nota-sesion">
               Descripción de habilidades
             </label>
             <textarea
               id="nota-sesion"
-              className="input-con"
+              className="input-con adm-rendimiento-nota-sesion"
               value={descripcionHabilidades}
               onChange={(e) => setDescripcionHabilidades(e.target.value)}
               placeholder="Describe el trabajo realizado en habilidades..."
@@ -194,10 +168,10 @@ function EditarRendimiento({ atleta, onVolver }) {
         </div>
       </section>
 
-      <section id="conte-targe">
+      <section className="adm-rendimiento-conte-targe">
         <h4 className="titu-conte">Métricas de desempeño</h4>
 
-        <section id="fil-busque">
+        <section className="adm-rendimiento-fil-busque">
           <input
             type="search"
             placeholder="Buscar Habilidad..."
@@ -205,7 +179,7 @@ function EditarRendimiento({ atleta, onVolver }) {
             value={busquedaHabilidad}
             onChange={(e) => setBusquedaHabilidad(e.target.value)}
           />
-          <div id="bnt">
+          <div className="adm-rendimiento-bnt">
             {PESTANAS.map((pestana) => (
               <button
                 key={pestana.key}
@@ -220,7 +194,7 @@ function EditarRendimiento({ atleta, onVolver }) {
           </div>
         </section>
 
-        <section id="habilidades">
+        <section className="adm-rendimiento-habilidades">
           {cargando ? (
             <p className="text-muted text-center py-4">Cargando habilidades...</p>
           ) : (
@@ -259,15 +233,15 @@ function EditarRendimiento({ atleta, onVolver }) {
         </section>
       </section>
 
-      <footer id="guardar-cam">
-        <div id="conte-final">
+      <footer className="adm-rendimiento-guardar-cam">
+        <div className="adm-rendimiento-conte-final">
           <span>{hayCambios ? "Cambios sin guardar" : "Sin cambios"}</span>
         </div>
-        <div id="conte-final">
-          <button type="button" id="cancelar" onClick={handleCancelar} disabled={guardando}>
+        <div className="adm-rendimiento-conte-final">
+          <button type="button" className="adm-rendimiento-cancelar" onClick={handleCancelar} disabled={guardando}>
             Cancelar
           </button>
-          <button type="button" id="guardar" onClick={handleGuardar} disabled={guardando || !hayCambios}>
+          <button type="button" className="adm-rendimiento-guardar" onClick={handleGuardar} disabled={guardando || !hayCambios}>
             {guardando ? "Guardando..." : "Guardar registro"}
           </button>
         </div>

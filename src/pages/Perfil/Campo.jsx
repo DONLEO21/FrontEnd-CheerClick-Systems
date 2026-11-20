@@ -1,4 +1,4 @@
-export default function Campo({ id, label, icono: Icono, children, aviso }) {
+export default function Campo({ id, label, icono: Icono, children, aviso, error }) {
   return (
     <div className="form-grupo">
       <div className="form-grupo__cabecera">
@@ -9,6 +9,7 @@ export default function Campo({ id, label, icono: Icono, children, aviso }) {
         <Icono size={16} />
         {children}
       </div>
+      {error && <small className="perfil-campo-error" role="alert">{error}</small>}
     </div>
   );
 }

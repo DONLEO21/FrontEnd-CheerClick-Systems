@@ -17,8 +17,10 @@ export function aISO(fecha) {
   return `${anio}-${mes}-${dia}`;
 }
 
+// Fecha de hoy en Colombia (zona del club). El backend valida con la MISMA zona (America/Bogota): usar la hora local
+// del navegador o UTC puede dar un día distinto y rechazar la asistencia como "fecha futura".
 export function fechaHoyISO() {
-  return aISO(hoy());
+  return new Intl.DateTimeFormat("en-CA", { timeZone: "America/Bogota" }).format(hoy());
 }
 
 export function formatearFechaCorta(fechaISO) {

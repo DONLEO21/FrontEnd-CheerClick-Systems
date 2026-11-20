@@ -1,5 +1,4 @@
 
-import React from "react";
 import { ESTADOS, PRIORIDADES, TIPOS } from "./pqrsData";
 
 export default function FiltrosPqrs({ filtros, onCambio, onLimpiar }) {
@@ -81,9 +80,6 @@ export default function FiltrosPqrs({ filtros, onCambio, onLimpiar }) {
           />
         </div>
 
-        <button type="submit" className="btn pqrs-btn-icono" aria-label="Aplicar filtros">
-          <i className="bi bi-funnel" aria-hidden="true" />
-        </button>
       </form>
     </div>
   );

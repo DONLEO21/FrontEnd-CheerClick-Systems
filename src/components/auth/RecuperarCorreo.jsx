@@ -1,17 +1,28 @@
 import { useState } from 'react'
+import { enviarCodigoRecuperacion } from '../../services/sesion'
 
-function RecuperarCorreo({ irA, setCorreo }) {
-  const [email, setEmail] = useState('')
+function RecuperarCorreo({ irA, setCorreo, correoInicial = '' }) {
+  const [email, setEmail] = useState(correoInicial)
   const [mensaje, setMensaje] = useState('')
+  const [enviando, setEnviando] = useState(false)
 
-  const enviarCodigo = (e) => {
+  const enviarCodigo = async (e) => {
     e.preventDefault()
     setMensaje('')
 
     if (!email) return setMensaje('Ingresa tu correo electrónico.')
     if (!/\S+@\S+\.\S+/.test(email)) return setMensaje('Correo no válido.')
 
-    setCorreo(email)
+    setEnviando(true)
+    try {
+      await enviarCodigoRecuperacion(email.trim())
+    } catch (err) {
+      setEnviando(false)
+      return setMensaje(err.message)
+    }
+    setEnviando(false)
+
+    setCorreo(email.trim())
     setMensaje(`Código enviado a ${email}`)
 
     setTimeout(() => irA('recuperar-codigo'), 1000)
@@ -46,7 +57,7 @@ function RecuperarCorreo({ irA, setCorreo }) {
           </div>
         )}
 
-        <button className="boton-primario" type="submit">Enviar código</button>
+        <button className="boton-primario" type="submit" disabled={enviando}>Enviar código</button>
         <button
           className="boton-secundario boton-bloque"
           type="button"

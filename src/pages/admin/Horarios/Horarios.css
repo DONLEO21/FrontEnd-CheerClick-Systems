@@ -1,16 +1,13 @@
-:root {
-  --color-primario: #d71920;
-  --color-primario-oscuro: #b8141a;
-  --color-primario-claro: #fdeaea;
-  --color-primario-badge: #f9dede;
-  --color-borde: #dcdcdc;
-  --color-texto: #222222;
-  --color-texto-suave: #777777;
-  --radio-boton: 5px;
-  --radio-tarjeta: 4px;
-}
+/* ── Estilos de otros módulos que ya afectaban a este (copiados para conservar el aspecto; ver README) ── */
 
-@keyframes entrada-escala {
+:where(.adm-horarios) select {
+    border: 1px solid #d4d4d4;
+    color: #333333;
+    font-size: 14px;
+    padding: 10px;
+    border-radius: 10px;
+    height: 40px;
+    width: 100%;}@keyframes entrada-escala {
   from {
     opacity: 0;
     transform: scale(0.95) translateY(14px);
@@ -22,19 +19,19 @@
   }
 }
 
-.titulo-panel {
+:where(.adm-horarios) .titulo-panel {
   font-size: 17px;
   font-weight: 700;
   color: var(--color-texto);
   margin-bottom: 3px;
 }
 
-.descripcion-panel {
+:where(.adm-horarios) .descripcion-panel {
   font-size: 12px;
   color: var(--color-texto-suave);
 }
 
-.btn-nueva-categoria {
+:where(.adm-horarios) .btn-nueva-categoria {
   display: inline-flex;
   align-items: center;
   gap: 5px;
@@ -50,15 +47,15 @@
   white-space: nowrap;
 }
 
-.btn-nueva-categoria:hover {
+:where(.adm-horarios) .btn-nueva-categoria:hover {
   background-color: var(--color-primario-oscuro);
 }
 
-.btn-nueva-categoria:active {
+:where(.adm-horarios) .btn-nueva-categoria:active {
   transform: scale(0.98);
 }
 
-.btn-nueva-competencia {
+:where(.adm-horarios) .btn-nueva-competencia {
   display: inline-flex;
   align-items: center;
   gap: 7px;
@@ -74,16 +71,16 @@
   white-space: nowrap;
 }
 
-.btn-nueva-competencia:hover {
+:where(.adm-horarios) .btn-nueva-competencia:hover {
   background-color: var(--color-primario);
   color: #fff;
 }
 
-.btn-nueva-competencia:active {
+:where(.adm-horarios) .btn-nueva-competencia:active {
   transform: scale(0.98);
 }
 
-.etiqueta-pestania {
+:where(.adm-horarios) .etiqueta-pestania {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -100,21 +97,21 @@
   white-space: nowrap;
 }
 
-.etiqueta-pestania:hover {
+:where(.adm-horarios) .etiqueta-pestania:hover {
   color: var(--color-primario);
 }
 
-.etiqueta-pestania.activa {
+:where(.adm-horarios) .etiqueta-pestania.activa {
   color: var(--color-primario);
   border-bottom-color: var(--color-primario);
   font-weight: 700;
 }
 
-.barra-pestanias {
+:where(.adm-horarios) .barra-pestanias {
   border-bottom: 2px solid var(--color-borde);
 }
 
-.tarjeta-categoria {
+:where(.adm-horarios) .tarjeta-categoria {
   background: #fff;
   border-radius: 10px;
   overflow: hidden;
@@ -126,21 +123,21 @@
   height: 100%;
 }
 
-.tarjeta-categoria:hover {
+:where(.adm-horarios) .tarjeta-categoria:hover {
   transform: translateY(-3px);
   box-shadow: 0 8px 20px rgba(0, 0, 0, .12);
 }
 
-.tarjeta-categoria.inhabilitada {
+:where(.adm-horarios) .tarjeta-categoria.inhabilitada {
   opacity: .48;
   filter: grayscale(55%);
 }
 
-.tarjeta-categoria.inhabilitada .encabezado-categoria {
+:where(.adm-horarios) .tarjeta-categoria.inhabilitada .encabezado-categoria {
   background: #9e9e9e;
 }
 
-.encabezado-categoria {
+:where(.adm-horarios) .encabezado-categoria {
   background-color: var(--color-primario);
   color: #fff;
   text-align: center;
@@ -151,14 +148,14 @@
   line-height: 1.3;
 }
 
-.cuerpo-categoria {
+:where(.adm-horarios) .cuerpo-categoria {
   padding: 18px 16px 16px;
   display: flex;
   flex-direction: column;
   flex: 1;
 }
 
-.info-entrenador {
+:where(.adm-horarios) .info-entrenador {
   display: flex;
   align-items: flex-start;
   gap: 14px;
@@ -166,7 +163,7 @@
   flex: 1;
 }
 
-.foto-entrenador {
+:where(.adm-horarios) .foto-entrenador {
   width: 72px;
   height: 90px;
   object-fit: cover;
@@ -176,7 +173,7 @@
   background-color: #e8e8e8;
 }
 
-.datos-entrenador h3 {
+:where(.adm-horarios) .datos-entrenador h3 {
   font-size: 15px;
   font-weight: 700;
   color: var(--color-texto);
@@ -184,13 +181,13 @@
   line-height: 1.2;
 }
 
-.horarios {
+:where(.adm-horarios) .horarios {
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
 
-.insignia-horario {
+:where(.adm-horarios) .insignia-horario {
   display: inline-flex;
   align-items: center;
   gap: 7px;
@@ -207,12 +204,12 @@
   text-overflow: ellipsis;
 }
 
-.insignia-horario i {
+:where(.adm-horarios) .insignia-horario i {
   font-size: 12px;
 }
 
-.acciones-categoria,
-.acciones-competencia {
+:where(.adm-horarios) .acciones-categoria,
+:where(.adm-horarios) .acciones-competencia {
   display: flex;
   gap: 10px;
   justify-content: center;
@@ -221,8 +218,8 @@
   border-top: 1px solid #f0f0f0;
 }
 
-.btn-modificar,
-.btn-inhabilitar {
+:where(.adm-horarios) .btn-modificar,
+:where(.adm-horarios) .btn-inhabilitar {
   padding: 7px 0;
   width: 110px;
   border: 1.5px solid var(--color-primario);
@@ -236,18 +233,18 @@
   text-align: center;
 }
 
-.btn-modificar:hover,
-.btn-inhabilitar:hover {
+:where(.adm-horarios) .btn-modificar:hover,
+:where(.adm-horarios) .btn-inhabilitar:hover {
   background-color: var(--color-primario);
   color: #fff;
 }
 
-.barra-sub-pestanias {
+:where(.adm-horarios) .barra-sub-pestanias {
   border-bottom: 1px solid var(--color-borde);
   padding-bottom: 16px;
 }
 
-.sub-etiqueta {
+:where(.adm-horarios) .sub-etiqueta {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -263,19 +260,19 @@
   white-space: nowrap;
 }
 
-.sub-etiqueta:hover {
+:where(.adm-horarios) .sub-etiqueta:hover {
   color: var(--color-primario);
   border-color: var(--color-primario);
   background: var(--color-primario-claro);
 }
 
-.sub-etiqueta.activa {
+:where(.adm-horarios) .sub-etiqueta.activa {
   color: #fff;
   background: var(--color-primario);
   border-color: var(--color-primario);
 }
 
-.sub-count {
+:where(.adm-horarios) .sub-count {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -288,11 +285,11 @@
   background: rgba(0, 0, 0, .08);
 }
 
-.sub-etiqueta.activa .sub-count {
+:where(.adm-horarios) .sub-etiqueta.activa .sub-count {
   background: rgba(255, 255, 255, .25);
 }
 
-.tarjeta-competencia {
+:where(.adm-horarios) .tarjeta-competencia {
   background: #fff;
   border-radius: 10px;
   overflow: hidden;
@@ -304,17 +301,17 @@
   animation: entrada-escala .5s ease both;
 }
 
-.tarjeta-competencia:hover {
+:where(.adm-horarios) .tarjeta-competencia:hover {
   transform: translateY(-3px);
   box-shadow: 0 8px 20px rgba(0, 0, 0, .12);
 }
 
-.tarjeta-competencia.inhabilitada {
+:where(.adm-horarios) .tarjeta-competencia.inhabilitada {
   opacity: .48;
   filter: grayscale(55%);
 }
 
-.figura-competencia {
+:where(.adm-horarios) .figura-competencia {
   position: relative;
   height: 200px;
   margin: 0;
@@ -323,7 +320,7 @@
   overflow: hidden;
 }
 
-.imagen-competencia {
+:where(.adm-horarios) .imagen-competencia {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -331,7 +328,7 @@
   display: block;
 }
 
-.figura-competencia .placeholder-trofeo {
+:where(.adm-horarios) .figura-competencia .placeholder-trofeo {
   width: 100%;
   height: 100%;
   display: flex;
@@ -341,7 +338,7 @@
   font-size: 2.2rem;
 }
 
-.insignia-estado {
+:where(.adm-horarios) .insignia-estado {
   position: absolute;
   top: 10px;
   right: 10px;
@@ -352,24 +349,24 @@
   letter-spacing: .2px;
 }
 
-.insignia-activa {
+:where(.adm-horarios) .insignia-activa {
   background: #d4edda;
   color: #1a6b30;
 }
 
-.insignia-inactiva {
+:where(.adm-horarios) .insignia-inactiva {
   background: #e9e9e9;
   color: #777777;
 }
 
-.cuerpo-competencia {
+:where(.adm-horarios) .cuerpo-competencia {
   padding: 16px 16px 14px;
   display: flex;
   flex-direction: column;
   flex: 1;
 }
 
-.nombre-competencia {
+:where(.adm-horarios) .nombre-competencia {
   font-size: 14.5px;
   font-weight: 700;
   color: var(--color-texto);
@@ -377,7 +374,7 @@
   line-height: 1.3;
 }
 
-.lista-datos {
+:where(.adm-horarios) .lista-datos {
   list-style: none;
   padding: 0;
   margin: 0 0 12px;
@@ -386,7 +383,7 @@
   gap: 6px;
 }
 
-.dato-item {
+:where(.adm-horarios) .dato-item {
   display: flex;
   align-items: flex-start;
   gap: 7px;
@@ -395,13 +392,13 @@
   line-height: 1.4;
 }
 
-.dato-item i {
+:where(.adm-horarios) .dato-item i {
   color: var(--color-primario);
   margin-top: 1px;
   font-size: 13px;
 }
 
-.superposicion-modal {
+:where(.adm-horarios) .superposicion-modal {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, .52);
@@ -410,7 +407,7 @@
   backdrop-filter: blur(2px);
 }
 
-.contenedor-modal {
+:where(.adm-horarios) .contenedor-modal {
   background: #fff;
   border-radius: 14px;
   width: 100%;
@@ -420,13 +417,13 @@
   box-shadow: 0 24px 64px rgba(0, 0, 0, .28);
 }
 
-.encabezado-modal {
+:where(.adm-horarios) .encabezado-modal {
   background: var(--color-primario);
   padding: 15px 20px;
   border-radius: 14px 14px 0 0;
 }
 
-.encabezado-modal h2 {
+:where(.adm-horarios) .encabezado-modal h2 {
   font-size: 17px;
   font-weight: 700;
   color: #fff;
@@ -434,27 +431,27 @@
   letter-spacing: .1px;
 }
 
-.cuerpo-modal {
+:where(.adm-horarios) .cuerpo-modal {
   padding: 22px 22px 8px;
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-.grupo-formulario {
+:where(.adm-horarios) .grupo-formulario {
   display: flex;
   flex-direction: column;
   gap: 7px;
 }
 
-.etiqueta-formulario {
+:where(.adm-horarios) .etiqueta-formulario {
   font-size: 12.5px;
   font-weight: 700;
   color: var(--color-texto);
   letter-spacing: .1px;
 }
 
-.campo-formulario {
+:where(.adm-horarios) .campo-formulario {
   padding: 9px 13px;
   border: 1.5px solid var(--color-borde);
   border-radius: 7px;
@@ -466,17 +463,17 @@
   width: 100%;
 }
 
-.campo-formulario:focus {
+:where(.adm-horarios) .campo-formulario:focus {
   border-color: var(--color-primario);
   box-shadow: 0 0 0 3px rgba(215, 25, 32, .10);
 }
 
-.campo-formulario::placeholder {
+:where(.adm-horarios) .campo-formulario::placeholder {
   color: #bbbbbb;
 }
 
-.zona-subida-foto,
-.zona-imagen-torneo {
+:where(.adm-horarios) .zona-subida-foto,
+:where(.adm-horarios) .zona-imagen-torneo {
   display: flex;
   align-items: center;
   gap: 14px;
@@ -488,19 +485,19 @@
   background: #fafafa;
 }
 
-.zona-subida-foto:hover,
-.zona-imagen-torneo:hover {
+:where(.adm-horarios) .zona-subida-foto:hover,
+:where(.adm-horarios) .zona-imagen-torneo:hover {
   border-color: var(--color-primario);
   background: var(--color-primario-claro);
 }
 
-.zona-imagen-torneo {
+:where(.adm-horarios) .zona-imagen-torneo {
   flex-direction: column;
   text-align: center;
   padding: 20px 14px;
 }
 
-.contenedor-vista-previa {
+:where(.adm-horarios) .contenedor-vista-previa {
   width: 52px;
   height: 66px;
   border-radius: 5px;
@@ -512,33 +509,33 @@
   justify-content: center;
 }
 
-.contenedor-vista-previa img {
+:where(.adm-horarios) .contenedor-vista-previa img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
 }
 
-.texto-principal-subida {
+:where(.adm-horarios) .texto-principal-subida {
   font-size: 13px;
   font-weight: 600;
   color: var(--color-texto);
   margin-bottom: 3px;
 }
 
-.pista-subida {
+:where(.adm-horarios) .pista-subida {
   font-size: 11.5px;
   color: var(--color-texto-suave);
   font-weight: 400;
 }
 
-.selector-dias {
+:where(.adm-horarios) .selector-dias {
   display: flex;
   gap: 7px;
   flex-wrap: wrap;
 }
 
-.btn-dia {
+:where(.adm-horarios) .btn-dia {
   padding: 7px 10px;
   min-width: 42px;
   border: 1.5px solid #d9d9d9;
@@ -552,49 +549,49 @@
   text-align: center;
 }
 
-.btn-dia:hover:not(.activo) {
+:where(.adm-horarios) .btn-dia:hover:not(.activo) {
   border-color: var(--color-primario);
   color: var(--color-primario);
 }
 
-.btn-dia:active {
+:where(.adm-horarios) .btn-dia:active {
   transform: scale(.94);
 }
 
-.btn-dia.activo {
+:where(.adm-horarios) .btn-dia.activo {
   background: var(--color-primario);
   border-color: var(--color-primario);
   color: #fff;
 }
 
-.fila-horario {
+:where(.adm-horarios) .fila-horario {
   display: flex;
   align-items: center;
   gap: 8px;
   margin-bottom: 8px;
 }
 
-.bloque-horario {
+:where(.adm-horarios) .bloque-horario {
   border: 1.5px solid var(--color-borde);
   border-radius: 10px;
   padding: 12px;
   background: #fafafa;
 }
 
-.selector-dias--bloque {
+:where(.adm-horarios) .selector-dias--bloque {
   margin-bottom: 10px;
 }
 
-.fila-horario--bloque {
+:where(.adm-horarios) .fila-horario--bloque {
   margin-bottom: 0;
 }
 
-.separador-hora {
+:where(.adm-horarios) .separador-hora {
   color: var(--color-texto-suave);
   font-weight: 600;
 }
 
-.btn-quitar-horario {
+:where(.adm-horarios) .btn-quitar-horario {
   width: 30px;
   height: 30px;
   border: none;
@@ -609,16 +606,16 @@
   transition: background .18s, color .18s, transform .12s;
 }
 
-.btn-quitar-horario:hover {
+:where(.adm-horarios) .btn-quitar-horario:hover {
   background: var(--color-primario);
   color: #fff;
 }
 
-.btn-quitar-horario:active {
+:where(.adm-horarios) .btn-quitar-horario:active {
   transform: scale(.9);
 }
 
-.btn-agregar-horario {
+:where(.adm-horarios) .btn-agregar-horario {
   width: 100%;
   padding: 9px 12px;
   border: 1.5px dashed #cccccc;
@@ -632,13 +629,13 @@
   transition: all .18s;
 }
 
-.btn-agregar-horario:hover {
+:where(.adm-horarios) .btn-agregar-horario:hover {
   border-color: var(--color-primario);
   color: var(--color-primario);
   background: var(--color-primario-claro);
 }
 
-.pie-modal {
+:where(.adm-horarios) .pie-modal {
   padding: 16px 22px 20px;
   display: flex;
   gap: 10px;
@@ -646,7 +643,7 @@
   border-top: 1px solid #f2f2f2;
 }
 
-.btn-cancelar-modal {
+:where(.adm-horarios) .btn-cancelar-modal {
   padding: 9px 22px;
   border: 1.5px solid #cccccc;
   background: #fff;
@@ -658,12 +655,12 @@
   transition: border-color .18s, color .18s;
 }
 
-.btn-cancelar-modal:hover {
+:where(.adm-horarios) .btn-cancelar-modal:hover {
   border-color: var(--color-primario);
   color: var(--color-primario);
 }
 
-.btn-guardar-modal {
+:where(.adm-horarios) .btn-guardar-modal {
   padding: 9px 22px;
   border: none;
   background: var(--color-primario);
@@ -676,21 +673,21 @@
   letter-spacing: .1px;
 }
 
-.btn-guardar-modal:hover {
+:where(.adm-horarios) .btn-guardar-modal:hover {
   background: var(--color-primario-oscuro);
 }
 
-.btn-guardar-modal:active {
+:where(.adm-horarios) .btn-guardar-modal:active {
   transform: scale(.97);
 }
 
-.campo-con-prefijo {
+:where(.adm-horarios) .campo-con-prefijo {
   position: relative;
   display: flex;
   align-items: center;
 }
 
-.prefijo-campo {
+:where(.adm-horarios) .prefijo-campo {
   position: absolute;
   left: 12px;
   color: var(--color-texto-suave);
@@ -699,82 +696,116 @@
   pointer-events: none;
 }
 
-.prefijo-icono {
+:where(.adm-horarios) .prefijo-icono {
   display: flex;
   align-items: center;
 }
 
-.prefijo-icono i {
+:where(.adm-horarios) .prefijo-icono i {
   font-size: 14px;
   color: var(--color-texto-suave);
 }
 
-.campo-con-simbolo {
+:where(.adm-horarios) .campo-con-simbolo {
   padding-left: 26px !important;
 }
 
-.campo-con-icono {
+:where(.adm-horarios) .campo-con-icono {
   padding-left: 34px !important;
 }
 
-.campo-con-prefijo:focus-within .prefijo-icono i {
+:where(.adm-horarios) .campo-con-prefijo:focus-within .prefijo-icono i {
   color: var(--color-primario);
 }
 
-.figura-preview-torneo {
+:where(.adm-horarios) .figura-preview-torneo {
   width: 100%;
 }
 
-.figura-preview-torneo img {
+:where(.adm-horarios) .figura-preview-torneo img {
   max-height: 100px;
   border-radius: 6px;
 }
 
-.placeholder-img-torneo i {
+:where(.adm-horarios) .placeholder-img-torneo i {
   font-size: 1.9rem;
   color: #cccccc;
 }
 
-.etiqueta-opcional {
+:where(.adm-horarios) .etiqueta-opcional {
   font-weight: 400;
   font-size: 11px;
   color: var(--color-texto-suave);
   margin-left: 4px;
 }
 
-.aviso-toast {
-  position: fixed;
-  bottom: 28px;
-  left: 50%;
-  transform: translateX(-50%) translateY(20px);
-  background: #222222;
-  color: #fff;
-  padding: 11px 22px;
+/* ── Estilos de otros módulos que ya afectaban a este (copiados para conservar el aspecto; ver README) ── */
+
+:where(.adm-horarios) select {
+    border: 1px solid #d4d4d4;
+    color: #333333;
+    font-size: 14px;
+    padding: 10px;
+    border-radius: 10px;
+    height: 40px;
+    width: 100%;}
+:where(.adm-horarios) .fila-horario {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;}
+:where(.adm-horarios) .cuerpo-modal {
+  padding: 22px;
+  max-height: 65vh;
+  overflow: auto;}
+:where(.adm-horarios) .pie-modal {
+  padding: 18px 22px;
+  border-top: 1px solid var(--gris-borde);
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;}
+:where(.adm-horarios) .etiqueta-formulario {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 13px;
+  font-weight: 700;}
+:where(.adm-horarios) .btn-cancelar-modal {
+  padding: 10px 18px;
+  background: #fff;
+  border: 1.5px solid var(--gris-borde);
   border-radius: 8px;
-  font-size: 13.5px;
-  font-weight: 500;
-  white-space: nowrap;
-  z-index: 4000;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity .25s ease, transform .25s ease;
-  box-shadow: 0 6px 24px rgba(0, 0, 0, .22);
-}
-
-.aviso-toast.visible {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
-  pointer-events: auto;
-}
-
-.aviso-toast.aviso-ok {
-  background: #1d8348;
-}
-
-.aviso-toast.aviso-advertencia {
-  background: #b7770d;
-}
-
-.aviso-toast.aviso-error {
-  background: var(--color-primario);
-}
+  cursor: pointer;
+  font-weight: 600;
+  font-family: inherit;}
+:where(.adm-horarios) .btn-guardar-modal {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  background: var(--rojo);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-family: inherit;}
+:where(.adm-horarios) .btn-guardar-modal:hover {
+  background: var(--rojo-hover);}
+:where(.adm-horarios) .campo-formulario {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;}
+:where(.adm-horarios) .campo-formulario label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--gris-texto);}
+:where(.adm-horarios) .campo-formulario input[type="text"] {
+    padding: 9px 13px;
+    border: 1px solid var(--gris-borde);
+    border-radius: var(--radio-sm);
+    font-size: 0.9rem;
+    color: var(--carbon);
+    outline: none;}
+:where(.adm-horarios) .campo-formulario input:focus {
+    border-color: var(--rojo);
+    box-shadow: 0 0 0 3px rgba(204, 0, 0, 0.1);}

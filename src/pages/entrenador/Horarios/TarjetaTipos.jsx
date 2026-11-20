@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { TIPOS_BASE, formatearRangoHora } from "./calendarioData";
-import { formatearDias } from "../../Admin/Horarios/horariosData";
+import { formatearDias } from "../../admin/Horarios/horariosData";
 
 const ICONO_TIPO = {
   Partner: "bi-people",

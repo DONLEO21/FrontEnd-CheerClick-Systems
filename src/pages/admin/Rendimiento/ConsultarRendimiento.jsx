@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { listarHabilidades, listarProgresoAtleta, listarNotas } from "../../../services/rendimientoAdminService";
 import imgusuario from "../../../assets/icons/usuarios.png";
 import { obtenerEstiloNivel } from "../../../components/utils/nivelEstilos";
 import "./ConsultarRendimiento.css";
@@ -12,7 +13,7 @@ const PESTANAS = [
   { key: "elite", label: "Élite", icon: <i class="bi bi-trophy"></i> },
 ];
 
-function ConsultarRendimiento({ atleta, onVolver }) {
+function ConsultarRendimiento({ atleta }) {
   const [habilidades, setHabilidades] = useState([]);
   const [progreso, setProgreso] = useState([]);
   const [notas, setNotas] = useState([]);
@@ -25,23 +26,9 @@ function ConsultarRendimiento({ atleta, onVolver }) {
 
   setCargando(true);
 
-  Promise.all([
-    fetch("http://localhost:3001/habilidades", { cache: "no-store" }).then((res) => res.json()),
-    fetch("http://localhost:3001/progresoHabilidades", { cache: "no-store" }).then((res) =>
-      res.json()
-    ),
-    fetch("http://localhost:3001/notas", { cache: "no-store" }).then((res) => res.json()),
-  ])
-    .then(([datosHabilidades, datosProgreso, datosNotas]) => {
-      const progresoDelAtleta = Array.isArray(datosProgreso)
-        ? datosProgreso.filter((p) => p.atletaId === atleta.id)
-        : [];
-
-      const notasDelAtleta = Array.isArray(datosNotas)
-        ? datosNotas.filter((n) => n.atletaId === atleta.id)
-        : [];
-
-      setHabilidades(Array.isArray(datosHabilidades) ? datosHabilidades : []);
+  Promise.all([listarHabilidades(), listarProgresoAtleta(atleta.id), listarNotas(atleta.id)])
+    .then(([datosHabilidades, progresoDelAtleta, notasDelAtleta]) => {
+      setHabilidades(datosHabilidades);
       setProgreso(progresoDelAtleta);
       setNotas(notasDelAtleta);
     })
@@ -80,10 +67,10 @@ function ConsultarRendimiento({ atleta, onVolver }) {
   if (!atleta) return null;
 
   return (
-    <main id="conteni" className="mt-3">
-      <aside id="conte-infor">
+    <main className="mt-3 adm-rendimiento-conteni">
+      <aside className="adm-rendimiento-conte-infor">
         <div>
-          <img id="foto" src={imgusuario} alt="Foto Atleta" />
+          <img className="adm-rendimiento-foto" src={imgusuario} alt="Foto Atleta" />
         </div>
         <div>
           <h3>Detalle del Atleta</h3>
@@ -97,7 +84,7 @@ function ConsultarRendimiento({ atleta, onVolver }) {
         </div>
       </aside>
 
-      <section id="targetas-consulta">
+      <section className="adm-rendimiento-targetas-consulta">
         <div className="targe">
           <h4 className="titu">Puntaje Total</h4>
           <div className="conte-targe">
@@ -125,11 +112,11 @@ function ConsultarRendimiento({ atleta, onVolver }) {
 
       </section>
 
-      <section id="panel-infor">
-        <div id="conte-esta">
+      <section className="adm-rendimiento-panel-infor">
+        <div className="adm-rendimiento-conte-esta">
           <h3>Desempeño</h3>
 
-          <section id="fil-busque">
+          <section className="adm-rendimiento-fil-busque">
             <input
               type="search"
               placeholder="Buscar Habilidad..."
@@ -137,7 +124,7 @@ function ConsultarRendimiento({ atleta, onVolver }) {
               value={busquedaHabilidad}
               onChange={(e) => setBusquedaHabilidad(e.target.value)}
             />
-            <div id="bnt">
+            <div className="adm-rendimiento-bnt">
               {PESTANAS.map((pestana) => (
                 <button
                   key={pestana.key}
@@ -152,7 +139,7 @@ function ConsultarRendimiento({ atleta, onVolver }) {
             </div>
           </section>
 
-          <section id="habilidades">
+          <section className="adm-rendimiento-habilidades">
             {cargando ? (
               <p className="text-muted text-center py-4">Cargando habilidades...</p>
             ) : (
@@ -186,7 +173,7 @@ function ConsultarRendimiento({ atleta, onVolver }) {
           </section>
         </div>
       </section>
-      <footer id="notas-entre">
+      <footer className="adm-rendimiento-notas-entre">
         <h3>Notas del Entrenador</h3>
         {notas.length > 0 ? (
           notas.map((nota) => (

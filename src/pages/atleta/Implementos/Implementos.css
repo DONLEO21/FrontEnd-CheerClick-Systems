@@ -1,53 +1,177 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Varela+Round&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Arimo:ital,wght@0,400..700;1,400..700&display=swap');
+/* ── Estilos de otros módulos que ya afectaban a este (copiados para conservar el aspecto; ver README) ── */
 
-:root {
-    --rojo: #cc0000;
-    --rojo-oscuro: #a80000;
-    --dorado: #fad755;
-    --dorado-oscuro: #d4aa00;
-    --carbon: #1a1a1a;
-    --gris-hielo: #f4f6f8;
-    --gris-borde: #e2e8f0;
-    --gris-texto: #64748b;
-    --verde: #16a34a;
-    --verde-claro: #dcfce7;
-    --azul-info: #3b82f6;
-    --azul-info-bg: #eff6ff;
-    --blanco: #ffffff;
-    --sombra-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
-    --sombra-md: 0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
-    --radio: 12px;
-    --radio-sm: 8px;
-    --radio-pill: 999px;
-    --font: "Inter", system-ui, sans-serif;
-    --trans: 0.2s ease;
-}
-
-.pagina-implementos {
-    font-family: var(--font);
+:where(.atl-implementos) .tab-btn {
+    padding: 7px 18px;
+    border-radius: 6px;
+    font-size: var(--texto-sm);
+    font-weight: 600;
+    color: var(--texto-muted);
+    transition: var(--transicion);}
+:where(.atl-implementos) .tab-btn:hover { color: var(--texto-dark);}
+:where(.atl-implementos) .campo-formulario {
+  padding: 9px 13px;
+  border: 1.5px solid var(--color-borde);
+  border-radius: 7px;
+  font-size: 13.5px;
+  color: var(--color-texto);
+  outline: none;
+  background: #fff;
+  transition: border-color .18s, box-shadow .18s;
+  width: 100%;}
+:where(.atl-implementos) .campo-formulario:focus {
+  border-color: var(--color-primario);
+  box-shadow: 0 0 0 3px rgba(215, 25, 32, .10);}
+:where(.atl-implementos) .campo-formulario::placeholder {
+  color: #bbbbbb;}
+:where(.atl-implementos) .tab-btn {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 0 0 10px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--gris-suave);
+  cursor: pointer;}
+:where(.atl-implementos) .search-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--gris-borde-input);
+  border-radius: 8px;
+  padding: 6px 12px;
+  background: var(--blanco);
+  min-width: 240px;
+  color: var(--gris-suave);}
+:where(.atl-implementos) .search-box input {
+  border: none;
+  outline: none;
+  flex: 1;
+  font-size: 0.85rem;}
+:where(.atl-implementos) .filtro-caja-custom {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #ffffff;
+  padding: 4px 12px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  position: relative;}
+:where(.atl-implementos) .filtro-label {
+  color: var(--gris-suave, #999999);
+  font-size: 0.85rem;
+  font-weight: 500;
+  white-space: nowrap;}
+:where(.atl-implementos) .custom-dropdown {
+  position: relative;}
+:where(.atl-implementos) .custom-dropdown-btn {
+  background: transparent;
+  border: none;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--carbon-oscuro, #2b2b2b);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 2px;
+  outline: none;}
+:where(.atl-implementos) .arrow-icon {
+  transition: transform 0.2s ease;
+  color: #666;}
+:where(.atl-implementos) .custom-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  min-width: 130px;
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  padding: 6px 0;
+  margin: 0;
+  list-style: none;
+  z-index: 1000;
+  border: 1px solid #f0f0f0;
+  animation: fadeIn 0.15s ease-in-out;}
+:where(.atl-implementos) .custom-dropdown-item {
+  padding: 8px 14px;
+  font-size: 13px;
+  color: #444444;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;}
+:where(.atl-implementos) .custom-dropdown-item:hover {
+  background-color: #fdf2f2;
+  color: #dc3545;}
+:where(.atl-implementos) .tab-btn {
+    padding: 10px 22px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    color: #858585;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;}
+:where(.atl-implementos) .tabla-contenido {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 2px;}
+:where(.atl-implementos) .tab-btn {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #666;
+    cursor: pointer;
+    border: none;
+    background: none;
+    border-bottom: 2.5px solid transparent;
+    margin-bottom: -1.5px;
+    transition: color 0.2s, border-color 0.2s;
+    white-space: nowrap;}
+:where(.atl-implementos) .tab-btn:hover {
+    color: var(--color-primario);}
+:where(.atl-implementos) .btn-cerrar-modal {
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: var(--gris-fondo);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: .2s;
+  flex-shrink: 0;
+  color: var(--texto-dark);}
+:where(.atl-implementos) .btn-cerrar-modal:hover {
+  background: #ececec;}
+:where(.atl-implementos) .subtitulo-seccion {
+  font-size: 13px;
+  color: var(--texto-muted);
+  margin-top: 3px;}:where(.atl-implementos) .pagina-implementos {
     padding: 28px 24px;
     display: block;
-    font-family: 'Varela Round', 'Segoe UI', sans-serif;
     background-color: #f0f2f6;
-    min-height: calc(100vh - 55px);
+    min-height: calc(100vh - var(--alto-encabezado));
 }
 
-.pagina-implementos h1 {
+:where(.atl-implementos) .pagina-implementos h1 {
     font-size: 1.75rem;
     font-weight: 800;
     color: var(--carbon);
     margin: 0 0 4px;
 }
 
-.pagina-implementos>p {
+:where(.atl-implementos) .pagina-implementos>p {
     color: var(--gris-texto);
     font-size: 0.95rem;
     margin: 0 0 20px;
 }
 
-.contenedor-informacion {
+:where(.atl-implementos) .contenedor-informacion {
     display: inline-flex;
     align-items: center;
     gap: 8px;
@@ -58,29 +182,29 @@
     margin-bottom: 24px;
 }
 
-.icono-informacion {
+:where(.atl-implementos) .icono-informacion {
     font-size: 14px; 
 }
 
-.icono-informacion svg {
+:where(.atl-implementos) .icono-informacion svg {
     color: var(--azul-info);
 }
 
-.texto-informacion {
+:where(.atl-implementos) .texto-informacion {
     font-size: 0.85rem;
     font-weight: 500;
     color: var(--azul-info);
     margin: 0;
 }
 
-.tabla-contenido {
+:where(.atl-implementos) .tabla-contenido {
     display: flex;
     gap: 8px;
     margin-bottom: 28px;
     border-bottom: 2px solid var(--gris-borde);
 }
 
-.tab-btn {
+:where(.atl-implementos) .tab-btn {
     position: relative;
     padding: 11px 22px 13px;
     background: transparent;
@@ -89,22 +213,21 @@
     cursor: pointer;
     font-size: 0.9rem;
     font-weight: 600;
-    font-family: var(--font);
     transition: color var(--trans);
     border-bottom: 2px solid transparent;
     margin-bottom: -2px;
 }
 
-.tab-btn:hover {
+:where(.atl-implementos) .tab-btn:hover {
     color: var(--carbon);
 }
 
-.tab-btn.activo {
+:where(.atl-implementos) .tab-btn.activo {
     color: var(--rojo);
     border-bottom-color: var(--rojo);
 }
 
-.barra-filtros-modulo {
+:where(.atl-implementos) .barra-filtros-modulo {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -112,19 +235,19 @@
     margin: 0 0 28px;
 }
 
-.filtro-buscar input:focus {
+:where(.atl-implementos) .filtro-buscar input:focus {
     border-color: var(--rojo);
     box-shadow: 0 0 0 3px rgba(204, 0, 0, 0.1);
 }
 
-.filtro-selectores {
+:where(.atl-implementos) .filtro-selectores {
     display: flex;
     align-items: center;
     gap: 10px;
     flex-wrap: wrap;
 }
 
-.subtitulo-seccion {
+:where(.atl-implementos) .subtitulo-seccion {
     font-size: 1.05rem;
     font-weight: 700;
     color: var(--carbon);
@@ -133,7 +256,7 @@
     border-left: 3px solid var(--rojo);
 }
 
-.alerta-error {
+:where(.atl-implementos) .alerta-error {
     background: #fff1f2;
     color: #e11d48;
     border: 1px solid rgba(225, 29, 72, 0.2);
@@ -143,14 +266,14 @@
     margin-bottom: 16px;
 }
 
-.grid-productos {
+:where(.atl-implementos) .grid-productos {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 18px;
     margin-bottom: 36px;
 }
 
-.tarjeta-producto {
+:where(.atl-implementos) .tarjeta-producto {
     background: var(--blanco);
     border: 1px solid var(--gris-borde);
     border-radius: var(--radio);
@@ -161,13 +284,13 @@
     transition: transform var(--trans), box-shadow var(--trans), border-color var(--trans);
 }
 
-.tarjeta-producto:hover {
+:where(.atl-implementos) .tarjeta-producto:hover {
     transform: translateY(-3px);
     box-shadow: var(--sombra-md);
     border-color: #cbd5e1;
 }
 
-.producto-imagen {
+:where(.atl-implementos) .producto-imagen {
     background: var(--gris-hielo);
     height: 160px;
     display: flex;
@@ -175,18 +298,18 @@
     align-items: center;
 }
 
-.producto-imagen img {
+:where(.atl-implementos) .producto-imagen img {
     max-height: 82%;
     max-width: 82%;
     object-fit: contain;
     transition: transform 0.3s ease;
 }
 
-.tarjeta-producto:hover .producto-imagen img {
+:where(.atl-implementos) .tarjeta-producto:hover .producto-imagen img {
     transform: scale(1.05);
 }
 
-.producto-info {
+:where(.atl-implementos) .producto-info {
     padding: 14px 16px 16px;
     display: flex;
     flex-direction: column;
@@ -194,7 +317,7 @@
     gap: 4px;
 }
 
-.producto-info h4 {
+:where(.atl-implementos) .producto-info h4 {
     font-size: 0.92rem;
     font-weight: 700;
     color: var(--carbon);
@@ -202,37 +325,37 @@
     line-height: 1.35;
 }
 
-.calificacion {
+:where(.atl-implementos) .calificacion {
     display: flex;
     align-items: center;
     gap: 2px;
     margin-bottom: 6px;
 }
 
-.estrella-llena {
+:where(.atl-implementos) .estrella-llena {
     color: var(--dorado-oscuro);
     font-size: 13px;
 }
 
-.estrella-vacia {
+:where(.atl-implementos) .estrella-vacia {
     color: #d1d5db;
     font-size: 13px;
 }
 
-.conteo-resenas {
+:where(.atl-implementos) .conteo-resenas {
     font-size: 0.78rem;
     color: var(--gris-texto);
     margin-left: 3px;
 }
 
-.precio {
+:where(.atl-implementos) .precio {
     font-size: 1.05rem;
     font-weight: 800;
     color: var(--carbon);
     margin: 4px 0 12px;
 }
 
-.btn-agregar-carrito {
+:where(.atl-implementos) .btn-agregar-carrito {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -244,29 +367,28 @@
     border-radius: var(--radio-sm);
     font-weight: 700;
     font-size: 0.85rem;
-    font-family: var(--font);
     cursor: pointer;
     margin-top: auto;
     transition: background var(--trans), transform 0.1s;
 }
 
-.btn-agregar-carrito:hover {
+:where(.atl-implementos) .btn-agregar-carrito:hover {
     background: var(--dorado-oscuro);
 }
 
-.btn-agregar-carrito:active {
+:where(.atl-implementos) .btn-agregar-carrito:active {
     transform: scale(0.98);
 }
 
 /* Mis pedidos */
-.lista-pedidos {
+:where(.atl-implementos) .lista-pedidos {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
     gap: 20px;
     margin-top: 4px;
 }
 
-.tarjeta-pedido {
+:where(.atl-implementos) .tarjeta-pedido {
     background: var(--blanco);
     border: 1px solid var(--gris-borde);
     border-radius: var(--radio);
@@ -275,24 +397,24 @@
     transition: box-shadow var(--trans), border-color var(--trans);
 }
 
-.tarjeta-pedido:hover {
+:where(.atl-implementos) .tarjeta-pedido:hover {
     box-shadow: var(--sombra-md);
     border-color: #cbd5e1;
 }
 
-.pago-metodo {
+:where(.atl-implementos) .pago-metodo {
     font-size: 0.78rem;
     color: var(--gris-texto);
     margin: 2px 0 0;
 }
 
-.motivo-rechazo {
+:where(.atl-implementos) .motivo-rechazo {
     font-size: 0.78rem;
     color: #e11d48;
     margin: 4px 0 0;
 }
 
-.estado-tag {
+:where(.atl-implementos) .estado-tag {
     display: inline-block;
     padding: 4px 12px;
     border-radius: var(--radio-pill);
@@ -301,31 +423,31 @@
     white-space: nowrap;
 }
 
-.estado-pendiente {
+:where(.atl-implementos) .estado-pendiente {
     background: #fef9c3;
     color: #854d0e;
     border: 1px solid #fde68a;
 }
 
-.estado-listo {
+:where(.atl-implementos) .estado-listo {
     background: var(--verde-claro);
     color: var(--verde);
     border: 1px solid #bbf7d0;
 }
 
-.estado-rechazado {
+:where(.atl-implementos) .estado-rechazado {
     background: #fff1f2;
     color: #e11d48;
     border: 1px solid rgba(225, 29, 72, 0.2);
 }
 
-.estado-cancelado {
+:where(.atl-implementos) .estado-cancelado {
     background: #f1f5f9;
     color: #64748b;
     border: 1px solid var(--gris-borde);
 }
 
-.btn-cancelar-pedido {
+:where(.atl-implementos) .btn-cancelar-pedido {
     background: transparent;
     color: var(--rojo);
     border: 1.5px solid var(--rojo);
@@ -333,17 +455,16 @@
     border-radius: var(--radio-sm);
     font-size: 0.78rem;
     font-weight: 700;
-    font-family: var(--font);
     cursor: pointer;
     transition: background var(--trans), color var(--trans);
 }
 
-.btn-cancelar-pedido:hover {
+:where(.atl-implementos) .btn-cancelar-pedido:hover {
     background: var(--rojo);
     color: var(--blanco);
 }
 
-dialog.dialog-atleta {
+:where(.atl-implementos) dialog.dialog-atleta {
     border: none;
     border-radius: 20px;
     padding: 0;
@@ -358,23 +479,22 @@ dialog.dialog-atleta {
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    font-family: var(--font);
 }
 
-dialog.dialog-atleta:not([open]) {
+:where(.atl-implementos) dialog.dialog-atleta:not([open]) {
     display: none;
 }
 
-dialog.dialog-atleta::backdrop {
+:where(.atl-implementos) dialog.dialog-atleta::backdrop {
     background: rgba(0, 0, 0, 0.52);
     backdrop-filter: blur(3px);
 }
 
-dialog.dialog-cancelar {
+:where(.atl-implementos) dialog.dialog-cancelar {
     width: 360px;
 }
 
-.modal-header {
+:where(.atl-implementos) .modal-header {
     position: static;
     display: flex;
     align-items: center;
@@ -386,7 +506,7 @@ dialog.dialog-cancelar {
     transition: background var(--trans), color var(--trans);
 }
 
-.modal-header-icono {
+:where(.atl-implementos) .modal-header-icono {
     width: 36px;
     height: 36px;
     background: #fff0f0;
@@ -398,7 +518,7 @@ dialog.dialog-cancelar {
     color: var(--rojo);
 }
 
-.modal-header h3 {
+:where(.atl-implementos) .modal-header h3 {
     font-size: 1.05rem;
     font-weight: 700;
     color: var(--carbon);
@@ -407,7 +527,7 @@ dialog.dialog-cancelar {
     letter-spacing: -0.02em;
 }
 
-.btn-cerrar-modal {
+:where(.atl-implementos) .btn-cerrar-modal {
     background: var(--gris-hielo);
     border: none;
     cursor: pointer;
@@ -422,12 +542,12 @@ dialog.dialog-cancelar {
     flex-shrink: 0;
 }
 
-.btn-cerrar-modal:hover {
+:where(.atl-implementos) .btn-cerrar-modal:hover {
     background: #e2e8f0;
     color: var(--carbon);
 }
 
-.modal-body {
+:where(.atl-implementos) .modal-body {
     padding: 20px 24px 24px;
     display: flex;
     flex-direction: column;
@@ -436,7 +556,7 @@ dialog.dialog-cancelar {
     gap: 24px;
 }
 
-.modal-tarjeta-producto {
+:where(.atl-implementos) .modal-tarjeta-producto {
     border: 1.5px solid var(--gris-borde);
     border-radius: var(--radio);
     padding: 14px;
@@ -447,11 +567,11 @@ dialog.dialog-cancelar {
     overflow: hidden;
 }
 
-.dialog-atleta svg{
+:where(.atl-implementos) .dialog-atleta svg {
     color: #A80000;
 }
 
-.modal-tarjeta-producto::before {
+:where(.atl-implementos) .modal-tarjeta-producto::before {
     content: "";
     position: absolute;
     left: 0;
@@ -462,7 +582,7 @@ dialog.dialog-cancelar {
     border-radius: 4px 0 0 4px;
 }
 
-.modal-tarjeta-img {
+:where(.atl-implementos) .modal-tarjeta-img {
     width: 64px;
     height: 64px;
     object-fit: contain;
@@ -472,13 +592,13 @@ dialog.dialog-cancelar {
     flex-shrink: 0;
 }
 
-.modal-tarjeta-info {
+:where(.atl-implementos) .modal-tarjeta-info {
     display: flex;
     flex-direction: column;
     gap: 3px;
 }
 
-.modal-tarjeta-badge {
+:where(.atl-implementos) .modal-tarjeta-badge {
     font-size: 0.7rem;
     font-weight: 700;
     letter-spacing: 0.06em;
@@ -486,7 +606,7 @@ dialog.dialog-cancelar {
     text-transform: uppercase;
 }
 
-.modal-tarjeta-nombre {
+:where(.atl-implementos) .modal-tarjeta-nombre {
     font-size: 0.97rem;
     font-weight: 800;
     color: var(--carbon);
@@ -494,7 +614,7 @@ dialog.dialog-cancelar {
     letter-spacing: -0.01em;
 }
 
-.modal-tarjeta-precio {
+:where(.atl-implementos) .modal-tarjeta-precio {
     font-size: 1rem;
     font-weight: 800;
     color: var(--rojo);
@@ -502,19 +622,19 @@ dialog.dialog-cancelar {
     letter-spacing: -0.02em;
 }
 
-.formulario-pedido {
+:where(.atl-implementos) .formulario-pedido {
     display: flex;
     flex-direction: column;
     gap: 20px;
 }
 
-.form-section {
+:where(.atl-implementos) .form-section {
     display: flex;
     flex-direction: column;
     gap: 12px;
 }
 
-.form-section-label {
+:where(.atl-implementos) .form-section-label {
     display: flex;
     align-items: center;
     gap: 6px;
@@ -526,44 +646,43 @@ dialog.dialog-cancelar {
     margin: 0 0 4px;
 }
 
-.fila-formulario {
+:where(.atl-implementos) .fila-formulario {
     display: flex;
     gap: 14px;
     align-items: flex-start;
 }
 
-.campo-formulario {
+:where(.atl-implementos) .campo-formulario {
     display: flex;
     flex-direction: column;
     gap: 6px;
 }
 
-.campo-formulario label {
+:where(.atl-implementos) .campo-formulario label {
     font-size: 0.82rem;
     font-weight: 600;
     color: var(--gris-texto);
 }
 
-.campo-formulario input[type="text"] {
+:where(.atl-implementos) .campo-formulario input[type="text"] {
     padding: 9px 13px;
     border: 1px solid var(--gris-borde);
     border-radius: var(--radio-sm);
     font-size: 0.9rem;
-    font-family: var(--font);
     color: var(--carbon);
     outline: none;
 }
 
-.campo-formulario input:focus {
+:where(.atl-implementos) .campo-formulario input:focus {
     border-color: var(--rojo);
     box-shadow: 0 0 0 3px rgba(204, 0, 0, 0.1);
 }
 
-.c-corto {
+:where(.atl-implementos) .c-corto {
     flex-shrink: 0;
 }
 
-.control-cantidad {
+:where(.atl-implementos) .control-cantidad {
     display: flex;
     align-items: center;
     border: 1px solid var(--gris-borde);
@@ -571,7 +690,7 @@ dialog.dialog-cancelar {
     overflow: hidden;
 }
 
-.control-cantidad button {
+:where(.atl-implementos) .control-cantidad button {
     width: 36px;
     height: 40px;
     background: var(--gris-hielo);
@@ -582,11 +701,11 @@ dialog.dialog-cancelar {
     font-weight: 700;
 }
 
-.control-cantidad button:hover {
+:where(.atl-implementos) .control-cantidad button:hover {
     background: #e2e8f0;
 }
 
-.control-cantidad input {
+:where(.atl-implementos) .control-cantidad input {
     width: 52px;
     text-align: center;
     border: none;
@@ -598,17 +717,17 @@ dialog.dialog-cancelar {
     outline: none;
 }
 
-.opciones-pago-tarjetas {
+:where(.atl-implementos) .opciones-pago-tarjetas {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 10px;
 }
 
-.opciones-pago-tarjetas input[type="radio"] {
+:where(.atl-implementos) .opciones-pago-tarjetas input[type="radio"] {
     display: none;
 }
 
-.tarjeta-pago-label {
+:where(.atl-implementos) .tarjeta-pago-label {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -623,17 +742,17 @@ dialog.dialog-cancelar {
     background: var(--blanco);
 }
 
-.tarjeta-pago-label:hover {
+:where(.atl-implementos) .tarjeta-pago-label:hover {
     border-color: #cbd5e1;
     background: var(--gris-hielo);
 }
 
-.opciones-pago-tarjetas input:checked+.tarjeta-pago-label {
+:where(.atl-implementos) .opciones-pago-tarjetas input:checked+.tarjeta-pago-label {
     border-color: var(--rojo);
     background: #fff5f5;
 }
 
-.pago-check {
+:where(.atl-implementos) .pago-check {
     position: absolute;
     top: 8px;
     right: 8px;
@@ -644,12 +763,12 @@ dialog.dialog-cancelar {
     background: var(--blanco);
 }
 
-.opciones-pago-tarjetas input:checked+.tarjeta-pago-label .pago-check {
+:where(.atl-implementos) .opciones-pago-tarjetas input:checked+.tarjeta-pago-label .pago-check {
     background: var(--rojo);
     border-color: var(--rojo);
 }
 
-.pago-icono {
+:where(.atl-implementos) .pago-icono {
     font-size: 1.4rem;
     width: 48px;
     height: 48px;
@@ -660,23 +779,23 @@ dialog.dialog-cancelar {
     justify-content: center;
 }
 
-.opciones-pago-tarjetas input:checked+.tarjeta-pago-label .pago-icono {
+:where(.atl-implementos) .opciones-pago-tarjetas input:checked+.tarjeta-pago-label .pago-icono {
     background: #ffe4e4;
 }
 
-.pago-titulo {
+:where(.atl-implementos) .pago-titulo {
     font-size: 0.85rem;
     font-weight: 700;
     color: var(--carbon);
 }
 
-.pago-subtitulo {
+:where(.atl-implementos) .pago-subtitulo {
     font-size: 0.75rem;
     color: var(--gris-texto);
     margin-top: -4px;
 }
 
-.zona-upload {
+:where(.atl-implementos) .zona-upload {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -689,35 +808,35 @@ dialog.dialog-cancelar {
     text-align: center;
 }
 
-.zona-upload:hover,
-.zona-upload--activa {
+:where(.atl-implementos) .zona-upload:hover,
+:where(.atl-implementos) .zona-upload--activa {
     border-color: var(--rojo);
     background: #fff5f5;
 }
 
-.zona-upload-icono {
+:where(.atl-implementos) .zona-upload-icono {
     font-size: 1.2rem;
 }
 
-.zona-upload-texto {
+:where(.atl-implementos) .zona-upload-texto {
     font-size: 0.88rem;
     font-weight: 600;
     color: var(--carbon);
     margin: 0;
 }
 
-.zona-upload-hint {
+:where(.atl-implementos) .zona-upload-hint {
     font-size: 0.78rem;
     color: var(--gris-texto);
 }
 
-.zona-upload-nombre {
+:where(.atl-implementos) .zona-upload-nombre {
     font-size: 0.78rem;
     color: var(--rojo);
     font-weight: 600;
 }
 
-.modal-resumen-precio {
+:where(.atl-implementos) .modal-resumen-precio {
     background: var(--gris-hielo);
     border: 1px solid var(--gris-borde);
     border-radius: var(--radio-sm);
@@ -727,7 +846,7 @@ dialog.dialog-cancelar {
     gap: 8px;
 }
 
-.resumen-fila {
+:where(.atl-implementos) .resumen-fila {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -735,22 +854,22 @@ dialog.dialog-cancelar {
     color: var(--gris-texto);
 }
 
-.resumen-divider {
+:where(.atl-implementos) .resumen-divider {
     border-top: 1px solid var(--gris-borde);
     margin: 2px 0;
 }
 
-.resumen-total {
+:where(.atl-implementos) .resumen-total {
     font-size: 1rem;
     font-weight: 800;
     color: var(--carbon);
 }
 
-.resumen-total span:last-child {
+:where(.atl-implementos) .resumen-total span:last-child {
     color: var(--rojo);
 }
 
-.btn-enviar-pedido {
+:where(.atl-implementos) .btn-enviar-pedido {
     background: var(--rojo);
     color: var(--blanco);
     border: none;
@@ -759,21 +878,20 @@ dialog.dialog-cancelar {
     border-radius: var(--radio-sm);
     font-weight: 700;
     font-size: 0.97rem;
-    font-family: var(--font);
     cursor: pointer;
 }
 
-.btn-enviar-pedido:hover {
+:where(.atl-implementos) .btn-enviar-pedido:hover {
     background: var(--rojo-oscuro);
 }
 
-.btn-enviar-pedido:disabled {
+:where(.atl-implementos) .btn-enviar-pedido:disabled {
     opacity: 0.6;
     cursor: not-allowed;
 }
 
 /* Modal cancelar */
-.modal-confirmacion-alerta {
+:where(.atl-implementos) .modal-confirmacion-alerta {
     position: relative;
     padding: 32px 28px 28px;
     text-align: center;
@@ -783,13 +901,13 @@ dialog.dialog-cancelar {
     gap: 8px;
 }
 
-.btn-cerrar-alerta {
+:where(.atl-implementos) .btn-cerrar-alerta {
     position: absolute;
     top: 14px;
     left: 14px;
 }
 
-.contenedor-logo-alerta {
+:where(.atl-implementos) .contenedor-logo-alerta {
     width: 72px;
     height: 72px;
     background: #f1f5f9;
@@ -801,34 +919,34 @@ dialog.dialog-cancelar {
     font-size: 1.6rem;
 }
 
-.contenedor-logo-alerta svg{
+:where(.atl-implementos) .contenedor-logo-alerta svg {
     color: #9e2d2d;
     width: 40px;
     height: auto;
 }
 
-.modal-confirmacion-alerta h2 {
+:where(.atl-implementos) .modal-confirmacion-alerta h2 {
     font-size: 1.05rem;
     font-weight: 700;
     color: var(--carbon);
     margin: 0;
 }
 
-.modal-confirmacion-alerta p {
+:where(.atl-implementos) .modal-confirmacion-alerta p {
     font-size: 0.87rem;
     color: var(--gris-texto);
     line-height: 1.55;
     margin: 0 0 8px;
 }
 
-.modal-confirmar-botones {
+:where(.atl-implementos) .modal-confirmar-botones {
     display: flex;
     gap: 10px;
     width: 100%;
     margin-top: 8px;
 }
 
-.btn-mantener-pedido {
+:where(.atl-implementos) .btn-mantener-pedido {
     flex: 1;
     padding: 11px 16px;
     background: var(--gris-hielo);
@@ -837,15 +955,14 @@ dialog.dialog-cancelar {
     border-radius: 10px;
     font-size: 0.9rem;
     font-weight: 600;
-    font-family: var(--font);
     cursor: pointer;
 }
 
-.btn-mantener-pedido:hover {
+:where(.atl-implementos) .btn-mantener-pedido:hover {
     background: #e2e8f0;
 }
 
-.btn-confirmar-cancelar {
+:where(.atl-implementos) .btn-confirmar-cancelar {
     flex: 1;
     padding: 11px 16px;
     background: var(--rojo);
@@ -854,27 +971,26 @@ dialog.dialog-cancelar {
     border-radius: 10px;
     font-size: 0.9rem;
     font-weight: 700;
-    font-family: var(--font);
     cursor: pointer;
 }
 
-.btn-confirmar-cancelar:hover {
+:where(.atl-implementos) .btn-confirmar-cancelar:hover {
     background: var(--rojo-oscuro);
 }
 
-.btn-confirmar-cancelar:disabled {
+:where(.atl-implementos) .btn-confirmar-cancelar:disabled {
     opacity: 0.6;
     cursor: not-allowed;
 }
 
 @media (max-width: 720px) {
-    .lista-pedidos {
+    :where(.atl-implementos) .lista-pedidos {
         grid-template-columns: 1fr;
     }
 }
 
 /* ===== Opiniones de la comunidad ===== */
-.seccion-comentarios-comunidad {
+:where(.atl-implementos) .seccion-comentarios-comunidad {
     background: var(--blanco);
     border: 1px solid var(--gris-borde);
     border-radius: var(--radio);
@@ -882,14 +998,14 @@ dialog.dialog-cancelar {
     box-shadow: var(--sombra-sm);
 }
 
-.contenedor-comentarios {
+:where(.atl-implementos) .contenedor-comentarios {
     display: flex;
     flex-direction: column;
     gap: 16px;
     margin-top: 4px;
 }
 
-.bloque-comentario {
+:where(.atl-implementos) .bloque-comentario {
     padding: 14px 16px;
     border-radius: var(--radio-sm);
     background: var(--gris-hielo);
@@ -897,34 +1013,34 @@ dialog.dialog-cancelar {
     transition: border-color var(--trans);
 }
 
-.bloque-comentario:hover {
+:where(.atl-implementos) .bloque-comentario:hover {
     border-color: var(--gris-borde);
 }
 
-.comentario-meta {
+:where(.atl-implementos) .comentario-meta {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 6px;
 }
 
-.nombre-usuario {
+:where(.atl-implementos) .nombre-usuario {
     font-weight: 700;
     font-size: 0.9rem;
     color: var(--carbon);
 }
 
-.estrellas-opinion {
+:where(.atl-implementos) .estrellas-opinion {
     display: flex;
     gap: 2px;
 }
 
-.estrellas-opinion .estrella-llena,
-.estrellas-opinion .estrella-vacia {
+:where(.atl-implementos) .estrellas-opinion .estrella-llena,
+:where(.atl-implementos) .estrellas-opinion .estrella-vacia {
     font-size: 12px;
 }
 
-.comentario-texto {
+:where(.atl-implementos) .comentario-texto {
     font-size: 0.88rem;
     color: var(--gris-texto);
     line-height: 1.5;
@@ -932,7 +1048,7 @@ dialog.dialog-cancelar {
 }
 
 /* ===== Marcar como recibido + formulario de reseña ===== */
-.label-marcar-recibido {
+:where(.atl-implementos) .label-marcar-recibido {
     display: inline-block;
     background: var(--verde);
     color: var(--blanco);
@@ -941,17 +1057,16 @@ dialog.dialog-cancelar {
     border-radius: var(--radio-sm);
     font-size: 0.78rem;
     font-weight: 700;
-    font-family: var(--font);
     cursor: pointer;
     transition: background var(--trans);
     white-space: nowrap;
 }
 
-.label-marcar-recibido:hover {
+:where(.atl-implementos) .label-marcar-recibido:hover {
     background: #15803d;
 }
 
-.seccion-comentario-recibido {
+:where(.atl-implementos) .seccion-comentario-recibido {
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -960,19 +1075,18 @@ dialog.dialog-cancelar {
     border-top: 1px dashed var(--gris-borde);
 }
 
-.seccion-comentario-recibido label {
+:where(.atl-implementos) .seccion-comentario-recibido label {
     font-size: 0.8rem;
     font-weight: 600;
     color: var(--gris-texto);
 }
 
-.seccion-comentario-recibido textarea {
+:where(.atl-implementos) .seccion-comentario-recibido textarea {
     width: 100%;
     padding: 9px 12px;
     border: 1px solid var(--gris-borde);
     border-radius: var(--radio-sm);
     font-size: 0.88rem;
-    font-family: var(--font);
     resize: none;
     min-height: 70px;
     outline: none;
@@ -981,24 +1095,24 @@ dialog.dialog-cancelar {
     transition: border-color var(--trans), box-shadow var(--trans);
 }
 
-.seccion-comentario-recibido textarea:focus {
+:where(.atl-implementos) .seccion-comentario-recibido textarea:focus {
     border-color: var(--verde);
     box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.12);
     background: var(--blanco);
 }
 
-.estrellas-rating {
+:where(.atl-implementos) .estrellas-rating {
     display: flex;
     flex-direction: row-reverse;
     justify-content: flex-end;
     gap: 2px;
 }
 
-.estrellas-rating input {
+:where(.atl-implementos) .estrellas-rating input {
     display: none;
 }
 
-.estrellas-rating label {
+:where(.atl-implementos) .estrellas-rating label {
     font-size: 1.6rem;
     color: #d1d5db;
     cursor: pointer;
@@ -1006,13 +1120,13 @@ dialog.dialog-cancelar {
     line-height: 1;
 }
 
-.estrellas-rating input:checked~label,
-.estrellas-rating label:hover,
-.estrellas-rating label:hover~label {
+:where(.atl-implementos) .estrellas-rating input:checked~label,
+:where(.atl-implementos) .estrellas-rating label:hover,
+:where(.atl-implementos) .estrellas-rating label:hover~label {
     color: var(--dorado-oscuro);
 }
 
-.btn-enviar-comentario {
+:where(.atl-implementos) .btn-enviar-comentario {
     align-self: flex-end;
     background: var(--verde);
     color: var(--blanco);
@@ -1021,27 +1135,25 @@ dialog.dialog-cancelar {
     border-radius: var(--radio-sm);
     font-size: 0.87rem;
     font-weight: 700;
-    font-family: var(--font);
     cursor: pointer;
     transition: background var(--trans);
 }
 
-.btn-enviar-comentario:hover {
+:where(.atl-implementos) .btn-enviar-comentario:hover {
     background: #15803d;
 }
 
-.btn-enviar-comentario:disabled {
+:where(.atl-implementos) .btn-enviar-comentario:disabled {
     opacity: 0.6;
     cursor: not-allowed;
 }
-
 
 /* ============================================================
    CARRITO DE IMPLEMENTOS
    ============================================================ */
 
 /* Encabezado de la página + botón del carrito */
-.cabecera-implementos {
+:where(.atl-implementos) .cabecera-implementos {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
@@ -1050,17 +1162,17 @@ dialog.dialog-cancelar {
     margin-bottom: 20px;
 }
 
-.cabecera-implementos h1 {
+:where(.atl-implementos) .cabecera-implementos h1 {
     margin: 0 0 4px;
 }
 
-.cabecera-implementos p {
+:where(.atl-implementos) .cabecera-implementos p {
     color: var(--gris-texto);
     font-size: 0.95rem;
     margin: 0;
 }
 
-.btn-carrito {
+:where(.atl-implementos) .btn-carrito {
     position: relative;
     display: inline-flex;
     align-items: center;
@@ -1070,7 +1182,6 @@ dialog.dialog-cancelar {
     border: 1.5px solid var(--gris-borde);
     border-radius: var(--radio-pill);
     padding: 10px 20px;
-    font-family: var(--font);
     font-size: 0.88rem;
     font-weight: 700;
     cursor: pointer;
@@ -1078,20 +1189,20 @@ dialog.dialog-cancelar {
     transition: border-color var(--trans), box-shadow var(--trans), transform 0.1s;
 }
 
-.btn-carrito svg {
+:where(.atl-implementos) .btn-carrito svg {
     color: var(--rojo);
 }
 
-.btn-carrito:hover {
+:where(.atl-implementos) .btn-carrito:hover {
     border-color: var(--rojo);
     box-shadow: var(--sombra-md);
 }
 
-.btn-carrito:active {
+:where(.atl-implementos) .btn-carrito:active {
     transform: scale(0.98);
 }
 
-.btn-carrito-contador {
+:where(.atl-implementos) .btn-carrito-contador {
     min-width: 22px;
     height: 22px;
     padding: 0 6px;
@@ -1105,7 +1216,7 @@ dialog.dialog-cancelar {
     justify-content: center;
 }
 
-.nota-en-carrito {
+:where(.atl-implementos) .nota-en-carrito {
     margin: 0;
     font-size: 0.8rem;
     font-weight: 600;
@@ -1113,7 +1224,7 @@ dialog.dialog-cancelar {
 }
 
 /* Panel lateral */
-dialog.dialog-carrito {
+:where(.atl-implementos) dialog.dialog-carrito {
     position: fixed;
     inset: 0 0 0 auto;
     margin: 0;
@@ -1130,19 +1241,18 @@ dialog.dialog-carrito {
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    font-family: var(--font);
     color: var(--carbon);
 }
 
-dialog.dialog-carrito:not([open]) {
+:where(.atl-implementos) dialog.dialog-carrito:not([open]) {
     display: none;
 }
 
-dialog.dialog-carrito[open] {
+:where(.atl-implementos) dialog.dialog-carrito[open] {
     animation: carrito-entrar 0.25s ease;
 }
 
-dialog.dialog-carrito::backdrop {
+:where(.atl-implementos) dialog.dialog-carrito::backdrop {
     background: rgba(0, 0, 0, 0.52);
     backdrop-filter: blur(3px);
 }
@@ -1158,7 +1268,7 @@ dialog.dialog-carrito::backdrop {
     }
 }
 
-.carrito-header {
+:where(.atl-implementos) .carrito-header {
     display: flex;
     align-items: center;
     gap: 12px;
@@ -1167,12 +1277,12 @@ dialog.dialog-carrito::backdrop {
     flex-shrink: 0;
 }
 
-.carrito-header-texto {
+:where(.atl-implementos) .carrito-header-texto {
     flex-grow: 1;
     min-width: 0;
 }
 
-.carrito-header-texto h3 {
+:where(.atl-implementos) .carrito-header-texto h3 {
     font-size: 1.05rem;
     font-weight: 700;
     letter-spacing: -0.02em;
@@ -1180,13 +1290,13 @@ dialog.dialog-carrito::backdrop {
     margin: 0;
 }
 
-.carrito-header-texto span {
+:where(.atl-implementos) .carrito-header-texto span {
     font-size: 0.78rem;
     color: var(--gris-texto);
 }
 
 /* Indicador de pasos */
-.carrito-pasos {
+:where(.atl-implementos) .carrito-pasos {
     display: flex;
     align-items: center;
     gap: 10px;
@@ -1199,13 +1309,13 @@ dialog.dialog-carrito::backdrop {
     flex-shrink: 0;
 }
 
-.carrito-paso {
+:where(.atl-implementos) .carrito-paso {
     display: flex;
     align-items: center;
     gap: 7px;
 }
 
-.carrito-paso-num {
+:where(.atl-implementos) .carrito-paso-num {
     width: 22px;
     height: 22px;
     border-radius: 50%;
@@ -1217,27 +1327,27 @@ dialog.dialog-carrito::backdrop {
     font-size: 0.72rem;
 }
 
-.carrito-paso.activo {
+:where(.atl-implementos) .carrito-paso.activo {
     color: var(--carbon);
 }
 
-.carrito-paso.activo .carrito-paso-num {
+:where(.atl-implementos) .carrito-paso.activo .carrito-paso-num {
     background: var(--rojo);
     color: var(--blanco);
 }
 
-.carrito-paso.hecho .carrito-paso-num {
+:where(.atl-implementos) .carrito-paso.hecho .carrito-paso-num {
     background: var(--verde);
     color: var(--blanco);
 }
 
-.carrito-paso-linea {
+:where(.atl-implementos) .carrito-paso-linea {
     flex: 1;
     height: 2px;
     background: var(--gris-borde);
 }
 
-.carrito-cuerpo {
+:where(.atl-implementos) .carrito-cuerpo {
     flex: 1;
     overflow-y: auto;
     padding: 18px 24px;
@@ -1246,12 +1356,12 @@ dialog.dialog-carrito::backdrop {
     gap: 18px;
 }
 
-.carrito-cuerpo .alerta-error {
+:where(.atl-implementos) .carrito-cuerpo .alerta-error {
     margin-bottom: 0;
 }
 
 /* Carrito vacío */
-.carrito-vacio {
+:where(.atl-implementos) .carrito-vacio {
     margin: auto 0;
     display: flex;
     flex-direction: column;
@@ -1261,7 +1371,7 @@ dialog.dialog-carrito::backdrop {
     padding: 20px 10px;
 }
 
-.carrito-vacio-icono {
+:where(.atl-implementos) .carrito-vacio-icono {
     width: 64px;
     height: 64px;
     border-radius: 50%;
@@ -1273,13 +1383,13 @@ dialog.dialog-carrito::backdrop {
     margin-bottom: 6px;
 }
 
-.carrito-vacio h4 {
+:where(.atl-implementos) .carrito-vacio h4 {
     font-size: 1rem;
     font-weight: 700;
     margin: 0;
 }
 
-.carrito-vacio p {
+:where(.atl-implementos) .carrito-vacio p {
     font-size: 0.86rem;
     color: var(--gris-texto);
     margin: 0 0 8px;
@@ -1287,7 +1397,7 @@ dialog.dialog-carrito::backdrop {
 }
 
 /* Líneas del carrito */
-.carrito-lista {
+:where(.atl-implementos) .carrito-lista {
     list-style: none;
     margin: 0;
     padding: 0;
@@ -1296,7 +1406,7 @@ dialog.dialog-carrito::backdrop {
     gap: 12px;
 }
 
-.carrito-item {
+:where(.atl-implementos) .carrito-item {
     display: flex;
     align-items: flex-start;
     gap: 12px;
@@ -1306,11 +1416,11 @@ dialog.dialog-carrito::backdrop {
     transition: border-color var(--trans);
 }
 
-.carrito-item:hover {
+:where(.atl-implementos) .carrito-item:hover {
     border-color: #cbd5e1;
 }
 
-.carrito-item-img {
+:where(.atl-implementos) .carrito-item-img {
     width: 68px;
     height: 68px;
     object-fit: contain;
@@ -1320,7 +1430,7 @@ dialog.dialog-carrito::backdrop {
     flex-shrink: 0;
 }
 
-.carrito-item-info {
+:where(.atl-implementos) .carrito-item-info {
     flex: 1;
     min-width: 0;
     display: flex;
@@ -1328,7 +1438,7 @@ dialog.dialog-carrito::backdrop {
     gap: 3px;
 }
 
-.carrito-item-nombre {
+:where(.atl-implementos) .carrito-item-nombre {
     margin: 0;
     font-size: 0.9rem;
     font-weight: 700;
@@ -1336,13 +1446,13 @@ dialog.dialog-carrito::backdrop {
     color: var(--carbon);
 }
 
-.carrito-item-detalle {
+:where(.atl-implementos) .carrito-item-detalle {
     margin: 0;
     font-size: 0.78rem;
     color: var(--gris-texto);
 }
 
-.carrito-item-fila {
+:where(.atl-implementos) .carrito-item-fila {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -1350,30 +1460,30 @@ dialog.dialog-carrito::backdrop {
     margin-top: 6px;
 }
 
-.carrito-item-subtotal {
+:where(.atl-implementos) .carrito-item-subtotal {
     font-size: 0.95rem;
     font-weight: 800;
     color: var(--carbon);
 }
 
-.control-cantidad--sm button {
+:where(.atl-implementos) .control-cantidad--sm button {
     width: 30px;
     height: 32px;
     font-size: 1rem;
 }
 
-.control-cantidad--sm button:disabled {
+:where(.atl-implementos) .control-cantidad--sm button:disabled {
     opacity: 0.4;
     cursor: not-allowed;
 }
 
-.control-cantidad--sm input {
+:where(.atl-implementos) .control-cantidad--sm input {
     width: 42px;
     height: 32px;
     font-size: 0.88rem;
 }
 
-.carrito-item-quitar {
+:where(.atl-implementos) .carrito-item-quitar {
     background: transparent;
     border: none;
     color: var(--gris-texto);
@@ -1388,29 +1498,28 @@ dialog.dialog-carrito::backdrop {
     transition: background var(--trans), color var(--trans);
 }
 
-.carrito-item-quitar:hover {
+:where(.atl-implementos) .carrito-item-quitar:hover {
     background: #fff1f2;
     color: #e11d48;
 }
 
-.btn-vaciar-carrito {
+:where(.atl-implementos) .btn-vaciar-carrito {
     align-self: center;
     background: transparent;
     border: none;
     color: var(--gris-texto);
-    font-family: var(--font);
     font-size: 0.8rem;
     font-weight: 600;
     text-decoration: underline;
     cursor: pointer;
 }
 
-.btn-vaciar-carrito:hover {
+:where(.atl-implementos) .btn-vaciar-carrito:hover {
     color: var(--rojo);
 }
 
 /* Pie del carrito */
-.carrito-pie {
+:where(.atl-implementos) .carrito-pie {
     flex-shrink: 0;
     display: flex;
     flex-direction: column;
@@ -1420,59 +1529,58 @@ dialog.dialog-carrito::backdrop {
     background: var(--blanco);
 }
 
-.carrito-pie .resumen-total {
+:where(.atl-implementos) .carrito-pie .resumen-total {
     font-size: 1.05rem;
 }
 
-.carrito-pie-botones {
+:where(.atl-implementos) .carrito-pie-botones {
     display: flex;
     gap: 10px;
 }
 
-.carrito-pie-botones .btn-enviar-pedido {
+:where(.atl-implementos) .carrito-pie-botones .btn-enviar-pedido {
     flex: 1;
 }
 
-.btn-carrito-secundario {
+:where(.atl-implementos) .btn-carrito-secundario {
     background: var(--blanco);
     color: var(--carbon);
     border: 1.5px solid var(--gris-borde);
     padding: 13px 18px;
     border-radius: var(--radio-sm);
-    font-family: var(--font);
     font-weight: 700;
     font-size: 0.9rem;
     cursor: pointer;
     transition: border-color var(--trans), background var(--trans);
 }
 
-.btn-carrito-secundario:hover {
+:where(.atl-implementos) .btn-carrito-secundario:hover {
     border-color: #cbd5e1;
     background: var(--gris-hielo);
 }
 
-.btn-carrito-secundario:disabled {
+:where(.atl-implementos) .btn-carrito-secundario:disabled {
     opacity: 0.6;
     cursor: not-allowed;
 }
 
 /* Método de pago dentro del carrito (Presencial + Nequi + Davivienda) */
-.opciones-pago-tarjetas--auto {
+:where(.atl-implementos) .opciones-pago-tarjetas--auto {
     grid-template-columns: repeat(auto-fit, minmax(118px, 1fr));
 }
 
-.opciones-pago-tarjetas--auto .tarjeta-pago-label {
+:where(.atl-implementos) .opciones-pago-tarjetas--auto .tarjeta-pago-label {
     height: 100%;
     padding: 14px 8px;
     justify-content: flex-start;
 }
 
-.dialog-carrito .pago-icono {
+:where(.atl-implementos) .dialog-carrito .pago-icono {
     color: var(--rojo-oscuro);
 }
 
 /* Panel de pago digital: QR + llave */
-.pago-digital {
+:where(.atl-implementos) .pago-digital {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -1484,7 +1592,7 @@ dialog.dialog-carrito::backdrop {
     text-align: center;
 }
 
-.pago-digital-titulo {
+:where(.atl-implementos) .pago-digital-titulo {
     margin: 0;
     font-size: 0.72rem;
     font-weight: 700;
@@ -1493,7 +1601,7 @@ dialog.dialog-carrito::backdrop {
     color: var(--gris-texto);
 }
 
-.pago-qr-marco {
+:where(.atl-implementos) .pago-qr-marco {
     width: 208px;
     height: 208px;
     padding: 10px;
@@ -1506,28 +1614,28 @@ dialog.dialog-carrito::backdrop {
     justify-content: center;
 }
 
-.pago-qr-marco img {
+:where(.atl-implementos) .pago-qr-marco img {
     width: 100%;
     height: 100%;
     object-fit: contain;
     display: block;
 }
 
-.pago-qr-vacio {
+:where(.atl-implementos) .pago-qr-vacio {
     font-size: 0.82rem;
     font-weight: 600;
     color: var(--gris-texto);
     text-align: center;
 }
 
-.pago-llave {
+:where(.atl-implementos) .pago-llave {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 4px;
 }
 
-.pago-llave-label {
+:where(.atl-implementos) .pago-llave-label {
     font-size: 0.7rem;
     font-weight: 700;
     letter-spacing: 0.08em;
@@ -1535,7 +1643,7 @@ dialog.dialog-carrito::backdrop {
     color: var(--gris-texto);
 }
 
-.pago-llave-valor {
+:where(.atl-implementos) .pago-llave-valor {
     font-size: 1.3rem;
     font-weight: 800;
     letter-spacing: 0.04em;
@@ -1543,52 +1651,51 @@ dialog.dialog-carrito::backdrop {
     word-break: break-all;
 }
 
-.btn-copiar-llave {
+:where(.atl-implementos) .btn-copiar-llave {
     margin-top: 4px;
     background: var(--gris-hielo);
     border: 1px solid var(--gris-borde);
     color: var(--carbon);
     border-radius: var(--radio-pill);
     padding: 5px 14px;
-    font-family: var(--font);
     font-size: 0.76rem;
     font-weight: 700;
     cursor: pointer;
     transition: border-color var(--trans), color var(--trans);
 }
 
-.btn-copiar-llave:hover {
+:where(.atl-implementos) .btn-copiar-llave:hover {
     border-color: var(--rojo);
     color: var(--rojo);
 }
 
-.pago-titular,
-.pago-valor {
+:where(.atl-implementos) .pago-titular,
+:where(.atl-implementos) .pago-valor {
     margin: 0;
     font-size: 0.82rem;
     color: var(--gris-texto);
 }
 
-.pago-titular strong,
-.pago-valor strong {
+:where(.atl-implementos) .pago-titular strong,
+:where(.atl-implementos) .pago-valor strong {
     color: var(--carbon);
 }
 
-.pago-valor strong {
+:where(.atl-implementos) .pago-valor strong {
     color: var(--rojo);
 }
 
 /* ============================================================
    MIS PEDIDOS (cada pedido agrupa varios productos)
    ============================================================ */
-.tarjeta-pedido {
+:where(.atl-implementos) .tarjeta-pedido {
     padding: 0;
     display: flex;
     flex-direction: column;
     overflow: hidden;
 }
 
-.pedido-cabecera {
+:where(.atl-implementos) .pedido-cabecera {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -1598,7 +1705,7 @@ dialog.dialog-carrito::backdrop {
     border-bottom: 1px solid var(--gris-borde);
 }
 
-.pedido-codigo {
+:where(.atl-implementos) .pedido-codigo {
     display: block;
     font-size: 0.92rem;
     font-weight: 800;
@@ -1606,19 +1713,19 @@ dialog.dialog-carrito::backdrop {
     letter-spacing: 0.02em;
 }
 
-.pedido-fecha {
+:where(.atl-implementos) .pedido-fecha {
     font-size: 0.76rem;
     color: var(--gris-texto);
 }
 
-.pedido-items {
+:where(.atl-implementos) .pedido-items {
     list-style: none;
     margin: 0;
     padding: 6px 20px;
     flex: 1;
 }
 
-.pedido-item {
+:where(.atl-implementos) .pedido-item {
     padding: 12px 0;
     border-bottom: 1px dashed var(--gris-borde);
     display: flex;
@@ -1626,17 +1733,17 @@ dialog.dialog-carrito::backdrop {
     gap: 10px;
 }
 
-.pedido-item:last-child {
+:where(.atl-implementos) .pedido-item:last-child {
     border-bottom: none;
 }
 
-.pedido-item-fila {
+:where(.atl-implementos) .pedido-item-fila {
     display: flex;
     align-items: center;
     gap: 14px;
 }
 
-.img-pedido {
+:where(.atl-implementos) .img-pedido {
     width: 56px;
     height: 56px;
     object-fit: contain;
@@ -1646,32 +1753,32 @@ dialog.dialog-carrito::backdrop {
     flex-shrink: 0;
 }
 
-.pedido-item-info {
+:where(.atl-implementos) .pedido-item-info {
     flex: 1;
     min-width: 0;
 }
 
-.pedido-item-info h4 {
+:where(.atl-implementos) .pedido-item-info h4 {
     font-size: 0.9rem;
     font-weight: 700;
     margin: 0 0 3px;
     color: var(--carbon);
 }
 
-.pedido-item-detalle {
+:where(.atl-implementos) .pedido-item-detalle {
     font-size: 0.8rem;
     color: var(--gris-texto);
     margin: 0;
 }
 
-.pedido-item-total {
+:where(.atl-implementos) .pedido-item-total {
     font-size: 0.92rem;
     font-weight: 800;
     color: var(--carbon);
     white-space: nowrap;
 }
 
-.pedido-pie {
+:where(.atl-implementos) .pedido-pie {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -1680,12 +1787,12 @@ dialog.dialog-carrito::backdrop {
     border-top: 1px solid var(--gris-borde);
 }
 
-.pedido-pie-info {
+:where(.atl-implementos) .pedido-pie-info {
     flex: 1 1 140px;
     min-width: 0;
 }
 
-.pedido-pie .pago-metodo {
+:where(.atl-implementos) .pedido-pie .pago-metodo {
     display: flex;
     align-items: center;
     gap: 6px;
@@ -1694,18 +1801,18 @@ dialog.dialog-carrito::backdrop {
     font-weight: 600;
 }
 
-.pedido-pie .pago-metodo svg {
+:where(.atl-implementos) .pedido-pie .pago-metodo svg {
     color: var(--rojo);
 }
 
-.pedido-total {
+:where(.atl-implementos) .pedido-total {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
     line-height: 1.2;
 }
 
-.pedido-total span {
+:where(.atl-implementos) .pedido-total span {
     font-size: 0.7rem;
     font-weight: 700;
     text-transform: uppercase;
@@ -1713,20 +1820,20 @@ dialog.dialog-carrito::backdrop {
     color: var(--gris-texto);
 }
 
-.pedido-total strong {
+:where(.atl-implementos) .pedido-total strong {
     font-size: 1.1rem;
     font-weight: 800;
     color: var(--rojo);
 }
 
-.pedido-acciones {
+:where(.atl-implementos) .pedido-acciones {
     flex: 1 1 100%;
     display: flex;
     justify-content: flex-end;
     gap: 8px;
 }
 
-.pedido-resena-ok {
+:where(.atl-implementos) .pedido-resena-ok {
     align-self: flex-start;
     font-size: 0.76rem;
     font-weight: 700;
@@ -1736,40 +1843,41 @@ dialog.dialog-carrito::backdrop {
     padding: 3px 11px;
 }
 
-.btn-abrir-resena {
+:where(.atl-implementos) .btn-abrir-resena {
     align-self: flex-start;
     background: transparent;
     border: 1.5px solid var(--dorado-oscuro);
     color: #8a6d00;
     border-radius: var(--radio-sm);
     padding: 5px 12px;
-    font-family: var(--font);
     font-size: 0.78rem;
     font-weight: 700;
     cursor: pointer;
     transition: background var(--trans);
 }
 
-.btn-abrir-resena:hover {
+:where(.atl-implementos) .btn-abrir-resena:hover {
     background: var(--dorado);
     color: var(--carbon);
 }
 
 @media (max-width: 720px) {
-    .lista-pedidos {
+    :where(.atl-implementos) .lista-pedidos {
         grid-template-columns: 1fr;
     }
 }
 
 @media (max-width: 480px) {
-    dialog.dialog-carrito {
+    :where(.atl-implementos) dialog.dialog-carrito {
         border-radius: 0;
     }
 
-    .carrito-header,
-    .carrito-cuerpo,
-    .carrito-pie {
+    :where(.atl-implementos) .carrito-header,
+    :where(.atl-implementos) .carrito-cuerpo,
+    :where(.atl-implementos) .carrito-pie {
         padding-left: 16px;
         padding-right: 16px;
     }
 }
+
+:where(.atl-implementos) .producto-sin-imagen { color: #9aa3b2; font-size: 14px; font-weight: 600; }

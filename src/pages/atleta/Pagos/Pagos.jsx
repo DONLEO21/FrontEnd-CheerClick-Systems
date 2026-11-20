@@ -1,4 +1,4 @@
-import { api } from "../../../api/Client";
+import { cargarPagosAtleta, enviarComprobanteMensualidad } from "../../../services/pagosService";
 import { useSesion } from "../../../context/SesionContext";
 import { useState, useEffect, useMemo } from "react";
 import { ordenarPorMes, calcularResumen, construirNotificaciones } from "../../../components/utils/PagosAtleta";
@@ -11,6 +11,8 @@ import ModalSubirComprobante from "./ModalSubirComprobante";
 import ModalVerComprobante from "./ModalVerComprobante";
 import PlanMembresia from "./PlanMembresia";
 import NotificacionesPagos from "./NotificacionesPagos";
+import useAviso from "../../../hooks/useAviso";
+import AvisoToast from "../../../components/Compartidos/AvisoToast";
 import "./PagosAtleta.css";
 
 function PagosAtleta() {
@@ -22,14 +24,12 @@ function PagosAtleta() {
   const [aSubir, setASubir] = useState(null);
   const [aVer, setAVer] = useState(null);
   const [guardando, setGuardando] = useState(false);
+  const { aviso, mostrarAviso } = useAviso();
 
   useEffect(() => {
     let vigente = true;
-    Promise.all([
-      api.obtener("atletas", sesion.atletaId),
-      api.listar(`mensualidades?atletaId=${sesion.atletaId}`),
-    ])
-      .then(([a, m]) => {
+    cargarPagosAtleta(sesion.usuario)
+      .then(({ atleta: a, mensualidades: m }) => {
         if (vigente) {
           setAtleta(a);
           setMensualidades(m);
@@ -56,28 +56,29 @@ function PagosAtleta() {
   const guardarComprobante = async (datos) => {
     setGuardando(true);
     try {
-      const actualizada = await api.actualizar("mensualidades", aSubir.id, datos);
+      const actualizada = await enviarComprobanteMensualidad(aSubir, datos);
       setMensualidades((prev) =>
         prev.map((m) => (m.id === actualizada.id ? actualizada : m))
       );
       setASubir(null);
+      mostrarAviso("Pago enviado. El club lo revisará y lo validará.", "ok");
     } catch (e) {
       console.error(e);
-      alert("No se pudo enviar el comprobante.");
+      throw e; // el modal muestra el mensaje y se queda abierto
     } finally {
       setGuardando(false);
     }
   };
 
   return (
-    <main id="conteni" className="vista-atleta">
+    <main className="atl-pagos">
       <InfoUsuario atleta={atleta} />
       <ResumenPagos resumen={resumen} />
 
-      <section id="panel-atl">
+      <section className="atl-pagos-panel-atl">
         <h3 id="titulo-mensu">Mensualidades · Registro completo</h3>
         {resumen.totalPendiente > 0 && (
-          <div id="mensaje-atl">
+          <div className="atl-pagos-mensaje-atl">
             <h4>
               Total pendiente: <strong>{resumen.totalPendiente.toLocaleString("es-CO")}</strong> — Regulariza para evitar suspensión.
             </h4>
@@ -86,7 +87,7 @@ function PagosAtleta() {
 
         <FiltrosMensualidades filtro={filtro} onFiltro={setFiltro} mes={mes} onMes={setMes} />
 
-        <section id="targetas-atl">
+        <section className="atl-pagos-targetas-atl">
           {visibles.length ? (
             visibles.map((m) => (
               <TarjetaMensualidad key={m.id} mensualidad={m} onSubir={setASubir} onVer={setAVer} />
@@ -97,7 +98,7 @@ function PagosAtleta() {
         </section>
       </section>
 
-      <footer id="infor-final-atl">
+      <footer className="atl-pagos-infor-final-atl">
         <PlanMembresia plan={ultima?.plan} valor={ultima?.valor} />
         <NotificacionesPagos notificaciones={notificaciones} />
       </footer>
@@ -109,6 +110,7 @@ function PagosAtleta() {
         onGuardar={guardarComprobante}
       />
       <ModalVerComprobante mensualidad={aVer} atleta={atleta} onCerrar={() => setAVer(null)} />
+      <AvisoToast aviso={aviso} />
     </main>
   );
 }

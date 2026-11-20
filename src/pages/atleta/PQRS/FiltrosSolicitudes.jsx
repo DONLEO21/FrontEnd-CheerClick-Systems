@@ -1,5 +1,4 @@
 
-import React from "react";
 import { PESTANAS } from "./pqrsData";
 
 export default function FiltrosSolicitudes({

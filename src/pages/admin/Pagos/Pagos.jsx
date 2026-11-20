@@ -1,7 +1,8 @@
 import "./Pagos.css";
 import { useEffect, useMemo, useState } from "react";
-import { api } from "../../../api/Client";
-import AvisoToast from "../../../components/Modal/AvisoToast";
+import { cargarPagosAdmin, registrarPago, obtenerMensualidad } from "../../../services/pagosService";
+import AvisoToast from "../../../components/Compartidos/AvisoToast";
+import useAviso from "../../../hooks/useAviso";
 import Targetaestado from "./TargetaEstado";
 import Paginacion from "./Paginacion";
 import FiltrosMensualidades from "./FiltrosMensualidades";
@@ -10,13 +11,15 @@ import TarjetasCompetencia from "./TarjetasCompetencia";
 import ModalFormularioPago from "./ModalFormularioPago";
 import ModalComprobante from "./ModalComprobante";
 import ModalDetalleCompetencia from "./ModalDetalleCompetencia";
+import MetodosPagoPanel from "./MetodosPagoPanel";
+import PlanesPanel from "./PlanesPanel";
 
 const cop = (n) =>
   typeof n === "number"
     ? n.toLocaleString("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 })
     : "—";
 
-function Pagos() {
+function PagosContenido() {
   const [pestana, setPestana] = useState("mensualidades");
   const itemsPorPagina = 6;
 
@@ -24,6 +27,7 @@ function Pagos() {
   const [atletas, setAtletas] = useState([]);
   const [mensualidades, setMensualidades] = useState([]);
   const [planes, setPlanes] = useState([]);
+  const [metodos, setMetodos] = useState([]);
   const [competencias, setCompetencias] = useState([]);
   const [pagosCompetencia, setPagosCompetencia] = useState([]);
   const [cargando, setCargando] = useState(true);
@@ -42,30 +46,20 @@ function Pagos() {
   const [detalleCompetencia, setDetalleCompetencia] = useState(null); 
   const [guardando, setGuardando] = useState(false);
 
-  const [aviso, setAviso] = useState({ mensaje: "", tipo: "ok", visible: false });
-
-  const mostrarAviso = (mensaje, tipo = "ok") => {
-    setAviso({ mensaje, tipo, visible: true });
-    setTimeout(() => setAviso((a) => ({ ...a, visible: false })), 3000);
-  };
+  const { aviso, mostrarAviso } = useAviso({ tipoPorDefecto: "ok" });
 
   useEffect(() => {
     let vivo = true;
     setCargando(true);
-    Promise.all([
-      fetch("http://localhost:3001/atletas").then((r) => r.json()),
-      api.listar("mensualidades"),
-      api.listar("planes"),
-      api.listar("competencias"),
-      api.listar("pagosCompetencia"),
-    ])
-      .then(([a, m, p, c, pc]) => {
+    cargarPagosAdmin()
+      .then((d) => {
         if (!vivo) return;
-        setAtletas(Array.isArray(a) ? a : []);
-        setMensualidades(m);
-        setPlanes(p);
-        setCompetencias(c);
-        setPagosCompetencia(pc);
+        setAtletas(d.atletas);
+        setMensualidades(d.mensualidades);
+        setPlanes(d.planes);
+        setMetodos(d.metodos ?? []);
+        setCompetencias(d.competencias);
+        setPagosCompetencia(d.pagosCompetencia);
         setError(null);
       })
       .catch((e) => vivo && setError(e))
@@ -144,6 +138,7 @@ function Pagos() {
     setPagoAEditar({
       tipo: "mensualidad",
       id: pago.id,
+      pagoId: pago.pagoId,
       atleta: pago.atleta,
       etiquetas: [{ texto: pago.mes }, { texto: pago.plan }],
       generacion: pago.generacion,
@@ -156,6 +151,7 @@ function Pagos() {
     setPagoAEditar({
       tipo: "competencia",
       id: pago.id,
+      pagoId: pago.pagoId,
       atleta: pago.atleta,
       etiquetas: [{ texto: detalleCompetencia?.nombre ?? "" }],
       generacion: pago.generacion,
@@ -169,22 +165,21 @@ function Pagos() {
     setGuardando(true);
     try {
       if (pagoAEditar.tipo === "mensualidad") {
-        const actualizado = await api.actualizar("mensualidades", pagoAEditar.id, {
-          ...datos, estado: "pagado", registrado: true,
-        });
+        await registrarPago(pagoAEditar.pagoId, datos);
+        const actualizado = await obtenerMensualidad(pagoAEditar.id);
         setMensualidades((prev) => prev.map((m) => (m.id === actualizado.id ? actualizado : m)));
         mostrarAviso("Pago registrado correctamente");
       } else {
-        const actualizado = await api.actualizar("pagosCompetencia", pagoAEditar.id, {
-          ...datos, estado: "validado",
-        });
-        setPagosCompetencia((prev) => prev.map((p) => (p.id === actualizado.id ? actualizado : p)));
+        await registrarPago(pagoAEditar.pagoId, datos);
+        setPagosCompetencia((prev) =>
+          prev.map((p) => (p.id === pagoAEditar.id ? { ...p, ...datos, estado: "validado" } : p))
+        );
         mostrarAviso("Pago validado correctamente");
       }
       setPagoAEditar(null);
     } catch (e) {
       console.error(e);
-      mostrarAviso("No se pudo guardar el pago", "error");
+      mostrarAviso(e.message || "No se pudo guardar el pago", "error");
     } finally {
       setGuardando(false);
     }
@@ -218,7 +213,7 @@ function Pagos() {
   if (cargando) {
     return (
       <div className="conteni">
-        <aside id="titu-ren"><h3>Estado Pagos</h3><p>Cargando información de pagos…</p></aside>
+        <aside className="adm-pagos-titu-ren ui-pagina__titulo"><h3>Estado Pagos</h3><p>Cargando información de pagos…</p></aside>
       </div>
     );
   }
@@ -226,9 +221,9 @@ function Pagos() {
   if (error) {
     return (
       <div className="conteni">
-        <aside id="titu-ren">
+        <aside className="adm-pagos-titu-ren ui-pagina__titulo">
           <h3>Estado Pagos</h3>
-          <p>No se pudo cargar la información: {error.message}. Verifica que json-server esté corriendo en el puerto 3001.</p>
+          <p>No se pudo cargar la información: {error.message}.</p>
         </aside>
       </div>
     );
@@ -236,7 +231,7 @@ function Pagos() {
 
   return (
     <div className="conteni">
-      <aside id="titu-ren">
+      <aside className="adm-pagos-titu-ren ui-pagina__titulo">
         <h3>Estado Pagos</h3>
         <p>
           Controla el estado de pagos de mensualidades y competencias, registra nuevos
@@ -245,36 +240,52 @@ function Pagos() {
       </aside>
 
       <div className="tabs-pagos">
+       <div className="ui-tabs" role="tablist">
         <button
-          className={"tab-btn" + (pestana === "mensualidades" ? " tab-btn--activo" : "")}
+          type="button"
+          role="tab"
+          aria-selected={pestana === "mensualidades"}
+          className={"ui-tab" + (pestana === "mensualidades" ? " ui-tab--activa" : "")}
           onClick={() => setPestana("mensualidades")}
         >
           Mensualidades
         </button>
         <button
-          className={"tab-btn" + (pestana === "competencias" ? " tab-btn--activo" : "")}
+          type="button"
+          role="tab"
+          aria-selected={pestana === "competencias"}
+          className={"ui-tab" + (pestana === "competencias" ? " ui-tab--activa" : "")}
           onClick={() => setPestana("competencias")}
         >
           Pagos de competencia
         </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={pestana === "metodos"}
+          className={"ui-tab" + (pestana === "metodos" ? " ui-tab--activa" : "")}
+          onClick={() => setPestana("metodos")}
+        >
+          Métodos de pago
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={pestana === "planes"}
+          className={"ui-tab" + (pestana === "planes" ? " ui-tab--activa" : "")}
+          onClick={() => setPestana("planes")}
+        >
+          Planes asociados
+        </button>
+       </div>
       </div>
 
       {pestana === "mensualidades" && (
         <>
-          <section id="targetas">
-            <div className="container">
-              <div className="row mt-3">
-                <div className="col-lg-4">
-                  <Targetaestado titulo="Total recaudado" dato={cop(totalRecaudado)} texto="Marzo" />
-                </div>
-                <div className="col-lg-4">
-                  <Targetaestado titulo="Pendiente por pagar" dato={cop(totalPendiente)} texto="por cobrar" />
-                </div>
-                <div className="col-lg-4">
-                  <Targetaestado titulo="Atletas al día" dato={`${atletasAlDia} / ${mensualidades.length}`} texto="pagos verificados" />
-                </div>
-              </div>
-            </div>
+          <section className="ui-tarjetas">
+            <Targetaestado titulo="Total recaudado" dato={cop(totalRecaudado)} texto={mesSeleccionado || "acumulado"} />
+            <Targetaestado titulo="Pendiente por pagar" dato={cop(totalPendiente)} texto="por cobrar" />
+            <Targetaestado titulo="Atletas al día" dato={`${atletasAlDia} / ${mensualidades.length}`} texto="pagos verificados" />
           </section>
 
           <FiltrosMensualidades
@@ -305,12 +316,19 @@ function Pagos() {
         </>
       )}
 
+      {pestana === "planes" && <PlanesPanel mostrarAviso={mostrarAviso} />}
+
+      {pestana === "metodos" && (
+        <MetodosPagoPanel metodos={metodos} setMetodos={setMetodos} mostrarAviso={mostrarAviso} />
+      )}
+
       {pestana === "competencias" && (
         <TarjetasCompetencia grupos={grupos} onVerDetalle={setDetalleCompetencia} />
       )}
 
       <ModalFormularioPago
         pago={pagoAEditar}
+        metodos={metodos}
         guardando={guardando}
         onCerrar={() => setPagoAEditar(null)}
         onGuardar={guardarPago}
@@ -334,4 +352,11 @@ function Pagos() {
   );
 }
 
-export default Pagos;
+// Clase raíz del módulo: todos sus estilos viven bajo .adm-pagos
+export default function Pagos(props) {
+  return (
+    <div className="adm-pagos ui-contenido ui-pagina">
+      <PagosContenido {...props} />
+    </div>
+  );
+}

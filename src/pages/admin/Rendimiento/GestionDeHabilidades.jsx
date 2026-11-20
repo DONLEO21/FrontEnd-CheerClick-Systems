@@ -1,16 +1,17 @@
 import { useEffect, useState } from "react";
-import Swal from 'sweetalert2';
+import { listarHabilidades, guardarHabilidad as guardarHabilidadApi, cambiarEstadoHabilidad as cambiarEstadoApi, eliminarHabilidad as eliminarHabilidadApi } from "../../../services/rendimientoAdminService";
+import ModalConfirmar from "../../../components/Compartidos/ModalConfirmar";
+import AvisoToast from "../../../components/Compartidos/AvisoToast";
+import useAviso from "../../../hooks/useAviso";
 import TargetasEstadoHabilidad from "./TargetasEstadoHabilidad";
 import FiltrosHabilidades from "./FiltrosHabilidades";
 import TablaHabilidades from "./TablaHabilidades";
 import Paginacion from "./Paginacion";
 import ModalHabilidad from "./ModalHabilidad";
 import "./GestionHabilidades.css";
-import "../../../App.css";
 
 
 
-const API_URL = "http://localhost:3001/habilidades";
 
 function GestionDeHabilidades() {
   const [habilidades, setHabilidades] = useState([]);
@@ -21,14 +22,16 @@ function GestionDeHabilidades() {
 
   const [modalAbierto, setModalAbierto] = useState(false);
   const [habilidadSeleccionada, setHabilidadSeleccionada] = useState(null);
+  const [porDeshabilitar, setPorDeshabilitar] = useState(null); // habilidad pendiente de confirmar
+  const [procesando, setProcesando] = useState(false);
+  const { aviso, mostrarAviso } = useAviso({ tipoPorDefecto: "ok" });
 
   const itemsPorPagina = 6;
 
   // ── Cargar habilidades ──────────────────────────────
   const cargarHabilidades = () => {
-    fetch(API_URL)
-      .then((res) => res.json())
-      .then((datos) => setHabilidades(Array.isArray(datos) ? datos : []))
+    listarHabilidades()
+      .then((datos) => setHabilidades(datos))
       .catch((error) => {
         console.error("Error al cargar habilidades", error);
         setHabilidades([]);
@@ -96,105 +99,52 @@ function GestionDeHabilidades() {
   const guardarHabilidad = (form) => {
     const esEdicion = Boolean(form.id);
 
-    const peticion = esEdicion
-      ? fetch(`${API_URL}/${form.id}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ...form, estado: form.estado || "activa" }),
-        })
-      : fetch(API_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ...form, estado: "activa" }),
-        });
-
-    peticion
-      .then((res) => {
-        if (!res.ok) throw new Error("No se pudo guardar la habilidad");
-        return res.json();
-      })
+    // devuelve la promesa: si falla, el modal muestra el mensaje y se queda abierto
+    return guardarHabilidadApi({ ...form, estado: esEdicion ? form.estado || "activa" : "activa" })
       .then(() => {
         cargarHabilidades();
         cerrarModal();
-      })
-      .catch((error) => console.error(error));
+      });
   };
 
-  const eliminarHabilidad = (habilidad) => {
-  Swal.fire({
-    title: "¿Eliminar Habilidad?",
-    html: `¿Está seguro/a de que desea eliminar la habilidad <strong>"${habilidad.texto}"</strong>?<br><small style="color:#8c8c8c">Esta acción no se puede deshacer.</small>`,
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonColor: "#a15252",
-    cancelButtonColor: "#335eb6",
-    confirmButtonText: "Sí, eliminar",
-    cancelButtonText: "Cancelar",
-    reverseButtons: true,
-    customClass: {
-      popup: "swal-atl-popup",
-      confirmButton: "swal-atl-confirmar",
-      cancelButton: "swal-atl-cancelar",
-      title: "swal-atl-titulo",
-    },
-    buttonsStyling: false,
-  }).then((result) => {
-    if (!result.isConfirmed) return;
+  // Deshabilitar (antes "eliminar"): la habilidad se conserva y se puede volver a habilitar.
+  // TODO(backend): no existe DELETE de habilidades; se deshabilita con PATCH { estado: 'Inactivo' }.
+  const confirmarDeshabilitar = async () => {
+    if (!porDeshabilitar) return;
+    setProcesando(true);
+    try {
+      await eliminarHabilidadApi(porDeshabilitar);
+      cargarHabilidades();
+      mostrarAviso("La habilidad quedó deshabilitada.", "ok");
+      setPorDeshabilitar(null);
+    } catch (error) {
+      console.error(error);
+      mostrarAviso(error.message || "No se pudo deshabilitar la habilidad.", "error");
+    } finally {
+      setProcesando(false);
+    }
+  };
 
-    fetch(`${API_URL}/${habilidad.id}`, { method: "DELETE" })
-      .then((res) => {
-        if (!res.ok) throw new Error("No se pudo eliminar la habilidad");
+  const cambiarEstadoHabilidad = (habilidad) => {
+    // activa → pide confirmación para deshabilitar; deshabilitada → se habilita directamente
+    if (habilidad.estado !== "inhabilitada") return setPorDeshabilitar(habilidad);
+
+    cambiarEstadoApi(habilidad, "activa")
+      .then(() => {
         cargarHabilidades();
-        Swal.fire({
-          title: "Eliminada",
-          text: "La habilidad se eliminó correctamente.",
-          icon: "success",
-          confirmButtonColor: "#59a050",
-          customClass: {
-            popup: "swal-atl-popup",
-            confirmButton: "swal-atl-confirmar",
-            title: "swal-atl-titulo",
-          },
-          buttonsStyling: false,
-          timer: 1800,
-          showConfirmButton: false,
-        });
+        mostrarAviso("La habilidad volvió a estar activa.", "ok");
       })
       .catch((error) => {
         console.error(error);
-        Swal.fire({
-          title: "Error",
-          text: "No se pudo eliminar la habilidad.",
-          icon: "error",
-          confirmButtonColor: "#cc0000",
-          customClass: { popup: "swal-atl-popup", confirmButton: "swal-atl-confirmar", title: "swal-atl-titulo" },
-          buttonsStyling: false,
-        });
+        mostrarAviso(error.message || "No se pudo habilitar la habilidad.", "error");
       });
-  });
-};
-
-  const cambiarEstadoHabilidad = (habilidad) => {
-    const nuevoEstado =
-      habilidad.estado === "inhabilitada" ? "activa" : "inhabilitada";
-
-    fetch(`${API_URL}/${habilidad.id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ estado: nuevoEstado }),
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error("No se pudo cambiar el estado");
-        cargarHabilidades();
-      })
-      .catch((error) => console.error(error));
   };
 
   return (
-    <div className="contenido">
-      <aside id="titu-ren">
+    <div className="ui-contenido ui-ancho-total ui-pagina">
+      <aside className="adm-rendimiento-titu-ren ui-pagina__titulo">
         <h3>Gestión de Habilidades</h3>
-        <p>Registra, edita e inhabilita habilidades del sistema de evaluación</p>
+        <p>Registra, edita y deshabilita habilidades del sistema de evaluación</p>
       </aside>
 
       <TargetasEstadoHabilidad habilidades={habilidades} />
@@ -212,7 +162,6 @@ function GestionDeHabilidades() {
       <TablaHabilidades
         habilidades={habilidadesPaginadas}
         onEditar={abrirModalEditar}
-        onEliminar={eliminarHabilidad}
         onCambiarEstado={cambiarEstadoHabilidad}
       />
 
@@ -231,6 +180,19 @@ function GestionDeHabilidades() {
           onGuardar={guardarHabilidad}
         />
       )}
+
+      <ModalConfirmar
+        abierto={!!porDeshabilitar}
+        titulo="¿Deshabilitar habilidad?"
+        mensaje={`¿Desea deshabilitar la habilidad "${porDeshabilitar?.texto ?? ""}"? Dejará de evaluarse, pero podrá habilitarla de nuevo cuando quiera.`}
+        tipo="peligro"
+        textoConfirmar="Sí, deshabilitar"
+        cargando={procesando}
+        onConfirmar={confirmarDeshabilitar}
+        onCancelar={() => setPorDeshabilitar(null)}
+      />
+
+      <AvisoToast aviso={aviso} />
     </div>
   );
 }

@@ -19,14 +19,14 @@ const ModalRevisionJustificacion = forwardRef(function ModalRevisionJustificacio
     cerrar();
   };
 
-  if (!justificacion) return <dialog ref={ref} id="modal-revision-justificacion" />;
+  if (!justificacion) return <dialog ref={ref} className="adm-asistencia-modal-revision-justificacion" />;
 
   const nombreAtleta = atleta ? `${atleta.nombre} ${atleta.apellido}` : "Atleta desconocido";
   const nivelLabel = nivel ? nombreCortoNivel(nivel.categoria) : "";
   const [anio, mes, dia] = justificacion.fecha.split("-");
 
   return (
-    <dialog ref={ref} id="modal-revision-justificacion">
+    <dialog ref={ref} className="adm-asistencia-modal-revision-justificacion">
       <div className="modal-revision">
         <div className={`modal-revision-icono ${esAprobar ? "modal-revision-icono-ok" : "modal-revision-icono-no"}`}>
           {esAprobar ? (

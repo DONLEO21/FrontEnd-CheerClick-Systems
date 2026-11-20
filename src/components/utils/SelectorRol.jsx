@@ -1,8 +1,7 @@
 import { useSesion } from "../../context/SesionContext";
 import { useNavigate } from "react-router-dom";
 
-// Lista de atletas de prueba (coincide con "atletas" en db.json).
-// Si agregas/quitas atletas en el db.json, actualiza esta lista también.
+// Lista de atletas de prueba (solo desarrollo; ya no existe db.json).
 const ATLETAS_PRUEBA = [
   { id: "1", nombre: "Valeria Gómez" },
   { id: "2", nombre: "Santiago Ramírez" },

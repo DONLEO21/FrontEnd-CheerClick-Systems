@@ -1,12 +1,22 @@
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
-import { TrendingUp } from 'lucide-react'
+import { TrendingUp, LineChart as IconoGrafico } from 'lucide-react'
 
 export default function TarjetaProgreso({ metricas, cargando }) {
   const { variacion, serie, esDemo } = metricas
+  // Sin ninguna evaluación en las últimas 4 semanas: se muestra un mensaje en vez de una gráfica vacía
+  const sinDatos = !cargando && serie.every((p) => p.valor === null)
 
   return (
-    <article className="de-tarjeta de-col-6">
+    <article className="de-tarjeta de-col-7">
       <h2 className="de-titulo">Progreso últimas 4 semanas</h2>
+      {sinDatos ? (
+        <div className="de-vacio" role="status">
+          <IconoGrafico size={34} strokeWidth={1.6} aria-hidden="true" />
+          <p>Aún no hay datos de las últimas cuatro semanas</p>
+          <small>Aparecerán cuando se registren evaluaciones de rendimiento.</small>
+        </div>
+      ) : (
+      <>
       <p className="de-variacion">
         {variacion === null ? (
           <span className="de-variacion--nulo">Sin datos para comparar</span>
@@ -35,6 +45,8 @@ export default function TarjetaProgreso({ metricas, cargando }) {
           <p className="de-grafico__vacio">Datos de ejemplo — se reemplazarán cuando haya evaluaciones registradas.</p>
         )}
       </div>
+      </>
+      )}
     </article>
   )
 }

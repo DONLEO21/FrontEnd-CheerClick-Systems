@@ -1,23 +1,17 @@
-import { supabase } from '../../../services/supabase'
+import { listarNiveles, listarSesiones } from '../../../services/horariosService'
+import { asistenciaApi } from '../../../api/asistencia.api'
+import { rendimientoApi } from '../../../api/rendimiento.api'
 
 /* ───────── configuración ───────── */
-const DB = {
-  usuarios: 'usuarios',
-  niveles: 'niveles',
-  entrenamientos: 'entrenamientos',
-  asistencias: 'asistencias',
-  evaluaciones: 'evaluaciones',
-}
 
 export const RUTA_PERFIL = '/entrenador/perfil'
-export const RUTA_ENTRENAMIENTOS = '/entrenador/entrenamientos'
+export const RUTA_ENTRENAMIENTOS = '/entrenador/horarios'
 export const RUTA_INICIO_ENTRENADOR = '/entrenador'
 
 export const USAR_DATOS_DEMO = false // true = datos de ejemplo siempre
-export const DEMO_SI_NO_HAY_NIVEL = true
+export const DEMO_SI_NO_HAY_NIVEL = false
 export const MAX_ITEMS = 3 // atletas por página
 
-// Los id deben coincidir con las columnas de `evaluaciones` en Supabase
 export const CATEGORIAS = [
   { id: 'apropiada', nombre: 'Apropiada', color: '#a847e0' },
   { id: 'avanzada', nombre: 'Avanzada', color: '#f8df3e' },
@@ -25,7 +19,7 @@ export const CATEGORIAS = [
 ]
 
 // Valores temporales mientras no existan evaluaciones registradas
-const EQUIPO_DEMO = { apropiada: 79, avanzada: 83, elite: 65 }
+const EQUIPO_DEMO = {}
 const SERIE_DEMO = [62, 68, 74, 76]
 const RENDIMIENTO_DEMO = 76
 
@@ -47,40 +41,55 @@ export const hora12 = (h) => {
   return `${H % 12 || 12}:${pad(M)} ${H >= 12 ? 'PM' : 'AM'}`
 }
 
-/* ───────── acceso a datos ───────── */
-async function pedir(tabla, armar) {
-  const { data, error } = await armar(supabase.from(tabla))
-  if (error) throw new Error(`${tabla}: ${error.message}`)
-  return data ?? []
+
+const sinTildes = (s) => String(s ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
+// Porcentaje completado de una categoría de habilidades (apropiada / avanzada / elite) según el resumen del backend
+const pctCategoria = (porCategoria = {}, prefijo) => {
+  const k = Object.keys(porCategoria).find((n) => sinTildes(n).startsWith(prefijo))
+  const c = k ? porCategoria[k] : null
+  return c && c.total ? Math.round((c.completadas / c.total) * 100) : null
 }
 
-export async function cargarBase(uid) {
+export const BASE_VACIA = { niveles: [], atletas: [], evals: [], asist: [], errores: [] }
+
+/* ───────── acceso a datos (backend) ───────── */
+export async function cargarBase() {
   const errores = []
-  const seguro = async (tabla, armar) => {
-    try { return await pedir(tabla, armar) } catch (e) { errores.push(e.message); return [] }
+  const seguro = async (fn, vacio = []) => {
+    try { return await fn() } catch (e) { errores.push(e.message); return vacio }
   }
 
-  const niveles = await seguro(DB.niveles, (t) => t.select('id,nombre').eq('id_entrenador', uid).order('nombre'))
-  const ids = niveles.map((n) => n.id)
-  if (!ids.length) return { niveles, atletas: [], evals: [], asist: [], errores }
+  // el backend solo devuelve los niveles del entrenador autenticado
+  const nivelesApi = await seguro(() => listarNiveles())
+  const niveles = nivelesApi.filter((n) => !n.inhabilitado).map((n) => ({ id: n.id, nombre: n.categoria }))
+  if (!niveles.length) return { ...BASE_VACIA, errores }
 
-  const [atletas, evals, asist] = await Promise.all([
-    seguro(DB.usuarios, (t) =>
-      t.select('id,codigo,nombre,activo,id_nivel').eq('rol', 'atleta').eq('estado', 'aprobada').in('id_nivel', ids).order('nombre')),
-    seguro(DB.evaluaciones, (t) =>
-      t.select('fecha,apropiada,avanzada,elite').in('id_nivel', ids).gte('fecha', iso(hace(27)))),
-    seguro(DB.asistencias, (t) =>
-      t.select('fecha,presente').in('id_nivel', ids).gte('fecha', iso(hace(29)))),
-  ])
+  const hoyIso = iso(new Date())
+  const desde = iso(hace(29))
+  const planillas = await Promise.all(niveles.map((n) => seguro(async () => (await asistenciaApi.planilla({ nivel: n.id, fecha: hoyIso })).data?.atletas ?? [])))
+  const atletas = planillas.flatMap((lista, i) => lista.map(({ usuario: u }) => ({
+    id: u._id, codigo: u.codigo, nombre: [u.nombre, u.apellido].filter(Boolean).join(' '), activo: true, id_nivel: niveles[i].id,
+  })))
+
+  const asistLista = await Promise.all(niveles.map((n) => seguro(async () => (await asistenciaApi.list({ nivel: n.id, desde })).data ?? [])))
+  const asist = asistLista.flat().map((a) => ({ fecha: a.fecha, presente: a.tipoNovedad === 'Presente' || a.tipoNovedad === 'Tarde' }))
+
+  // Una evaluación por atleta con su avance actual por categoría
+  const evals = (await Promise.all(atletas.map((a) => seguro(async () => {
+    const pc = (await rendimientoApi.getAtleta(a.id)).data?.resumen?.porCategoria
+    return pc ? { fecha: hoyIso, apropiada: pctCategoria(pc, 'apropiad'), avanzada: pctCategoria(pc, 'avanz'), elite: pctCategoria(pc, 'elit') } : null
+  }, null)))).filter(Boolean)
+
   return { niveles, atletas, evals, asist, errores }
 }
 
 async function cargarEntrenos(ids, desde, hasta) {
   if (!ids.length) return []
-  return pedir(DB.entrenamientos, (t) =>
-    t.select('id,id_nivel,titulo,fecha,hora_inicio,hora_fin')
-      .in('id_nivel', ids).gte('fecha', desde).lte('fecha', hasta)
-      .order('fecha').order('hora_inicio'))
+  const listas = await Promise.all(ids.map((id) => listarSesiones(id)))
+  return listas.flat()
+    .filter((s) => s.estado === 'activa' && s.fecha >= desde && s.fecha <= hasta)
+    .map((s) => ({ id: s.id, id_nivel: s.nivelId, titulo: s.enfoque, fecha: s.fecha, hora_inicio: s.horaInicio, hora_fin: s.horaFin }))
+    .sort((a, b) => a.fecha.localeCompare(b.fecha) || a.hora_inicio.localeCompare(b.hora_inicio))
 }
 
 export function obtenerEntrenos({ demo, niveles, desde, hasta }) {
@@ -90,8 +99,10 @@ export function obtenerEntrenos({ demo, niveles, desde, hasta }) {
 }
 
 /* ───────── métricas ───────── */
-export function calcularMetricas(evals, asist) {
-  const esDemo = evals.length === 0
+// demo (solo desarrollo, ver USAR_DATOS_DEMO): rellena con datos de ejemplo cuando no hay evaluaciones.
+// Con demo=false NUNCA se inventan cifras: sin evaluaciones los valores quedan en null y la pantalla lo indica.
+export function calcularMetricas(evals, asist, demo = false) {
+  const esDemo = demo && evals.length === 0
 
   const notas = evals.map(notaEval).filter((n) => n !== null)
   const rendimiento = notas.length ? Math.round(prom(notas)) : (esDemo ? RENDIMIENTO_DEMO : null)

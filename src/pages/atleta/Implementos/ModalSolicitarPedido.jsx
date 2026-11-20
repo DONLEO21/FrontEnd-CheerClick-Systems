@@ -10,7 +10,7 @@ const ModalSolicitarPedido = forwardRef(function ModalSolicitarPedido(
   const [cantidad, setCantidad] = useState(1);
   const [talla, setTalla] = useState("");
   const [seleccion, setSeleccion] = useState(null); // { grupo, talla, stock }
-  const [metodoPago, setMetodoPago] = useState("presencial");
+  const [metodoPago, setMetodoPago] = useState("efectivo");
   const [comprobante, setComprobante] = useState("");
   const [nombreArchivo, setNombreArchivo] = useState("");
   const [enviando, setEnviando] = useState(false);
@@ -22,7 +22,7 @@ const ModalSolicitarPedido = forwardRef(function ModalSolicitarPedido(
     // Si solo hay una talla disponible (ej. talla única), queda seleccionada
     const conStock = (implemento?.tallas ?? []).filter((t) => Number(t.stock) > 0);
     setSeleccion(conStock.length === 1 ? conStock[0] : null);
-    setMetodoPago("presencial");
+    setMetodoPago("efectivo");
     setComprobante("");
     setNombreArchivo("");
     setError("");
@@ -73,7 +73,7 @@ const ModalSolicitarPedido = forwardRef(function ModalSolicitarPedido(
         grupoTalla: tieneTallas ? seleccion.grupo : undefined,
         precioUnitario: implemento.precio,
         fechaSolicitud: new Date().toISOString().slice(0, 10),
-        metodoPago: metodoPago === "presencial" ? "Pago presencial" : "Transferencia Nequi",
+        metodoPago: metodoPago === "efectivo" ? "Efectivo" : "Transferencia Nequi",
         comprobante,
       });
       onEnviado();
@@ -105,7 +105,7 @@ const ModalSolicitarPedido = forwardRef(function ModalSolicitarPedido(
         <div className="modal-tarjeta-producto">
           <img
             className="modal-tarjeta-img"
-            src={implemento.imagen || "/img/placeholder.png"}
+            src={implemento.imagen || "/img/placeholder.svg"}
             alt={implemento.nombre}
           />
           <div className="modal-tarjeta-info">
@@ -180,11 +180,11 @@ const ModalSolicitarPedido = forwardRef(function ModalSolicitarPedido(
               <input
                 type="radio"
                 name="metodo-pago"
-                id="pago-presencial"
-                checked={metodoPago === "presencial"}
-                onChange={() => setMetodoPago("presencial")}
+                id="pago-efectivo"
+                checked={metodoPago === "efectivo"}
+                onChange={() => setMetodoPago("efectivo")}
               />
-              <label htmlFor="pago-presencial" className="tarjeta-pago-label">
+              <label htmlFor="pago-efectivo" className="tarjeta-pago-label">
                 <div className="pago-icono">
                   <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"
                     fill="none" stroke="currentColor" strokeWidth="1.8"
@@ -193,7 +193,7 @@ const ModalSolicitarPedido = forwardRef(function ModalSolicitarPedido(
                     <polyline points="9 22 9 12 15 12 15 22" />
                   </svg>
                 </div>
-                <span className="pago-titulo">Pago presencial</span>
+                <span className="pago-titulo">Efectivo</span>
                 <span className="pago-subtitulo">Al recoger en el club</span>
               </label>
 

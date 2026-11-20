@@ -1,5 +1,4 @@
 // src/pages/Atleta/PQRS/ModalDetalle.jsx
-import React from "react";
 import ModalBase from "./ModalBase";
 import { ESTADOS, etiquetaTipo, formatearFecha, radicadoDe } from "./pqrsData";
 

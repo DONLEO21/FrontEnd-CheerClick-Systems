@@ -34,6 +34,12 @@ const ModalEditar = forwardRef(function ModalEditar({ implemento, onGuardado }, 
   const hayTallas = form.tallas.length > 0;
   const total = hayTallas ? totalStock(form.tallas) : Number(form.cantidad) || 0;
 
+  // Disponibilidad automática: sin stock => No Disponible; al volver a haber stock => Disponible.
+  const sinStock = total <= 0;
+  // si estaba "No Disponible" solo por no tener stock, al agregar stock vuelve a Disponible
+  const eraSinStock = (implemento?.cantidad ?? 0) <= 0;
+  const estadoFinal = sinStock ? "No Disponible" : (eraSinStock && form.estado === "No Disponible" ? "Disponible" : form.estado);
+
   const handleGuardar = async (e) => {
     e.preventDefault();
     setGuardando(true);
@@ -41,6 +47,7 @@ const ModalEditar = forwardRef(function ModalEditar({ implemento, onGuardado }, 
     try {
       await actualizarImplemento(form.id, {
         ...form,
+        estado: estadoFinal,
         cantidad: total,
         precio: Number(form.precio),
       });
@@ -70,6 +77,7 @@ const ModalEditar = forwardRef(function ModalEditar({ implemento, onGuardado }, 
     reader.readAsDataURL(file);
   };
 
+  // eslint-disable-next-line no-unused-vars
   const redimensionar = (file, maxSize = 400, calidad = 0.8) =>
   new Promise((resolve) => {
     const img = new Image();
@@ -101,8 +109,7 @@ const ModalEditar = forwardRef(function ModalEditar({ implemento, onGuardado }, 
             {error && <div className="alert alert-danger py-2 small">{error}</div>}
 
             <div className="row align-items-center mb-3 g-3">
-              <div className="col-3 text-center">
-                <div className="col-3 text-center">
+              <div className="col-3 d-flex justify-content-center">
                   <div
                     className="foto-editable"
                     role="button"
@@ -112,7 +119,7 @@ const ModalEditar = forwardRef(function ModalEditar({ implemento, onGuardado }, 
                     onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && fileRef.current.click()}
                   >
                     <img
-                      src={form.imagen || "/img/placeholder.png"}
+                      src={form.imagen || "/img/placeholder.svg"}
                       alt={form.nombre}
                       className="img-modal"
                     />
@@ -123,7 +130,6 @@ const ModalEditar = forwardRef(function ModalEditar({ implemento, onGuardado }, 
                     </span>
                     <input ref={fileRef} type="file" accept="image/*" onChange={handleImagen} />
                   </div>
-                </div>
               </div>
               <div className="col-9">
                 <label className="form-label small fw-bold text-secondary mb-1">Nombre del Producto</label>
@@ -166,7 +172,9 @@ const ModalEditar = forwardRef(function ModalEditar({ implemento, onGuardado }, 
                 <label className="form-label small fw-bold text-secondary mb-1">Estado</label>
                 <select
                   className="form-select"
-                  value={form.estado}
+                  value={estadoFinal}
+                  disabled={sinStock}
+                  title={sinStock ? "Sin existencias: se marca como No disponible automáticamente" : undefined}
                   onChange={(e) => handleChange("estado", e.target.value)}
                 >
                   <option value="Disponible">Disponible</option>
