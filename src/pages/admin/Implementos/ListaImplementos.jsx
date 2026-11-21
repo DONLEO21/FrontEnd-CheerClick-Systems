@@ -106,7 +106,7 @@ export default function ListaImplementos({ onAviso }) {
 
   const implementosFiltrados = useMemo(() => {
     return implementos.filter((item) => {
-      const coincideBusqueda = item.nombre.toLowerCase().includes(busqueda.toLowerCase());
+      const coincideBusqueda = `${item.nombre} ${item.codigo ?? ""}`.toLowerCase().includes(busqueda.toLowerCase().trim());
       const coincideTipo = filtroTipo === "todos" || item.tipo.toLowerCase() === filtroTipo;
       const coincideEstado =
         filtroEstado === "todos" ||

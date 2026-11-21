@@ -1201,8 +1201,7 @@
   }
 }
 :where(.ent-horarios) .tarjeta-calendario {
-  opacity: 0;
-  animation: entradaAbajo 1.1s ease 0.39s forwards;
+  animation: ui-entrada 0.35s ease 0.16s backwards;
 }
 :where(.ent-horarios) .tarjeta-calendario {
   grid-area: calendario;
@@ -1211,8 +1210,7 @@
 /* ── Estilos de otros módulos que ya afectaban a este (copiados para conservar el aspecto; ver README) ── */
 
 :where(.ent-horarios) .tarjeta-calendario {
-  opacity: 0;
-  animation: entradaAbajo 1.1s ease 0.39s forwards;}
+  animation: ui-entrada 0.35s ease 0.16s backwards;}
 @media (prefers-reduced-motion: reduce) {
 :where(.ent-horarios) .tarjeta-calendario {
     animation: none;

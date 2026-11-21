@@ -3,7 +3,7 @@ import { ETIQUETA_ROL } from './perfilData.js';
 import { URL_POLIZA } from '../../config/enlaces.js';
 
 export default function TarjetaEncabezado({
-  rol, esAtleta, fotoUrl, inicialesUsuario, nombreCompleto, apellido,
+  rol, esAtleta, fotoUrl, inicialesUsuario, nombre, apellido,
   editando, onCambiarFoto, onEditar, onGuardar, onCancelar,
 }) {
   return (
@@ -27,8 +27,8 @@ export default function TarjetaEncabezado({
         </div>
 
         <div className="perfil-encabezado-info">
-          <h2 className="perfil-nombre">{nombreCompleto}</h2>
-          {apellido && <p className="perfil-apellido">{apellido}</p>}
+          {/* "Nombre Apellido" completo, con salto de línea si es largo (nunca se trunca) */}
+          <h2 className="perfil-nombre">{[nombre, apellido].filter(Boolean).join(' ') || '—'}</h2>
           <div className="perfil-insignias">
             <span className="insignia-rol">{ETIQUETA_ROL[rol]}</span>
 

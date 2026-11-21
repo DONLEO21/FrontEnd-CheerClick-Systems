@@ -1,0 +1,201 @@
+/* Gestión de habilidades (admin y entrenador). Prefijo .adm-hab-* ; la base (.ui-tabs, .ui-tarjetas,
+   .ui-accion, .ui-confirmar, .ui-estado-error) está en src/styles/global.css */
+
+.adm-hab__encabezado {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.adm-hab__titulo { font-size: 30px; margin: 4px 0 6px; }
+.adm-hab__sub { margin: 0; font-size: 15px; color: var(--texto-muted); }
+
+.adm-hab__volver {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--texto-muted);
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+}
+.adm-hab__volver:hover { color: var(--rojo); }
+
+.adm-hab__nueva {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 20px;
+    border: 0;
+    border-radius: 10px;
+    background: var(--rojo);
+    color: var(--blanco);
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+.adm-hab__nueva:hover { background: var(--rojo-hover); color: var(--blanco); }
+
+/* Resumen */
+.adm-hab__resumen { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; }
+
+.adm-hab-resumen {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 16px;
+    background: var(--blanco);
+    border: 1px solid #d4d4d4;
+    border-radius: 12px;
+}
+.adm-hab-resumen strong { font-size: 22px; }
+.adm-hab-resumen span:last-child { color: var(--texto-muted); font-size: 14px; }
+
+.adm-hab-punto { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; background: var(--gris-suave); }
+.adm-hab-punto--negro { background: var(--texto-dark); }
+.adm-hab-punto--verde { background: var(--verde); }
+.adm-hab-punto--gris { background: #cfd4dc; }
+.adm-hab-punto--apropiada { background: var(--azul); }
+.adm-hab-punto--avanzada { background: var(--rojo); }
+.adm-hab-punto--elite { background: #f5c518; }
+
+/* Herramientas */
+.adm-hab__herramientas {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin: 4px 0 18px;
+}
+
+.adm-hab__buscar {
+    position: relative;
+    flex: 1 1 260px;
+    display: flex;
+    align-items: center;
+}
+.adm-hab__buscar svg { position: absolute; left: 12px; color: var(--texto-muted); pointer-events: none; }
+.adm-hab__buscar input,
+.adm-hab__select {
+    height: 42px;
+    border: 1px solid #d4d4d4;
+    border-radius: 10px;
+    background-color: var(--blanco);   /* background-color (no el atajo): conserva la flecha de .form-select */
+    font-size: 14px;
+}
+.adm-hab__buscar input { width: 100%; padding: 0 14px 0 38px; }
+.adm-hab__select { flex: 0 1 240px; padding: 0 12px; }
+.adm-hab__buscar input:focus,
+.adm-hab__select:focus { border-color: var(--rojo); outline: none; }
+
+/* Grid de tarjetas */
+.adm-hab__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+    margin-bottom: 8px;
+}
+
+.adm-hab-card {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 16px 18px;
+    background: var(--blanco);
+    border: 1px solid #e3e6ea;
+    border-radius: 14px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+.adm-hab-card:hover { box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08); transform: translateY(-1px); }
+.adm-hab-card--off { background: #fafafa; }
+.adm-hab-card--off .adm-hab-card__nombre { color: var(--texto-muted); }
+
+.adm-hab-card__cabeza { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.adm-hab-card__id { font-size: 12px; font-weight: 700; letter-spacing: 0.04em; color: var(--texto-muted); }
+.adm-hab-card__nombre { margin: 0; font-size: 1.05rem; line-height: 1.3; flex: 1; }
+.adm-hab-card__acciones { display: flex; justify-content: flex-end; gap: 8px; margin-top: 4px; }
+
+.adm-hab-estado { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 700; }
+.adm-hab-estado--on { color: var(--verde); }
+.adm-hab-estado--off { color: var(--texto-muted); }
+
+.adm-hab-tipo {
+    align-self: flex-start;
+    padding: 3px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    background: #eef0f3;
+    color: #4a5260;
+}
+.adm-hab-tipo--apropiada { background: #dbe6ff; color: #2447b8; }
+.adm-hab-tipo--avanzada { background: #fbd9d9; color: #b00000; }
+.adm-hab-tipo--elite { background: #fff0b8; color: #8a6a00; }
+
+/* Cargando (skeleton) y vacío */
+.adm-hab-skeleton {
+    height: 150px;
+    border-radius: 14px;
+    background: linear-gradient(90deg, #eceff3 25%, #f6f7f9 37%, #eceff3 63%);
+    background-size: 400% 100%;
+    animation: adm-hab-brillo 1.3s ease infinite;
+}
+@keyframes adm-hab-brillo { from { background-position: 100% 0; } to { background-position: 0 0; } }
+@media (prefers-reduced-motion: reduce) { .adm-hab-skeleton { animation: none; } }
+
+.adm-hab__vacio {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 48px 16px;
+    text-align: center;
+    color: var(--texto-muted);
+    background: var(--blanco);
+    border: 1px dashed #cfd4dc;
+    border-radius: 14px;
+}
+.adm-hab__vacio p { margin: 0; font-weight: 600; color: var(--color-texto); }
+
+@media (max-width: 560px) {
+    .adm-hab__grid { grid-template-columns: minmax(0, 1fr); }
+    .adm-hab__select { flex: 1 1 100%; }
+    .adm-hab__nueva { width: 100%; justify-content: center; }
+}
+
+/* ── Bloque 4.1: tarjetas compactas (más tarjetas por pantalla sin perder legibilidad) ──
+   auto-fill/minmax(220px): ~5 columnas en escritorio, 2-3 en tablet, 1 en móvil. */
+.adm-hab__grid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+}
+
+.adm-hab-card { gap: 8px; padding: 12px 14px; border-radius: 12px; }
+.adm-hab-card__nombre { font-size: 0.95rem; }
+.adm-hab-card__id { font-size: 11.5px; }
+.adm-hab-estado { font-size: 11.5px; }
+.adm-hab-card__acciones { gap: 6px; margin-top: 2px; }
+.adm-hab-card__acciones .ui-accion { width: 30px; height: 30px; border-radius: 8px; }
+
+.adm-hab-card__etiquetas { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.adm-hab-tipo { padding: 2px 10px; font-size: 11.5px; }
+.adm-hab-nivel {
+    padding: 2px 10px;
+    border-radius: 999px;
+    border: 1px solid #e3e6ea;
+    background: #fafafa;
+    color: var(--texto-muted);
+    font-size: 11.5px;
+    font-weight: 600;
+}
+
+.adm-hab-skeleton { height: 112px; }
+
+/* Filtro de nivel: mismo aspecto que los selects de Rendimiento (Bootstrap .form-select) */
+.adm-hab__select.form-select { flex: 0 1 220px; width: auto; margin: 0; }

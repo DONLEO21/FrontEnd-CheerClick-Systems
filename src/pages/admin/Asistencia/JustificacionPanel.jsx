@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import JustificacionCard from "./JustificacionCard";
 import ModalRevisionJustificacion from "./ModalRevisionJustificacion";
+import EstadoError from "../../../components/Compartidos/EstadoError";
 import AvisoToast from "../../../components/Compartidos/AvisoToast";
 import useAviso from "../../../hooks/useAviso";
 import {
@@ -38,7 +39,7 @@ export default function JustificacionesPanel({ niveles = [], onCambio }) {
         setJustificaciones(justs.filter((j) => nivelIds.includes(String(j.nivelId))));
         setAtletas(listasAtletas.flat());
       })
-      .catch(() => setError("No se pudo conectar con el servidor de datos."))
+      .catch((e) => setError(e?.message || "No se pudieron cargar las justificaciones."))
       .finally(() => setCargando(false));
   };
 
@@ -167,9 +168,7 @@ export default function JustificacionesPanel({ niveles = [], onCambio }) {
       </div>
 
       <div className="panel-categoria">
-        {error && (
-          <p className="asist-error" style={{ padding: "16px 20px 0" }}>{error}</p>
-        )}
+        {error && <EstadoError mensaje={error} onReintentar={cargarDatos} />}
 
         <div className="just-filtros">
           <div className="ui-tabs" role="tablist">

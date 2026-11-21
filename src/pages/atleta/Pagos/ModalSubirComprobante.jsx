@@ -12,7 +12,11 @@ const hoyISO = () => {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 };
 
-/** Pago de una mensualidad: método (los que configuró el admin), referencia, fecha y comprobante (imagen o PDF). */
+/**
+ * Pago de una mensualidad: método (los que configuró el admin), referencia, fecha y comprobante (imagen o PDF).
+ * Guiado por datos: si el método elegido NO requiere comprobante (p. ej. Efectivo, `requiereComprobante: false`) se
+ * ocultan referencia y comprobante, se quitan sus validaciones y no se envía ningún campo de archivo.
+ */
 function ModalSubirComprobante({ mensualidad, guardando, onCerrar, onGuardar }) {
   const [metodos, setMetodos] = useState([]);
   const [metodoId, setMetodoId] = useState("");
@@ -53,11 +57,20 @@ function ModalSubirComprobante({ mensualidad, guardando, onCerrar, onGuardar }) 
     setArchivo(f);
   };
 
-  const listo = !!metodoId && !!referencia.trim() && !!fecha && !!archivo;
+  const metodoSel = metodos.find((m) => m.id === metodoId);
+  // Mientras no se elige método se muestran los campos completos; un método sin comprobante los oculta
+  const requiereComprobante = metodoSel ? metodoSel.requiereComprobante !== false : true;
+
+  const listo = !!metodoId && !!fecha && (!requiereComprobante || (!!referencia.trim() && !!archivo));
 
   const enviar = async () => {
     setError("");
     try {
+      if (!requiereComprobante) {
+        // Efectivo: solo método y fecha. Sin archivo, sin referencia (el backend lo deja pendiente de confirmación).
+        await onGuardar({ metodoId, fechaPago: fecha, efectivo: true });
+        return;
+      }
       const comprobante = await prepararComprobante(archivo);
       await onGuardar({ metodoId, referencia: referencia.trim(), fechaPago: fecha, comprobante });
     } catch (e) {
@@ -102,13 +115,22 @@ function ModalSubirComprobante({ mensualidad, guardando, onCerrar, onGuardar }) 
                 <label htmlFor="atl-pago-fecha">Fecha del pago</label>
                 <input id="atl-pago-fecha" type="date" max={hoyISO()} value={fecha} onChange={(e) => setFecha(e.target.value)} />
               </div>
-              <div className="atl-pago-campo atl-pago-campo--completo">
-                <label htmlFor="atl-pago-ref">N.° de referencia</label>
-                <input id="atl-pago-ref" type="text" maxLength={40} placeholder="Ej: M000000"
-                  value={referencia} onChange={(e) => setReferencia(e.target.value)} />
-              </div>
+              {requiereComprobante && (
+                <div className="atl-pago-campo atl-pago-campo--completo">
+                  <label htmlFor="atl-pago-ref">N.° de referencia</label>
+                  <input id="atl-pago-ref" type="text" maxLength={40} placeholder="Ej: M000000"
+                    value={referencia} onChange={(e) => setReferencia(e.target.value)} />
+                </div>
+              )}
             </div>
 
+            {!requiereComprobante && (
+              <p className="atl-pago-efectivo" role="note">
+                Pago en efectivo: tu solicitud quedará pendiente hasta que el administrador confirme la recepción.
+              </p>
+            )}
+
+            {requiereComprobante && (
             <div className="atl-pago-comprobante">
               <span className="atl-pago-etiqueta">Comprobante de pago</span>
               <label className="atl-pago-subir">
@@ -127,6 +149,7 @@ function ModalSubirComprobante({ mensualidad, guardando, onCerrar, onGuardar }) 
               {archivo && vista && <span className="atl-pago-nota">{archivo.name} · haz clic en la imagen para cambiarla</span>}
               <span className="atl-pago-nota">JPG, PNG o PDF · máximo {MAX_MB} MB</span>
             </div>
+            )}
 
             {error && <p className="atl-pago-error" role="alert">{error}</p>}
           </div>
@@ -134,7 +157,7 @@ function ModalSubirComprobante({ mensualidad, guardando, onCerrar, onGuardar }) 
           <footer className="atl-pagos-conte-btn-atl">
             <button type="button" className="atl-pagos-cancelar-atl" onClick={onCerrar}>Cancelar</button>
             <button type="button" className="atl-pagos-registrar-atl" disabled={!listo || guardando} onClick={enviar}>
-              {guardando ? "Enviando…" : "Enviar pago"}
+              {guardando ? "Enviando…" : requiereComprobante ? "Enviar pago" : "Solicitar pago"}
             </button>
           </footer>
         </>

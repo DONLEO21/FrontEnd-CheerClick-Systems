@@ -1,6 +1,6 @@
 import "./Rendimiento.css";
 import { listarNivelesOpciones } from "../../../services/catalogos";
-import { listarAtletas, listarAtletasEntrenador, listarProgresoTodos, listarHabilidades, guardarProgresoAtleta } from "../../../services/rendimientoAdminService";
+import { listarAtletas, listarAtletasEntrenador, listarProgresoAtleta, listarHabilidades, guardarProgresoAtleta } from "../../../services/rendimientoAdminService";
 import Filtros from "./Filtros";
 import TargetaEstado from "./TargetaEstado";
 import { useEffect, useMemo, useState } from 'react';
@@ -20,9 +20,8 @@ import RendimientoPorNivel from "./RendimientoPorNivel";
 // esEntrenador: el entrenador solo ve los atletas de sus niveles
 function RendimientoContenido({ esEntrenador = false }) {
   const [atletas, setAtletas] = useState([]);
-  const [progreso, setProgreso] = useState([]);
-  const [totalHabilidades, setTotalHabilidades] = useState(1);
-  const [habilidadesActivas, setHabilidadesActivas] = useState(0); // conteo real (totalHabilidades nunca baja de 1 para dividir)
+  const [habilidadesActivas, setHabilidadesActivas] = useState(0);
+  const [error, setError] = useState("");
   const [cargando, setCargando] = useState(true);
   const [porReiniciar, setPorReiniciar] = useState(null); // atleta pendiente de confirmar el reinicio
   const [reiniciando, setReiniciando] = useState(false);
@@ -35,18 +34,16 @@ function RendimientoContenido({ esEntrenador = false }) {
   const itemsPorPagina = 6; 
 
   const cargarDatos = () => {
-    Promise.all([esEntrenador ? listarAtletasEntrenador() : listarAtletas(), listarProgresoTodos(), listarHabilidades()])
-      .then(([datosAtletas, datosProgreso, datosHabilidades]) => {
+    setError("");
+    Promise.all([esEntrenador ? listarAtletasEntrenador() : listarAtletas(), listarHabilidades().catch(() => [])])
+      .then(([datosAtletas, datosHabilidades]) => {
         setAtletas(datosAtletas);
-        setProgreso(datosProgreso);
-        const activas = datosHabilidades.filter((h) => h.estado === "activa").length;
-        setTotalHabilidades(activas || 1);
-        setHabilidadesActivas(activas);
+        setHabilidadesActivas(datosHabilidades.filter((h) => h.estado === "activa").length);
       })
-      .catch((error) => {
-        console.error("Error al cargar atletas/rendimiento", error);
+      .catch((e) => {
+        console.error("Error al cargar atletas/rendimiento", e);
         setAtletas([]);
-        setProgreso([]);
+        setError(e?.message || "No se pudo cargar el listado de rendimiento.");
       })
       .finally(() => setCargando(false));
   };
@@ -56,28 +53,21 @@ function RendimientoContenido({ esEntrenador = false }) {
     listarNivelesOpciones().then((l) => setNiveles(l.map(([, nombre]) => nombre))).catch(() => setNiveles([]));
   }, []);
 
-  // ── Rendimiento calculado dinámicamente a partir de progresoHabilidades ──
-  const atletasConRendimiento = useMemo(() => {
-    return atletas.map((atleta) => {
-      const completadas = progreso.filter(
-        (p) => p.atletaId === atleta.id && p.completado
-      ).length;
-      const rendimiento = Math.round((completadas / totalHabilidades) * 100);
-      return { ...atleta, rendimiento };
-    });
-  }, [atletas, progreso, totalHabilidades]);
+  // El backend devuelve a TODOS los atletas; `rendimiento` es null si aún no tienen ninguna evaluación
+  const atletasConRendimiento = atletas;
 
   // Tarjetas de resumen con datos reales (antes eran textos fijos vacíos)
   const targetasEstado = useMemo(() => {
     const total = atletasConRendimiento.length;
-    const promedio = total ? Math.round(atletasConRendimiento.reduce((s, a) => s + a.rendimiento, 0) / total) : 0;
+    const conDatos = atletasConRendimiento.filter((a) => a.rendimiento !== null);
+    const promedio = conDatos.length ? Math.round(conDatos.reduce((s, a) => s + a.rendimiento, 0) / conDatos.length) : null;
     const edades = atletasConRendimiento.map((a) => Number(a.edad)).filter((e) => e > 0);
     const promEdad = edades.length ? Math.round(edades.reduce((s, e) => s + e, 0) / edades.length) : null;
     return [
       { id: 1, titulo: "Total de atletas", dato: String(total), texto: "atletas registrados" },
       // TODO(backend): la edad vive en el perfil del atleta y la lista de usuarios no la trae.
       { id: 2, titulo: "Promedio de edad", dato: promEdad ? String(promEdad) : "—", texto: promEdad ? "años" : "sin datos de edad" },
-      { id: 3, titulo: "Rendimiento", dato: promedio + "%", texto: "promedio de habilidades logradas" },
+      { id: 3, titulo: "Rendimiento", dato: promedio === null ? "—" : promedio + "%", texto: promedio === null ? "sin evaluaciones registradas" : `promedio de ${conDatos.length} ${conDatos.length === 1 ? "atleta evaluado" : "atletas evaluados"}` },
       { id: 4, titulo: "Habilidades activas", dato: String(habilidadesActivas), texto: "en el sistema de evaluación" },
     ];
   }, [atletasConRendimiento, habilidadesActivas]);
@@ -87,14 +77,14 @@ function RendimientoContenido({ esEntrenador = false }) {
     const grupos = new Map();
     atletasConRendimiento.forEach((a) => {
       const nivel = a.nivel || "Sin nivel";
-      const g = grupos.get(nivel) ?? { nivel, atletas: 0, suma: 0 };
+      const g = grupos.get(nivel) ?? { nivel, atletas: 0, evaluados: 0, suma: 0 };
       g.atletas += 1;
-      g.suma += a.rendimiento;
+      if (a.rendimiento !== null) { g.evaluados += 1; g.suma += a.rendimiento; }
       grupos.set(nivel, g);
     });
     return [...grupos.values()]
-      .map((g) => ({ nivel: g.nivel, atletas: g.atletas, promedio: Math.round(g.suma / g.atletas) }))
-      .sort((x, y) => y.promedio - x.promedio);
+      .map((g) => ({ nivel: g.nivel, atletas: g.atletas, evaluados: g.evaluados, promedio: g.evaluados ? Math.round(g.suma / g.evaluados) : null }))
+      .sort((x, y) => (y.promedio ?? -1) - (x.promedio ?? -1));
   }, [atletasConRendimiento]);
 
   const handleBusquedaChange = (texto) => {
@@ -161,12 +151,12 @@ function RendimientoContenido({ esEntrenador = false }) {
     if (!atleta) return;
     setReiniciando(true);
     try {
-      const entradasDelAtleta = progreso.filter((p) => p.atletaId === atleta.id);
+      const entradasDelAtleta = await listarProgresoAtleta(atleta.id);
       await guardarProgresoAtleta(atleta.id, {
         cambios: entradasDelAtleta.filter((e) => e.completado).map((e) => ({ habilidadId: e.habilidadId, completado: false })),
       });
       // Actualiza el estado local sin necesidad de recargar todo desde el servidor
-      setProgreso((prev) => prev.map((p) => (p.atletaId === atleta.id ? { ...p, completado: false } : p)));
+      setAtletas((prev) => prev.map((a) => (a.id === atleta.id && a.rendimiento !== null ? { ...a, rendimiento: 0 } : a)));
       mostrarAviso(`${atleta.nombre} quedó en 0%.`, "ok");
       setPorReiniciar(null);
     } catch (error) {
@@ -204,6 +194,8 @@ function RendimientoContenido({ esEntrenador = false }) {
           <TablaAtletas 
             atletas={atletasPaginados} 
             cargando={cargando}
+            error={error}
+            onReintentar={() => { setCargando(true); cargarDatos(); }}
             onVerAtleta={handleVerAtleta} 
             onEditarAtleta={handleEditarAtleta}
             onRegistrarAtleta={handleRegistrarAtleta}
@@ -229,7 +221,7 @@ function RendimientoContenido({ esEntrenador = false }) {
       ) : vista === "registrar" ? (
         <RegistrarRendimiento atleta={atletaSeleccionado} onVolver={handleVolver} onAviso={mostrarAviso} />
       ) : vista === "habilidades" ? (
-        <GestionDeHabilidades atleta={atletaSeleccionado} onVolver={handleVolver} />
+        <GestionDeHabilidades esEntrenador={esEntrenador} onVolver={handleVolver} />
       ) : null}
 
       <ModalConfirmar

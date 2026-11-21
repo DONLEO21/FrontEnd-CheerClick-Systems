@@ -3,14 +3,14 @@ import { Sparkles, X } from "lucide-react";
 import { listarTiposHabilidad } from "../../../services/rendimientoAdminService";
 
 const sinTildes = (s) => (s ?? "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
-const VACIA = { texto: "", categoria: "", estado: "activa" };
+const VACIA = { texto: "", categoria: "", estado: "activa", nivelId: "" };
 const MAX_NOMBRE = 80;
 
 /**
  * Crear / editar una habilidad. El tipo sale de los tipos reales del backend (/tipo-habilidad).
  * TODO(backend): la habilidad no guarda "nivel"; por eso el formulario ya no lo pide.
  */
-function ModalHabilidad({ habilidad, onCerrar, onGuardar }) {
+function ModalHabilidad({ habilidad, niveles = [], onCerrar, onGuardar }) {
   const ref = useRef(null);
   const [form, setForm] = useState(() => (habilidad ? { ...habilidad } : VACIA));
   const [tipos, setTipos] = useState([]);
@@ -67,7 +67,7 @@ function ModalHabilidad({ habilidad, onCerrar, onGuardar }) {
           <span className="adm-rendimiento-hab-icono" aria-hidden="true"><Sparkles size={20} /></span>
           <div className="adm-rendimiento-hab-titulos">
             <h5>{esEdicion ? "Editar habilidad" : "Nueva habilidad"}</h5>
-            <p>{esEdicion ? "Modifica los datos de la habilidad." : "Se agregará al sistema de evaluación."}</p>
+            <p>{esEdicion ? `Código ${habilidad.codigo || "—"} · Modifica los datos de la habilidad.` : "Se agregará al sistema de evaluación."}</p>
           </div>
           <button type="button" className="adm-rendimiento-hab-cerrar" onClick={cerrar} aria-label="Cerrar">
             <X size={18} />
@@ -87,6 +87,12 @@ function ModalHabilidad({ habilidad, onCerrar, onGuardar }) {
           <select id="hab-tipo" value={form.categoria} onChange={cambiar("categoria")}>
             <option value="">{tipos.length ? "Selecciona un tipo" : "No hay tipos disponibles"}</option>
             {tipos.map((t) => <option key={t.valor} value={t.valor}>{t.etiqueta}</option>)}
+          </select>
+
+          <label htmlFor="hab-nivel">Nivel <small>(opcional)</small></label>
+          <select id="hab-nivel" value={form.nivelId ?? ""} onChange={cambiar("nivelId")}>
+            <option value="">Todos los niveles</option>
+            {niveles.map(([id, nombre]) => <option key={id} value={id}>{nombre}</option>)}
           </select>
 
           {esEdicion && (

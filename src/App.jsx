@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 
 import { SesionProvider } from './context/SesionContext';
 
@@ -41,10 +41,19 @@ import RendimientoAtleta from './pages/atleta/Rendimiento/Rendimiento.jsx';
 // Compartido
 import PerfilUsuario from './pages/Perfil/PerfilUsuario.jsx';
 
+// Las rutas del panel están en minúsculas (/entrenador/asistencia). Una URL con mayúsculas
+// (/Entrenador/Asistencia, enlaces antiguos) se redirige a su versión en minúsculas.
+function RedirigirMinusculas() {
+  const { pathname, search, hash } = useLocation();
+  if (pathname === pathname.toLowerCase()) return null;
+  return <Navigate to={pathname.toLowerCase() + search + hash} replace />;
+}
+
 export default function App() {
   return (
     <SesionProvider>
       <BrowserRouter>
+        <RedirigirMinusculas />
         <Routes>
           {/* Públicas */}
           <Route path="/" element={<Landing />} />

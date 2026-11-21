@@ -59,8 +59,7 @@
     border-radius: 10px 10px 0 0;
     border: 1.5px solid #e5e7eb;
     border-bottom: none;
-    opacity: 0;
-    animation: entrada-abajo 0.7s ease 0.05s forwards;
+    animation: ui-entrada 0.35s ease 0.02s backwards;
 }
 
 :where(.adm-asistencia) .asist-header h1 {
@@ -240,8 +239,7 @@
 :where(.adm-asistencia) .asist-tabla-wrapper {
     padding: 0 20px;
     overflow-x: auto;
-    opacity: 0;
-    animation: solo-fade 0.9s ease 0.45s forwards;
+    animation: ui-entrada 0.35s ease 0.18s backwards;
 }
 
 :where(.adm-asistencia) .asist-tabla {
@@ -369,8 +367,7 @@
     padding: 12px 20px;
     border-top: 1.5px solid #f0f0f0;
     flex-wrap: wrap;
-    opacity: 0;
-    animation: entrada-arriba 0.8s ease 0.60s forwards;
+    animation: ui-entrada 0.35s ease 0.24s backwards;
 }
 
 :where(.adm-asistencia) .btn-guardar {
@@ -459,8 +456,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    opacity: 0;
-    animation: entrada-arriba 0.7s ease 0.70s forwards;
+    animation: ui-entrada 0.35s ease 0.28s backwards;
 }
 
 :where(.adm-asistencia) .asist-tip-ok {
@@ -487,8 +483,7 @@
     overflow: hidden;
     height: 100%;
     transition: transform 0.25s ease, box-shadow 0.25s ease;
-    opacity: 0;
-    animation: entrada-escala 0.7s ease 0.15s forwards;
+    animation: ui-entrada 0.35s ease 0.06s backwards;
 }
 
 :where(.adm-asistencia) .rcard:hover {
@@ -1882,3 +1877,59 @@
 :where(.adm-asistencia) .btn-exportar--sec { background: #fff; color: #1f2430; border: 1px solid #d4d4d4; }
 :where(.adm-asistencia) .btn-exportar--sec:hover { background: #f4f4f4; }
 :where(.adm-asistencia) .calendario-leyenda { flex-wrap: wrap; }
+
+/* ── Modal "Consultar asistencia" (portal en document.body, ver ModalConsultar.jsx) ──
+   Overlay fijo y centrado; caja con encabezado y pie fijos y el cuerpo con scroll interno. La matriz de días
+   hace scroll horizontal dentro de su contenedor con la columna del nombre fija (sticky). */
+.adm-asist-consultar-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 2100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(2px);
+}
+
+.adm-asist-consultar {
+    display: flex;
+    flex-direction: column;
+    width: min(1100px, 95vw);
+    max-height: 90vh;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+    overflow: hidden;
+}
+
+.adm-asist-consultar__encabezado,
+.adm-asist-consultar__pie {
+    flex: none;
+    padding: 0 24px;
+}
+
+.adm-asist-consultar__encabezado { padding-top: 4px; }
+.adm-asist-consultar__pie { padding-top: 12px; padding-bottom: 16px; border-top: 1px solid #e5e7eb; }
+
+.adm-asist-consultar__cuerpo {
+    flex: 1 1 auto;
+    min-height: 0;
+    padding: 0 24px 16px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.adm-asist-consultar .consultar-tabla-wrapper {
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+.adm-asist-consultar .modal-consultar-header h2 { margin: 16px 0; }
+
+@media (max-width: 560px) {
+    .adm-asist-consultar { width: 100vw; max-height: 100dvh; border-radius: 0; }
+    .adm-asist-consultar-overlay { padding: 0; }
+}
+.adm-asist-consultar .modal-consultar-header { gap: 12px; }

@@ -34,11 +34,11 @@
 }
 
 .rend-atleta .resumen-cards .rcard:nth-child(3) {
-    animation: rendEntradaTarjeta .6s ease .66s both;
+    animation: ui-entrada 0.35s ease 0.26s backwards;
 }
 
 .rend-atleta .resumen-cards .rcard:nth-child(4) {
-    animation: rendEntradaTarjeta .6s ease .78s both;
+    animation: ui-entrada 0.35s ease 0.3s backwards;
 }
 
 @media (max-width: 991.98px) {
@@ -593,15 +593,15 @@
 }
 
 .rend-calendario {
-    animation: rendEntradaArriba .6s ease .15s both;
+    animation: ui-entrada 0.35s ease 0.06s backwards;
 }
 
 .rend-panel-just {
-    animation: rendEntradaArriba .6s ease .25s both;
+    animation: ui-entrada 0.35s ease 0.1s backwards;
 }
 
 .rend-historial {
-    animation: rendEntradaArriba .6s ease .35s both;
+    animation: ui-entrada 0.35s ease 0.14s backwards;
 }
 
 .rend-btn-nav:focus-visible,

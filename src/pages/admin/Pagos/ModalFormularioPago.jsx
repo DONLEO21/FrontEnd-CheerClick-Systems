@@ -42,8 +42,8 @@ function ModalFormularioPago({ pago, metodos = [], guardando, onCerrar, onGuarda
               <div className="adm-pagos-usu-tex">
                 <h4>{pago.atleta?.nombre ?? "Atleta no encontrado"}</h4>
                 <div className="adm-pagos-id-usu">
-                  <h5>ID atleta:</h5>
-                  <button className="fon-blanco">{pago.atleta?.id}</button>
+                  <h5>Código atleta:</h5>
+                  <button className="fon-blanco">{pago.atleta?.codigo || "—"}</button>
                 </div>
               </div>
             </div>
@@ -59,7 +59,7 @@ function ModalFormularioPago({ pago, metodos = [], guardando, onCerrar, onGuarda
             <div className="targe-a">
               <div className="targe-co">
                 <h5><i className="sim-targe bi bi-person"></i>ID del pago</h5>
-                <button className="fon-blan">{pago.codigo ?? pago.id}</button>
+                <button className="fon-blan">{pago.codigo || "—"}</button>
               </div>
               <div className="targe-co">
                 <h5><i className="sim-targe bi bi-calendar"></i>Fecha generación</h5>

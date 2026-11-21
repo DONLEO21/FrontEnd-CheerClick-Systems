@@ -79,7 +79,7 @@ export default function PedidosImplementos({ onAviso }) {
   return pedidos.filter((p) => {
     const coincideTexto =
       !texto ||
-      (p.codigo ?? p.id)?.toLowerCase().includes(texto) ||
+      (p.codigo ?? "").toLowerCase().includes(texto) ||
       p.atleta?.toLowerCase().includes(texto) ||
       (p.items ?? []).some((i) => i.implementoNombre?.toLowerCase().includes(texto));
     const coincideEstado = filtroEstado === "Todos" || p.estado === filtroEstado;
@@ -159,7 +159,7 @@ export default function PedidosImplementos({ onAviso }) {
                 const primero = items[0];
                 return (
                   <tr key={p.id}>
-                    <td>{p.codigo ?? p.id}</td>
+                    <td>{p.codigo || "—"}</td>
                     <td>
                       <div className="celda-productos">
                         <img
@@ -194,9 +194,10 @@ export default function PedidosImplementos({ onAviso }) {
 
                         <button
                           type="button"
-                          className="ui-accion ui-accion--aprobar"
+                          className={`ui-accion ui-accion--aprobar${p.estado === "Entregado" ? " ui-accion--bloqueada" : ""}`}
                           title="Aprobar"
                           disabled={p.estado !== "Pendiente"}
+                          aria-disabled={p.estado !== "Pendiente"}
                           onClick={() => aprobar(p)}
                         >
                           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
@@ -206,9 +207,10 @@ export default function PedidosImplementos({ onAviso }) {
 
                         <button
                           type="button"
-                          className="ui-accion ui-accion--rechazar"
+                          className={`ui-accion ui-accion--rechazar${p.estado === "Entregado" ? " ui-accion--bloqueada" : ""}`}
                           title="Rechazar"
                           disabled={p.estado !== "Pendiente"}
+                          aria-disabled={p.estado !== "Pendiente"}
                           onClick={() => pedirRechazo(p)}
                         >
                           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">

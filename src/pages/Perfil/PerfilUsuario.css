@@ -9,8 +9,7 @@
     height: 40px;
     width: 100%;}
 :where(.perfil-pagina) .pagina-encabezado {
-    opacity: 0;
-    animation: entradaArriba 1.1s ease .05s forwards;}
+    animation: ui-entrada 0.35s ease 0.02s backwards;}
 @media (prefers-reduced-motion: reduce) {
 :where(.perfil-pagina) .pagina-encabezado {
         animation: none;
@@ -702,3 +701,96 @@
     width: 100%;
     min-width: 0;
 }
+
+/* ═════════════ Bloque 2.1: perfil compacto (un solo CSS para admin, entrenador y atleta) ═════════════
+   Contenido de ~1080 px centrado; cabecera en una fila; tarjetas en grid de 2 columnas (1 en móvil). */
+.perfil-pagina .perfil-contenedor {
+    max-width: 1080px;
+    margin-inline: auto;
+    gap: 16px;
+}
+
+.perfil-pagina .perfil-layout {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    align-items: start;
+}
+
+/* Seguridad y Preferencias pasan a ser celdas del mismo grid */
+.perfil-pagina .perfil-fila-doble { display: contents; }
+
+.perfil-pagina .tarjeta-p {
+    padding: 16px 20px;
+}
+
+.perfil-pagina .tarjeta-p--lateral { align-self: stretch; }
+
+/* Cabecera compacta: avatar pequeño + nombre + rol (+ póliza) en una sola fila */
+.perfil-pagina .tarjeta-p--fila {
+    grid-column: 1 / -1;
+    gap: 12px;
+}
+
+.perfil-pagina .perfil-encabezado-foto { gap: 14px; align-items: center; }
+
+.perfil-pagina .foto-circulo {
+    width: 56px;
+    height: 56px;
+    box-shadow: none;
+}
+
+.perfil-pagina .foto-lapiz { width: 22px; height: 22px; }
+
+.perfil-pagina .perfil-encabezado-info {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 10px;
+}
+
+.perfil-pagina .perfil-nombre { font-size: 1.15rem; }
+.perfil-pagina .perfil-apellido { font-size: 1.15rem; margin: 0; }
+.perfil-pagina .perfil-insignias { margin: 0; }
+
+.perfil-pagina .seccion-titulo h3 { font-size: 1rem; }
+
+/* Campos: altura moderada */
+.perfil-pagina .form-grupo input,
+.perfil-pagina .form-grupo select {
+    height: 42px;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.perfil-pagina .campos-grid { gap: 12px 14px; }
+
+@media (max-width: 800px) {
+    .perfil-pagina .perfil-layout { grid-template-columns: minmax(0, 1fr); }
+    .perfil-pagina .campos-grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* Información personal y Contactos ocupan las 2 columnas (sus campos ya van en grid de 2) */
+.perfil-pagina .perfil-layout > .tarjeta-p:not(.tarjeta-p--fila) { grid-column: 1 / -1; }
+
+/* ── Bloque 5: nombre y apellido siempre completos y legibles ── */
+.perfil-pagina .perfil-nombre {
+    margin: 0;
+    white-space: normal;
+    overflow-wrap: anywhere;   /* salto de línea si es largo; nunca se corta con "…" */
+    overflow: visible;
+    text-overflow: clip;
+}
+
+.perfil-pagina .perfil-encabezado-info { min-width: 0; flex: 1 1 220px; }
+
+/* Los iconos van DENTRO del campo: el texto arranca después del icono (padding-left) y se ve completo */
+.perfil-pagina .campo-con-icono input,
+.perfil-pagina .campo-con-icono select {
+    padding-left: 38px;
+    text-overflow: clip;
+}
+
+/* Valor vacío: se muestra "—" (placeholder) con tono claro pero legible, también en modo lectura */
+.perfil-pagina .form-grupo input::placeholder { color: var(--texto-muted); opacity: 1; }
+.perfil-pagina .form-grupo input:disabled::placeholder { color: var(--texto-muted); }

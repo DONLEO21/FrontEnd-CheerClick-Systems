@@ -34,7 +34,7 @@ const ModalVerPedido = forwardRef(function ModalVerPedido({ pedido }, ref) {
           </div>
           <div className="flex-grow-1">
             <h5 className="detalle-titulo mb-0">Detalle del Pedido</h5>
-            <span className="detalle-codigo">{pedido.codigo ?? pedido.id}</span>
+            <span className="detalle-codigo">{pedido.codigo || "—"}</span>
           </div>
           <button type="button" className="btn-cerrar-circular" onClick={cerrar}>×</button>
         </div>

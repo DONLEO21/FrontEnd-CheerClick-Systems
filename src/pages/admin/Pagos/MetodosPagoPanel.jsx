@@ -16,11 +16,12 @@ export default function MetodosPagoPanel({ metodos, setMetodos, mostrarAviso }) 
   const [modal, setModal] = useState(null); // { tipo: 'crear' | 'editar' | 'eliminar', metodo? }
   const [nombre, setNombre] = useState("");
   const [qr, setQr] = useState(""); // data URL de la imagen del QR (opcional; no aplica a Efectivo)
+  const [requiereComprobante, setRequiereComprobante] = useState(true); // ¿el atleta debe adjuntar comprobante?
   const [error, setError] = useState("");
   const [guardando, setGuardando] = useState(false);
 
-  const abrirCrear = () => { setNombre(""); setQr(""); setError(""); setModal({ tipo: "crear" }); };
-  const abrirEditar = (metodo) => { setNombre(metodo.nombre); setQr(metodo.qr ?? ""); setError(""); setModal({ tipo: "editar", metodo }); };
+  const abrirCrear = () => { setNombre(""); setQr(""); setRequiereComprobante(true); setError(""); setModal({ tipo: "crear" }); };
+  const abrirEditar = (metodo) => { setNombre(metodo.nombre); setQr(metodo.qr ?? ""); setRequiereComprobante(metodo.requiereComprobante !== false); setError(""); setModal({ tipo: "editar", metodo }); };
   const abrirEliminar = (metodo) => { setError(""); setModal({ tipo: "eliminar", metodo }); };
   const cerrar = () => { if (!guardando) setModal(null); };
 
@@ -37,12 +38,12 @@ export default function MetodosPagoPanel({ metodos, setMetodos, mostrarAviso }) 
     setError("");
     try {
       if (modal.tipo === "crear") {
-        const nuevo = await crearMetodoPago({ nombre: limpio, qr });
-        setMetodos((prev) => [...prev, { id: nuevo.id, nombre: nuevo.nombre, qr: nuevo.qr }]);
+        const nuevo = await crearMetodoPago({ nombre: limpio, qr, requiereComprobante });
+        setMetodos((prev) => [...prev, { id: nuevo.id, nombre: nuevo.nombre, qr: nuevo.qr, requiereComprobante: nuevo.requiereComprobante }]);
         mostrarAviso("Método de pago creado");
       } else {
-        const actualizado = await actualizarMetodoPago(modal.metodo.id, { nombre: limpio, qr });
-        setMetodos((prev) => prev.map((m) => (m.id === actualizado.id ? { ...m, nombre: actualizado.nombre, qr: actualizado.qr } : m)));
+        const actualizado = await actualizarMetodoPago(modal.metodo.id, { nombre: limpio, qr, requiereComprobante });
+        setMetodos((prev) => prev.map((m) => (m.id === actualizado.id ? { ...m, nombre: actualizado.nombre, qr: actualizado.qr, requiereComprobante: actualizado.requiereComprobante } : m)));
         mostrarAviso("Método de pago actualizado");
       }
       setModal(null);
@@ -107,7 +108,7 @@ export default function MetodosPagoPanel({ metodos, setMetodos, mostrarAviso }) 
               <div className="adm-met__info">
                 <strong className="adm-met__nombre">{m.nombre}</strong>
                 <span className="adm-met__estado">
-                  {esMetodoEfectivo(m.nombre) ? "Se paga en el club · sin QR" : m.qr ? "Con código QR" : "Sin código QR"}
+                  {esMetodoEfectivo(m.nombre) ? "Se paga en el club · sin comprobante" : `${m.qr ? "Con código QR" : "Sin código QR"} · ${m.requiereComprobante === false ? "sin comprobante" : "con comprobante"}`}
                 </span>
               </div>
               <div className="adm-met__acciones">
@@ -138,6 +139,12 @@ export default function MetodosPagoPanel({ metodos, setMetodos, mostrarAviso }) 
                 value={nombre} onChange={(e) => setNombre(e.target.value)}
               />
               {pideQr ? (
+                <label className="adm-met__interruptor">
+                  <input type="checkbox" checked={requiereComprobante} onChange={(e) => setRequiereComprobante(e.target.checked)} />
+                  <span>El atleta debe adjuntar comprobante al pagar con este método</span>
+                </label>
+              ) : null}
+              {pideQr ? (
                 <div className="adm-met__qr">
                   <span className="adm-met__qr-etiqueta">Código QR <small>(opcional)</small></span>
                   {qr ? (
@@ -153,7 +160,7 @@ export default function MetodosPagoPanel({ metodos, setMetodos, mostrarAviso }) 
                   )}
                 </div>
               ) : (
-                <p className="adm-met__texto">Efectivo se paga en el club: no necesita código QR.</p>
+                <p className="adm-met__texto">Efectivo se paga en el club: no necesita código QR ni comprobante. La solicitud queda «Pendiente de confirmación» hasta que la confirmes.</p>
               )}
               {error && <p className="adm-met__error" role="alert">{error}</p>}
             </div>

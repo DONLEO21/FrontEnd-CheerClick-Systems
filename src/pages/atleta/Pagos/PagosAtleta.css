@@ -32,8 +32,7 @@
       justify-content: space-between;
       padding: 15px 30px;
       margin-bottom: 15px;
-      opacity: 0;
-      animation: atleta-entrada-abajo 0.7s ease 0.05s forwards;
+      animation: ui-entrada 0.35s ease 0.02s backwards;
   }
 
   .atl-pagos-detalle-usu-atl {
@@ -154,8 +153,7 @@
       border: 1px solid #d4d4d4;
       padding: 30px;
       margin-bottom: 15px;
-      opacity: 0;
-      animation: atleta-entrada-arriba 0.9s ease 0.5s forwards;
+      animation: ui-entrada 0.35s ease 0.2s backwards;
   }
 
   .atl-pagos-titulo-mensu-atl {
@@ -230,8 +228,7 @@
       background: #ffffff;
       border-radius: 10px;
       padding: 30px;
-      opacity: 0;
-      animation: atleta-entrada-arriba 0.7s ease 0.1s forwards;
+      animation: ui-entrada 0.35s ease 0.04s backwards;
   }
 
   .atl-img-tar {
@@ -339,8 +336,7 @@
   .atl-pagos-infor-final-atl {
       display: flex;
       gap: 30px;
-      opacity: 0;
-      animation: atleta-entrada-arriba 0.8s ease 0.75s forwards;
+      animation: ui-entrada 0.35s ease 0.3s backwards;
   }
 
   .atl-pagos-infor-plan-atl {
@@ -848,3 +844,15 @@
 .atl-pagos .atl-tar-infor .atl-subir-compro:hover { background-color: #a30000; border-color: #a30000; }
 .atl-pagos .atl-tar-infor .atl-sim-compro { width: 18px; height: 18px; }
 .atl-pagos .atl-tar-infor > :nth-last-child(2) { margin-bottom: 14px; }
+
+/* ── Bloque 2: ayuda del pago en efectivo ── */
+.atl-pago-efectivo {
+  margin: 4px 0 0;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: var(--amarillo-light, #fef3c7);
+  border: 1px solid #fcd34d;
+  color: #92400e;
+  font-size: 14px;
+  line-height: 1.45;
+}

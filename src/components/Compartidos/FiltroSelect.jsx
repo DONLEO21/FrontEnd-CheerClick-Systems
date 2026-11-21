@@ -27,7 +27,7 @@ export default function FiltroSelect({ label, value, onChange, options, alinearD
         </button>
 
         {open && (
-          <ul className={`custom-dropdown-menu${alinearDerecha ? " custom-dropdown-menu--derecha" : ""}`}>
+          <ul className={`custom-dropdown-menu ui-anim-desplegable${alinearDerecha ? " custom-dropdown-menu--derecha" : ""}`}>
             {options.map((opt) => (
               <li
                 key={opt.value}

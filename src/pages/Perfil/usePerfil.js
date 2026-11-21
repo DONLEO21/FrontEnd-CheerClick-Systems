@@ -4,6 +4,7 @@ import {
 } from '../../services/perfil';
 import { limpiarCacheUsuario } from '../../hooks/useUsuario';
 import { almacenSesion } from '../../api/client';
+import { renovarSesion } from '../../services/sesion';
 import {
   CAMPOS_UNA_VEZ, DATOS_INICIALES, BLOQUEOS_INICIALES,
 } from './perfilData.js';
@@ -100,6 +101,11 @@ export default function usePerfil({ rol, mostrarAviso }) {
     ? validarFechaNacimiento(borrador.fechaNacimiento, rol)
     : '';
 
+  // Nombre y apellido son obligatorios (el backend también lo valida)
+  const errorNombre = editando
+    ? (!borrador.nombre?.trim() ? 'El nombre es obligatorio.' : !borrador.apellido?.trim() ? 'El apellido es obligatorio.' : '')
+    : '';
+
   const cambiosUnaVez = CAMPOS_UNA_VEZ.filter(
     (c) => !bloqueos[c] && borrador[c] !== datos[c]
   );
@@ -165,6 +171,8 @@ export default function usePerfil({ rol, mostrarAviso }) {
       cache = { datos: actualizado, bloqueos: nuevosBloqueos };
       setEditando(false);
       setModal(null);
+      // La cabecera y la sesión muestran el nombre nuevo (renovar-token devuelve el usuario actualizado)
+      renovarSesion().then(limpiarCacheUsuario).catch(() => limpiarCacheUsuario());
       mostrarAviso('Cambios guardados con éxito', 'ok');
     } catch (err) {
       setErrorGuardar(err.message || 'No pudimos guardar los cambios. Inténtalo de nuevo.');
@@ -197,7 +205,7 @@ export default function usePerfil({ rol, mostrarAviso }) {
   return {
     datos, vista, bloqueos, editando, guardando, guardandoFoto,
     errorGuardar, cargandoPerfil, modal, setModal,
-    cantidadContactos, cambiosUnaVez, errorFecha,
+    cantidadContactos, cambiosUnaVez, errorFecha, errorNombre,
     cambiar, cambiarContacto, cambiarArchivoEps,
     activarEdicion, cancelarEdicion, confirmarGuardar, guardarFoto,
   };

@@ -98,7 +98,7 @@ const ModalEditar = forwardRef(function ModalEditar({ implemento, onGuardado }, 
 
         <div className="modal-header bg-danger text-white border-0 py-3 px-4">
           <div>
-            <h5 className="modal-title fw-bold mb-0" style={{ fontSize: "1.2rem" }}>Editar Implemento</h5>
+            <h5 className="modal-title fw-bold mb-0" style={{ fontSize: "1.2rem" }}>Editar Implemento{implemento?.codigo ? ` · ${implemento.codigo}` : ""}</h5>
             <small className="opacity-75">{form.nombre}</small>
           </div>
           <button type="button" className="btn-close btn-close-white ms-auto" onClick={cerrar}></button>

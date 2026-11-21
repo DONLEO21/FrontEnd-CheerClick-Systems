@@ -3,7 +3,7 @@ import { solicitudesApi } from '../api/solicitudes.api'
 
 const aPedido = (s) => ({
   id: s._id,
-  codigo: s.codigo ?? s._id,
+  codigo: s.codigo ?? '', // SL000 (backend); nunca el _id interno
   atleta: s.usuario ? [s.usuario.nombre, s.usuario.apellido].filter(Boolean).join(' ') : '',
   // TODO(backend): la solicitud no incluye el nivel del atleta.
   categoria: '',

@@ -7,6 +7,7 @@ function ModalVerComprobante({ mensualidad, atleta, onCerrar }) {
   const esImagen = comprobante.startsWith("data:image/");
   const esPdf = comprobante.startsWith("data:application/pdf");
   const hayArchivo = esImagen || esPdf;
+  const efectivo = !!mensualidad?.efectivo;
   const abrir = () => abrirDataURL(comprobante).catch(() => {});
 
   return (
@@ -19,7 +20,7 @@ function ModalVerComprobante({ mensualidad, atleta, onCerrar }) {
                 <path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z" />
                 <path d="M14 2v5a1 1 0 0 0 1 1h5" />
               </svg>
-              <span className="atl-pagos-titu-menu-atl">Comprobante de pago · {mensualidad.mes}</span>
+              <span className="atl-pagos-titu-menu-atl">{efectivo ? "Detalle del pago" : "Comprobante de pago"} · {mensualidad.mes}</span>
             </div>
             <div>
               <svg className="atl-pagos-sim-x-atl" onClick={onCerrar} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -42,13 +43,16 @@ function ModalVerComprobante({ mensualidad, atleta, onCerrar }) {
               </div>
             )}
             {!hayArchivo && (
-              <p className="atl-comp-sin">El archivo de este comprobante no está disponible para verlo.</p>
+              <p className="atl-comp-sin">
+                {efectivo ? "Pago en efectivo, sin comprobante." : "El archivo de este comprobante no está disponible para verlo."}
+              </p>
             )}
 
             <dl className="atl-comp-datos">
-              <div><dt>Estado</dt><dd>{mensualidad.registrado ? "Validado por el club" : "En revisión"}</dd></div>
+              {mensualidad.codigo && <div><dt>Código</dt><dd>{mensualidad.codigo}</dd></div>}
+              <div><dt>Estado</dt><dd>{mensualidad.registrado ? "Validado por el club" : efectivo ? "Pendiente de confirmación por el club" : "En revisión"}</dd></div>
               <div><dt>Método</dt><dd>{mensualidad.metodo || "—"}</dd></div>
-              <div><dt>Referencia</dt><dd>{mensualidad.referencia || "—"}</dd></div>
+              {!efectivo && <div><dt>Referencia</dt><dd>{mensualidad.referencia || "—"}</dd></div>}
               <div><dt>Fecha de pago</dt><dd>{mensualidad.fechaPago || "—"}</dd></div>
             </dl>
           </section>

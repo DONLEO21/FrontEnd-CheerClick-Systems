@@ -9,8 +9,7 @@
     height: 40px;
     width: 100%;}
 :where(.adm-implementos) .acciones-barra {
-    opacity: 0;
-    animation: entradaAbajo 1.1s ease .18s forwards;}
+    animation: ui-entrada 0.35s ease 0.07s backwards;}
 @media (prefers-reduced-motion: reduce) {
 :where(.adm-implementos) .acciones-barra {
         animation: none;

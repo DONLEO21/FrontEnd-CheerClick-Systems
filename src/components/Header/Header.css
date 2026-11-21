@@ -243,3 +243,14 @@ button.etiqueta-rol:hover {
         width: auto;
     }
 }
+
+/* Punto de "no leída" junto al título de la notificación */
+.encabezado__notif-punto {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    margin-right: 6px;
+    border-radius: 50%;
+    background: var(--rojo, #d71920);
+    vertical-align: middle;
+}

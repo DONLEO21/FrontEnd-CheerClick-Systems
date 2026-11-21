@@ -1,25 +1,24 @@
 import { tiposHabilidadApi } from '../api/tipos_habilidad.api'
 import { habilidadesApi } from '../api/habilidades.api'
-import { nivelesApi } from '../api/niveles.api'
-import { usuariosApi } from '../api/usuarios.api'
-import { asistenciaApi } from '../api/asistencia.api'
 import { rendimientoApi } from '../api/rendimiento.api'
 // Rendimiento deportivo (vista del administrador / entrenador).
 // Backend: /api/habilidad, /api/tipo-habilidad, /api/rendimiento (…/atleta/:id), /api/usuarios
 
 const sinTildes = (s) => (s ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim()
 const idDe = (x) => (x && typeof x === 'object' ? x._id : x)
-const hoyISO = () => new Date().toISOString().slice(0, 10)
+// Misma zona que el backend (America/Bogota)
+const hoyISO = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Bogota' }).format(new Date())
 
 /* ───────── habilidades ───────── */
-// TODO(backend): la habilidad del backend tiene { nombre, estado, tipoHabilidad }.
-//   La pantalla además muestra un "nivel" (p. ej. "Nivel 1 Youth") que el backend no guarda.
+// SUPUESTO: la habilidad tiene un `nivel` opcional (null = aplica a todos los niveles). Se agregó al modelo del backend
+//   porque antes no existía relación habilidad -> nivel y no se podía filtrar.
 const aHabilidad = (h) => ({
   id: h._id,
-  codigo: h.codigo ?? h._id, // HA000 (backend)
+  codigo: h.codigo ?? '', // HA000 (backend); nunca el _id interno
   categoria: sinTildes(h.tipoHabilidad?.nombre), // apropiada | avanzada | elite ...
   texto: h.nombre,
-  nivel: '',
+  nivelId: idDe(h.nivel) ?? '',
+  nivel: h.nivel?.nombre ?? '', // '' = todos los niveles
   estado: h.estado === 'Inactivo' ? 'inhabilitada' : 'activa',
   tipoId: idDe(h.tipoHabilidad),
 })
@@ -29,8 +28,9 @@ export async function listarTiposHabilidad() {
   return data ?? []
 }
 
-export async function listarHabilidades() {
-  const [{ data }, tipos] = await Promise.all([habilidadesApi.list(), listarTiposHabilidad()])
+// nivelId (opcional): solo las de ese nivel + las generales. El backend valida que el entrenador pida solo sus niveles.
+export async function listarHabilidades({ nivelId } = {}) {
+  const [{ data }, tipos] = await Promise.all([habilidadesApi.list({ nivelId }), listarTiposHabilidad()])
   const porId = Object.fromEntries(tipos.map((t) => [t._id, t]))
   return (data ?? []).map((h) => aHabilidad({ ...h, tipoHabilidad: porId[idDe(h.tipoHabilidad)] ?? h.tipoHabilidad }))
 }
@@ -44,7 +44,12 @@ async function idTipo(categoria) {
 
 // form: { id?, categoria, texto }
 export async function guardarHabilidad(form) {
-  const cuerpo = { nombre: form.texto, tipoHabilidad: await idTipo(form.categoria), estado: form.estado === 'inhabilitada' ? 'Inactivo' : 'Activo' }
+  const cuerpo = {
+    nombre: form.texto,
+    tipoHabilidad: await idTipo(form.categoria),
+    estado: form.estado === 'inhabilitada' ? 'Inactivo' : 'Activo',
+    nivel: form.nivelId || null,
+  }
   if (form.id) await habilidadesApi.update(form.id, cuerpo)
   else await habilidadesApi.create(cuerpo)
 }
@@ -56,44 +61,24 @@ export const cambiarEstadoHabilidad = (habilidad, estadoApp) =>
 export const eliminarHabilidad = (habilidad) => cambiarEstadoHabilidad(habilidad, 'inhabilitada')
 
 /* ───────── atletas y progreso ───────── */
+// Listado de rendimiento: TODOS los atletas, tengan o no rendimiento registrado (GET /rendimiento/resumen).
+// El backend filtra por rol: el administrador ve todos; el entrenador, solo los de SUS niveles.
+// `rendimiento` es el porcentaje (0-100) o null cuando el atleta aún no tiene ninguna evaluación.
 export async function listarAtletas() {
-  const [niveles, ...paginas] = await Promise.all([nivelesApi.list(), ...[1, 2, 3, 4, 5].map((p) => usuariosApi.listarSolicitudes({ estado: 'Aprobada', page: p }).catch(() => ({ data: [] })))])
-  const nombreNivel = Object.fromEntries((niveles.data ?? []).map((n) => [n._id, n.nombre]))
-  return paginas.flatMap((p) => p.data ?? []).filter((u) => u.rol === 'Atleta').map((u) => ({
-    id: u._id,
-    nombre: [u.nombre, u.apellido].filter(Boolean).join(' '),
-    // TODO(backend): el usuario no trae la edad (está en su perfil).
-    edad: '',
-    nivel: nombreNivel[idDe(u.nivel)] ?? '',
-    rendimiento: 0,
+  const { data } = await rendimientoApi.resumen()
+  return (data ?? []).map((a) => ({
+    id: a._id,
+    nombre: [a.nombre, a.apellido].filter(Boolean).join(' '),
+    // La edad la calcula el backend (/rendimiento/resumen) desde la fecha de nacimiento del perfil; null = sin fecha
+    edad: a.edad ?? '',
+    nivel: a.nivel?.nombre ?? '',
+    codigo: a.codigo ?? '',
+    rendimiento: a.rendimiento ? a.rendimiento.porcentaje : null,
   }))
 }
 
-// Atletas del ENTRENADOR: /usuarios/solicitudes es solo para el administrador, así que los atletas se
-// toman de la planilla de asistencia de cada uno de SUS niveles (el backend ya filtra los niveles por rol).
-export async function listarAtletasEntrenador() {
-  const { data: niveles } = await nivelesApi.list()
-  const activos = (niveles ?? []).filter((n) => n.estado !== 'Inactivo')
-  const planillas = await Promise.all(activos.map((n) =>
-    asistenciaApi.planilla({ nivel: n._id, fecha: hoyISO() }).then((r) => ({ nivel: n, atletas: r.data?.atletas ?? [] })).catch(() => ({ nivel: n, atletas: [] }))))
-  return planillas.flatMap(({ nivel, atletas }) => atletas.map(({ usuario: u }) => ({
-    id: u._id,
-    nombre: [u.nombre, u.apellido].filter(Boolean).join(' '),
-    edad: '',
-    nivel: nivel.nombre,
-    rendimiento: 0,
-  })))
-}
-
-// Progreso de TODOS los atletas: última calificación por atleta y habilidad
-export async function listarProgresoTodos() {
-  const { data } = await rendimientoApi.list()
-  const ultimo = new Map()
-  for (const r of (data ?? []).sort((a, b) => new Date(a.fecha) - new Date(b.fecha))) {
-    ultimo.set(`${idDe(r.usuario)}-${idDe(r.habilidad)}`, { id: `${idDe(r.usuario)}-${idDe(r.habilidad)}`, atletaId: idDe(r.usuario), habilidadId: idDe(r.habilidad), completado: !!r.calificacion })
-  }
-  return [...ultimo.values()]
-}
+// El entrenador usa el mismo listado: la restricción por nivel la valida el backend (no el frontend).
+export const listarAtletasEntrenador = listarAtletas
 
 // Progreso de un atleta (una entrada por habilidad activa)
 export async function listarProgresoAtleta(atletaId) {

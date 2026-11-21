@@ -164,23 +164,19 @@
 }
 
 :where(.adm-cuentas) .pagina-encabezado {
-    opacity: 0;
-    animation: entradaArriba 1.1s ease .05s forwards;
+    animation: ui-entrada 0.35s ease 0.02s backwards;
 }
 
 :where(.adm-cuentas) .acciones-barra {
-    opacity: 0;
-    animation: entradaAbajo 1.1s ease .18s forwards;
+    animation: ui-entrada 0.35s ease 0.07s backwards;
 }
 
 .adm-cuentas-seccion-solicitudes .tabs-barra {
-    opacity: 0;
-    animation: entradaAbajo 1.1s ease .30s forwards;
+    animation: ui-entrada 0.35s ease 0.12s backwards;
 }
 
 :where(.adm-cuentas) .tabla-wrap {
-    opacity: 0;
-    animation: entradaEscala 1.1s ease .42s forwards;
+    animation: ui-entrada 0.35s ease 0.17s backwards;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -785,21 +781,18 @@
 
 /* ── Cabeza: baja desde arriba ── */
 :where(.adm-cuentas) .modal-dialogo .modal-cabeza {
-    opacity: 0;
-    animation: imple-entrada-abajo .55s ease .12s forwards;
+    animation: ui-entrada 0.35s ease 0.05s backwards;
 }
 
 /* ── Cuerpo / descripción / campos: suben ── */
 :where(.adm-cuentas) .modal-dialogo .modal-cuerpo,
 :where(.adm-cuentas) .modal-dialogo .modal-descripcion {
-    opacity: 0;
-    animation: imple-entrada-arriba .5s ease .22s forwards;
+    animation: ui-entrada 0.35s ease 0.09s backwards;
 }
 
 /* ── Pie de botones ── */
 :where(.adm-cuentas) .modal-dialogo .modal-pie {
-    opacity: 0;
-    animation: imple-entrada-arriba .5s ease .32s forwards;
+    animation: ui-entrada 0.35s ease 0.13s backwards;
 }
 
 :where(.adm-cuentas) .modal--chico { max-width: 380px; }
@@ -1389,4 +1382,26 @@
 .adm-cuentas .insignia-rol--tabla {
     padding: 3px 10px;
     font-size: 11.5px;
+}
+
+/* ── 2.2: selector de rol compacto (altura 30 px, ancho según el contenido; no deforma la fila) ── */
+.adm-cuentas .select-rol,
+.adm-cuentas .select-rol.badge {
+    height: 30px;
+    min-height: 0;
+    width: auto;
+    min-width: 0;
+    max-width: 100%;
+    padding-block: 0;
+    line-height: 30px;
+    font-size: 12.5px;
+}
+
+.adm-cuentas .select-rol-modal {
+    height: 32px;
+    min-height: 0;
+    width: auto;
+    min-width: 150px;
+    padding-block: 0;
+    line-height: 32px;
 }

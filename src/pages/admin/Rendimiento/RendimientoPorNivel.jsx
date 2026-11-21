@@ -1,7 +1,7 @@
 /**
  * Rendimiento promedio por nivel. Se calcula en Rendimiento.jsx con los mismos datos reales de la
  * tabla (habilidades completadas / habilidades activas); no hay cifras propias de este componente.
- * datos: [{ nivel, atletas, promedio }]
+ * datos: [{ nivel, atletas, evaluados, promedio }]  (promedio = null si ningún atleta del nivel tiene evaluaciones)
  */
 function RendimientoPorNivel({ datos = [] }) {
   if (datos.length === 0) return null;
@@ -18,17 +18,18 @@ function RendimientoPorNivel({ datos = [] }) {
             <div className="adm-rendimiento-niveles__fila">
               <span className="adm-rendimiento-niveles__nombre">{d.nivel}</span>
               <span className="adm-rendimiento-niveles__meta">
-                {d.atletas} {d.atletas === 1 ? "atleta" : "atletas"} · <strong>{d.promedio}%</strong>
+                {d.atletas} {d.atletas === 1 ? "atleta" : "atletas"} ·{" "}
+                {d.promedio === null ? <strong>Sin evaluaciones</strong> : <strong>{d.promedio}%</strong>}
               </span>
             </div>
             <div
               className="adm-rendimiento-niveles__barra"
               role="progressbar"
-              aria-valuenow={d.promedio}
+              aria-valuenow={d.promedio ?? 0}
               aria-valuemin="0"
               aria-valuemax="100"
             >
-              <div className="adm-rendimiento-niveles__relleno" style={{ width: `${d.promedio}%` }} />
+              <div className="adm-rendimiento-niveles__relleno" style={{ width: `${d.promedio ?? 0}%` }} />
             </div>
           </li>
         ))}

@@ -5,11 +5,11 @@ import estadisticas from '../assets/icons/estadisticas-de-barras.png';
 import comentarios from '../assets/icons/comentarios.png';
 
 const menuEntrenador = [
-  { href: '/Entrenador/Perfil', titulo: 'Perfil', icono: usuario, alt: 'Perfil' },
-  { href: '/Entrenador/Asistencia', titulo: 'Asistencia', icono: listaVerificacion, alt: 'Estado de cuentas' },
-  { href: '/Entrenador/Horarios', titulo: 'Horarios', icono: calendario, alt: 'Horarios' },
-  { href: '/Entrenador/Rendimiento', titulo: 'Rendimiento Deportivo', icono: estadisticas, alt: 'Estado de cuentas' },
-  { href: '/Entrenador/Pqrs', titulo: 'PQRS', icono: comentarios, alt: 'PQRS' },
+  { href: '/entrenador/perfil', titulo: 'Perfil', icono: usuario, alt: 'Perfil' },
+  { href: '/entrenador/asistencia', titulo: 'Asistencia', icono: listaVerificacion, alt: 'Estado de cuentas' },
+  { href: '/entrenador/horarios', titulo: 'Horarios', icono: calendario, alt: 'Horarios' },
+  { href: '/entrenador/rendimiento', titulo: 'Rendimiento Deportivo', icono: estadisticas, alt: 'Estado de cuentas' },
+  { href: '/entrenador/pqrs', titulo: 'PQRS', icono: comentarios, alt: 'PQRS' },
 ];
 
 export default menuEntrenador;

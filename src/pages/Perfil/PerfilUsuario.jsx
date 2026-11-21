@@ -30,7 +30,7 @@ export default function PerfilUsuario({ rol = 'atleta' }) {
   const {
     datos, vista, bloqueos, editando, guardando, guardandoFoto,
     errorGuardar, cargandoPerfil, modal, setModal,
-    cantidadContactos, cambiosUnaVez, errorFecha,
+    cantidadContactos, cambiosUnaVez, errorFecha, errorNombre,
     cambiar, cambiarContacto, cambiarArchivoEps,
     activarEdicion, cancelarEdicion, confirmarGuardar, guardarFoto,
   } = usePerfil({ rol, mostrarAviso });
@@ -58,12 +58,12 @@ export default function PerfilUsuario({ rol = 'atleta' }) {
                   esAtleta={esAtleta}
                   fotoUrl={datos.fotoUrl}
                   inicialesUsuario={inicialesUsuario}
-                  nombreCompleto={nombreCompleto}
-                  apellido={apellido}
+                  nombre={vista.nombre || nombreCompleto}
+                  apellido={vista.nombre ? vista.apellido : apellido}
                   editando={editando}
                   onCambiarFoto={() => setModal('foto')}
                   onEditar={activarEdicion}
-                  onGuardar={() => (errorFecha ? mostrarAviso(errorFecha, 'error') : setModal('confirmar'))}
+                  onGuardar={() => (errorNombre || errorFecha ? mostrarAviso(errorNombre || errorFecha, 'error') : setModal('confirmar'))}
                   onCancelar={cancelarEdicion}
                 />
 
@@ -84,6 +84,7 @@ export default function PerfilUsuario({ rol = 'atleta' }) {
                   onCambiarArchivoEps={cambiarArchivoEps}
                   rol={rol}
                   errorFecha={errorFecha}
+                  errorNombre={errorNombre}
                 />
 
                 {/* Contactos de emergencia: 2 para atleta, 1 para entrenador/admin */}

@@ -1,4 +1,5 @@
-import { forwardRef, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import { obtenerRegistrosRango, calcularResumen } from "../../../services/asistenciaService";
 import { abrirReporteAsistencia } from "./exportarAsistencia";
 import { diasDeSesion, horarioDiasUnicos, nombreMes, hoy } from "../../../services/data";
@@ -50,7 +51,8 @@ function exportarCSV(nivel, mesLabel, dias, atletas, historial) {
   URL.revokeObjectURL(url);
 }
 
-const ModalConsultar = forwardRef(function ModalConsultar({ nivel, atletas }, ref) {
+// Modal en portal (document.body): ningún ancestro (transform, overflow, márgenes del layout) puede desplazarlo o cortarlo.
+function ModalConsultar({ abierto, onCerrar, nivel, atletas }) {
   const ahora = hoy();
   const [anio, setAnio] = useState(ahora.getFullYear());
   const [mesIndex, setMesIndex] = useState(ahora.getMonth());
@@ -58,7 +60,15 @@ const ModalConsultar = forwardRef(function ModalConsultar({ nivel, atletas }, re
   const [cargando, setCargando] = useState(false);
   const [busqueda, setBusqueda] = useState("");
 
-  const cerrar = () => ref.current?.close();
+  const cerrar = onCerrar;
+
+  // Escape cierra el modal
+  useEffect(() => {
+    if (!abierto) return;
+    const alTecla = (e) => { if (e.key === "Escape") onCerrar(); };
+    document.addEventListener("keydown", alTecla);
+    return () => document.removeEventListener("keydown", alTecla);
+  }, [abierto, onCerrar]);
 
   const diasHorario = useMemo(() => horarioDiasUnicos(nivel?.horarios), [nivel]);
   const dias = useMemo(
@@ -67,7 +77,7 @@ const ModalConsultar = forwardRef(function ModalConsultar({ nivel, atletas }, re
   );
 
   useEffect(() => {
-    if (!nivel?.id || dias.length === 0) {
+    if (!abierto || !nivel?.id || dias.length === 0) {
       setRegistros([]);
       return;
     }
@@ -80,7 +90,7 @@ const ModalConsultar = forwardRef(function ModalConsultar({ nivel, atletas }, re
       .catch(() => { if (!cancelado) setRegistros([]); })
       .finally(() => { if (!cancelado) setCargando(false); });
     return () => { cancelado = true; };
-  }, [nivel?.id, anio, mesIndex, dias.length]);
+  }, [abierto, nivel?.id, anio, mesIndex, dias.length]);
 
   const historial = useMemo(() => {
     const mapa = {};
@@ -158,11 +168,17 @@ const ModalConsultar = forwardRef(function ModalConsultar({ nivel, atletas }, re
     }
   };
 
-  return (
-    <dialog ref={ref} className="adm-asistencia-modal-consultar">
-      <div className="modal-consultar-contenido">
-        <div className="modal-consultar-header d-flex align-items-center">
-          <h2>Asistencia</h2>
+  if (!abierto) return null;
+
+  return createPortal(
+    <div
+      className="adm-asistencia adm-asist-consultar-overlay ui-anim-overlay"
+      onMouseDown={(e) => { if (e.target === e.currentTarget) cerrar(); }}
+    >
+      <div className="adm-asist-consultar ui-anim-modal" role="dialog" aria-modal="true" aria-labelledby="asist-consultar-titulo">
+        <div className="adm-asist-consultar__encabezado">
+          <div className="modal-consultar-header d-flex align-items-center">
+          <h2 id="asist-consultar-titulo">Asistencia</h2>
           <span className="badge-categoria">{nivel?.categoria}</span>
           <button type="button" className="btn-cerrar-circular ms-auto" aria-label="Cerrar" onClick={cerrar}>
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -170,7 +186,9 @@ const ModalConsultar = forwardRef(function ModalConsultar({ nivel, atletas }, re
             </svg>
           </button>
         </div>
+        </div>
 
+        <div className="adm-asist-consultar__cuerpo">
         <div className="resumen-mes-box">
           <div className="resumen-mes-pct">
             <span className="resumen-mes-num">{resumenTotales.porcentaje}%</span>
@@ -286,7 +304,9 @@ const ModalConsultar = forwardRef(function ModalConsultar({ nivel, atletas }, re
             </ul>
           </div>
         )}
+        </div>
 
+        <div className="adm-asist-consultar__pie">
         <div className="calendario-leyenda">
           <span className="leyenda-item"><span className="ico-presente">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-check2" viewBox="0 0 16 16">
@@ -323,9 +343,12 @@ const ModalConsultar = forwardRef(function ModalConsultar({ nivel, atletas }, re
           </button>
         </div>
         {avisoExport && <p className="asist-error" role="alert">{avisoExport}</p>}
+        </div>
       </div>
-    </dialog>
+    </div>,
+    document.body
   );
-});
+}
+
 
 export default ModalConsultar;

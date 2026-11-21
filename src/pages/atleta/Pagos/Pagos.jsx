@@ -50,7 +50,8 @@ function PagosAtleta() {
     let lista = ordenadas;
     if (mes) lista = lista.filter((m) => m.mes === mes);
     if (filtro === "recientes") return lista.slice(0, 3);
-    return lista.filter((m) => m.estado === filtro);
+    // "Por confirmar" (efectivo solicitado) cuenta como pendiente
+    return lista.filter((m) => m.estado === filtro || (filtro === "pendiente" && m.estado === "confirmando"));
   }, [ordenadas, filtro, mes]);
 
   const guardarComprobante = async (datos) => {
@@ -61,7 +62,12 @@ function PagosAtleta() {
         prev.map((m) => (m.id === actualizada.id ? actualizada : m))
       );
       setASubir(null);
-      mostrarAviso("Pago enviado. El club lo revisará y lo validará.", "ok");
+      mostrarAviso(
+        datos.efectivo
+          ? "Solicitud de pago en efectivo enviada. Quedará pendiente hasta que el administrador confirme la recepción."
+          : "Pago enviado. El club lo revisará y lo validará.",
+        "ok"
+      );
     } catch (e) {
       console.error(e);
       throw e; // el modal muestra el mensaje y se queda abierto

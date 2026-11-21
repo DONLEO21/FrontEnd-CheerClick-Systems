@@ -64,8 +64,7 @@
     overflow: hidden;
     height: 100%;
     transition: transform 0.25s ease, box-shadow 0.25s ease;
-    opacity: 0;
-    animation: entrada-escala 0.7s ease 0.15s forwards;}
+    animation: ui-entrada 0.35s ease 0.06s backwards;}
 :where(.rend-atleta) .rcard:hover {
     transform: translateY(-4px);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.10);}
@@ -420,11 +419,11 @@
 .rend-atleta .rend-vacio--izq { text-align: left; padding: 0; }
 
 /* ── Animación de entrada (una sola secuencia al cargar) ── */
-.rend-atleta .page-header { animation: rendEntradaArriba .6s ease .10s both; }
-.rend-atleta .perfil-atleta { animation: rendEntradaArriba .6s ease .22s both; }
-.rend-atleta .tabs-nav { animation: rendEntradaArriba .6s ease .32s both; }
-.rend-atleta .resumen-cards .rcard:nth-child(1) { animation: rendEntradaTarjeta .6s ease .42s both; }
-.rend-atleta .resumen-cards .rcard:nth-child(2) { animation: rendEntradaTarjeta .6s ease .54s both; }
+.rend-atleta .page-header { animation: ui-entrada 0.35s ease 0.04s backwards; }
+.rend-atleta .perfil-atleta { animation: ui-entrada 0.35s ease 0.09s backwards; }
+.rend-atleta .tabs-nav { animation: ui-entrada 0.35s ease 0.13s backwards; }
+.rend-atleta .resumen-cards .rcard:nth-child(1) { animation: ui-entrada 0.35s ease 0.17s backwards; }
+.rend-atleta .resumen-cards .rcard:nth-child(2) { animation: ui-entrada 0.35s ease 0.22s backwards; }
 
 @keyframes rendEntradaArriba {
     from { opacity: 0; transform: translateY(-14px); }

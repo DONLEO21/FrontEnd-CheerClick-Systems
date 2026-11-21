@@ -415,3 +415,28 @@
     background: #cc0000;
     transition: width .3s ease;
 }
+
+/* ── Bloque 6: atleta sin rendimiento registrado ── */
+.adm-rendimiento-sin {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    color: var(--texto-muted);
+    font-size: 13px;
+}
+
+.adm-rendimiento-sin__btn {
+    padding: 4px 12px;
+    border: 1.5px solid var(--rojo);
+    border-radius: 8px;
+    background: var(--blanco);
+    color: var(--rojo);
+    font-weight: 700;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.adm-rendimiento-sin__btn:hover { background: var(--rojo); color: var(--blanco); }

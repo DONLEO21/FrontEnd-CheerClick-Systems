@@ -6,12 +6,12 @@ import comentarios from '../assets/icons/comentarios.png';
 import estadisticas from '../assets/icons/estadisticas-de-barras.png';
 
 const menuAtleta = [
-  { href: '/Atleta/Perfil', titulo: 'Perfil', icono: usuario, alt: 'Perfil' },
-  { href: '/Atleta/Horarios', titulo: 'Horarios', icono: calendario, alt: 'Horarios' },
-  { href: '/Atleta/Implementos', titulo: 'Implementos Deportivos', icono: camisa, alt: 'Implementos' },
-  { href: '/Atleta/Pagos', titulo: 'Pagos', icono: factura, alt: 'Estado de cuentas' },
-  { href: '/Atleta/Pqrs', titulo: 'PQRS', icono: comentarios, alt: 'PQRS' },
-  { href: '/Atleta/Rendimiento', titulo: 'Rendimiento Deportivo', icono: estadisticas, alt: 'Estado de cuentas' },
+  { href: '/atleta/perfil', titulo: 'Perfil', icono: usuario, alt: 'Perfil' },
+  { href: '/atleta/horarios', titulo: 'Horarios', icono: calendario, alt: 'Horarios' },
+  { href: '/atleta/implementos', titulo: 'Implementos Deportivos', icono: camisa, alt: 'Implementos' },
+  { href: '/atleta/pagos', titulo: 'Pagos', icono: factura, alt: 'Estado de cuentas' },
+  { href: '/atleta/pqrs', titulo: 'PQRS', icono: comentarios, alt: 'PQRS' },
+  { href: '/atleta/rendimiento', titulo: 'Rendimiento Deportivo', icono: estadisticas, alt: 'Estado de cuentas' },
 ];
 
 export default menuAtleta;

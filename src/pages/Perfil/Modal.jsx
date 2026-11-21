@@ -2,10 +2,10 @@ export default function Modal({ abierto, onCerrar, children, className = '', lab
   if (!abierto) return null;
   return (
     <div
-      className="perfil-modal-overlay"
+      className="perfil-modal-overlay ui-anim-overlay"
       onClick={(e) => { if (e.target === e.currentTarget) onCerrar(); }}
     >
-      <div className={`perfil-modal ${className}`} role="dialog" aria-modal="true" aria-labelledby={labelledBy}>
+      <div className={`perfil-modal ui-anim-modal ${className}`} role="dialog" aria-modal="true" aria-labelledby={labelledBy}>
         {children}
       </div>
     </div>

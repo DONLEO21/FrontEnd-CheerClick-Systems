@@ -63,7 +63,7 @@ function ModalDetalleCompetencia({ competencia, pagos, onCerrar, onValidar, onVe
                   <div><div className="adm-pagos-deta-fto"></div></div>
                   <div>
                     <h5 className="adm-pagos-nombre-atl">{p.atleta?.nombre ?? "Atleta no encontrado"}</h5>
-                    <span className="adm-pagos-ID-fecha">{p.codigo ?? p.id} · {p.fechaPago}</span>
+                    <span className="adm-pagos-ID-fecha">{p.codigo || "—"} · {p.fechaPago}</span>
                   </div>
                 </div>
                 <div className="adm-pagos-acci-a">

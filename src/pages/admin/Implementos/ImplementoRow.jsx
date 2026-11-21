@@ -30,7 +30,7 @@ export default function ImplementoRow({ implemento, onEditar, onPedirCambioEstad
 
   return (
     <tr className={!disponible ? "fila-no-disponible" : ""}>
-      <td>{implemento.codigo ?? implemento.id}</td>
+      <td>{implemento.codigo || "—"}</td>
       <td>
         <div className="d-flex align-items-center gap-2">
           <img

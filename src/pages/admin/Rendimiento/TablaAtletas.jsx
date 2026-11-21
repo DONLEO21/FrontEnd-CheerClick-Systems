@@ -1,6 +1,8 @@
 import imgusuario from "../../../assets/icons/usuario.png";
 
-function TablaAtletas({ atletas, cargando = false, onVerAtleta, onEditarAtleta, onRegistrarAtleta, onEliminarAtleta }) {
+import EstadoError from "../../../components/Compartidos/EstadoError";
+
+function TablaAtletas({ atletas, cargando = false, error = "", onReintentar, onVerAtleta, onEditarAtleta, onRegistrarAtleta, onEliminarAtleta }) {
     const obtenerEstiloNivel = (nivel) => {
         switch (nivel?.toLowerCase().trim()) {
         case "nivel formativo king":
@@ -63,6 +65,15 @@ function TablaAtletas({ atletas, cargando = false, onVerAtleta, onEditarAtleta, 
                   </button>
                 </td>
                 <td className="edad-ne">
+                  {atleta.rendimiento === null ? (
+                    // Atleta sin ninguna evaluación: se muestra claro y se ofrece registrarla
+                    <div className="adm-rendimiento-sin">
+                      <span>Sin rendimiento registrado</span>
+                      <button type="button" className="adm-rendimiento-sin__btn" onClick={() => onRegistrarAtleta(atleta)}>
+                        Registrar
+                      </button>
+                    </div>
+                  ) : (
                   <div className="d-flex align-items-center gap-2">
                     <div className="barra-ren progress flex-grow-1" style={{ height: "10px" }}>
                       <div
@@ -76,6 +87,7 @@ function TablaAtletas({ atletas, cargando = false, onVerAtleta, onEditarAtleta, 
                     </div>
                     <span>{atleta.rendimiento}%</span>
                   </div>
+                  )}
                 </td>
 
                 <td>
@@ -115,7 +127,7 @@ function TablaAtletas({ atletas, cargando = false, onVerAtleta, onEditarAtleta, 
           ) : (
             <tr>
               <td colSpan="5" className="text-center py-4 text-muted">
-                {cargando ? "Cargando atletas…" : "No se encontraron atletas que coincidan con la búsqueda."}
+                {cargando ? "Cargando atletas…" : error ? <EstadoError mensaje={error} onReintentar={onReintentar} /> : "No se encontraron atletas que coincidan con la búsqueda."}
               </td>
             </tr>
           )}

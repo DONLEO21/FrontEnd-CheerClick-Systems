@@ -4,6 +4,7 @@ import ResumenCards from "./ResumenCards";
 import ModalGuardado from "./ModalGuardado";
 import ModalConsultar from "./ModalConsultar";
 import AvisoToast from "../../../components/Compartidos/AvisoToast";
+import EstadoError from "../../../components/Compartidos/EstadoError";
 import useAviso from "../../../hooks/useAviso";
 import {
   obtenerAtletasPorNivel,
@@ -24,10 +25,11 @@ export default function AsistenciaPanel({ niveles = [], subtitulo }) {
   const [pendienteJustificar, setPendienteJustificar] = useState(null);
   const [busqueda, setBusqueda] = useState("");
   const [guardando, setGuardando] = useState(false);
+  const [recarga, setRecarga] = useState(0); // al aumentar, vuelve a cargar los atletas (botón Reintentar)
  const { aviso, mostrarAviso } = useAviso();
 
   const modalGuardadoRef = useRef(null);
-  const modalConsultarRef = useRef(null);
+  const [consultarAbierto, setConsultarAbierto] = useState(false);
 
   const fechaHoy = fechaHoyISO();
 
@@ -56,9 +58,11 @@ export default function AsistenciaPanel({ niveles = [], subtitulo }) {
         setEstados(mapaEstados);
         setGuardada(listaAtletas.length > 0 && registrosHoy.length >= listaAtletas.length);
       })
-      .catch(() => {
+      .catch((e) => {
+        // Se muestra el mensaje REAL del backend (permiso, nivel inactivo…), no uno genérico de conexión
         if (!cancelado) {
-          setError("No se pudo conectar con el servidor de datos.");
+          setAtletas([]);
+          setError(e?.message || "No se pudieron cargar los atletas del nivel.");
         }
       })
       .finally(() => {
@@ -66,7 +70,7 @@ export default function AsistenciaPanel({ niveles = [], subtitulo }) {
       });
 
     return () => { cancelado = true; };
-  }, [nivelActivoIdEfectivo, fechaHoy]);
+  }, [nivelActivoIdEfectivo, fechaHoy, recarga]);
 
   const resumen = useMemo(() => {
     const valores = Object.values(estados);
@@ -209,7 +213,7 @@ export default function AsistenciaPanel({ niveles = [], subtitulo }) {
             <span>{formatearFechaCorta(fechaHoy)}</span>
           </div>
 
-          <button type="button" className="btn-consultar" onClick={() => modalConsultarRef.current?.showModal()}>
+          <button type="button" className="btn-consultar" onClick={() => setConsultarAbierto(true)}>
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <rect width="7" height="7" x="3" y="3" rx="1" /><rect width="7" height="7" x="14" y="3" rx="1" />
               <rect width="7" height="7" x="14" y="14" rx="1" /><rect width="7" height="7" x="3" y="14" rx="1" />
@@ -229,12 +233,13 @@ export default function AsistenciaPanel({ niveles = [], subtitulo }) {
             />
           </div>
 
-          {error && <span className="asist-error">{error}</span>}
         </div>
 
         <div className="asist-tabla-wrapper">
           {cargando ? (
             <p className="asist-cargando">Cargando atletas…</p>
+          ) : error ? (
+            <EstadoError mensaje={error} onReintentar={() => setRecarga((n) => n + 1)} />
           ) : atletas.length === 0 ? (
             <p className="asist-cargando">No hay atletas registrados en este nivel.</p>
           ) : atletasFiltrados.length === 0 ? (
@@ -270,12 +275,16 @@ export default function AsistenciaPanel({ niveles = [], subtitulo }) {
 
         <div className="asist-footer-bar">
           {!guardada ? (
-            <button type="button" className="btn-guardar btn-guardar-normal" onClick={handleGuardar} disabled={cargando || guardando || atletas.length === 0}>
+            <button type="button" className="btn-guardar btn-guardar-normal" onClick={handleGuardar} disabled={cargando || guardando || atletas.length === 0} aria-busy={guardando}>
+              {guardando ? (
+                <span className="spinner-border spinner-border-sm" aria-hidden="true" />
+              ) : (
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                 <polyline points="17 8 12 3 7 8" /><line x1="12" x2="12" y1="3" y2="15" />
               </svg>
-              Guardar asistencia
+              )}
+              {guardando ? "Guardando…" : "Guardar asistencia"}
             </button>
           ) : (
             <button type="button" className="btn-guardar btn-editar-guardado" onClick={handleEditar}>
@@ -311,7 +320,8 @@ export default function AsistenciaPanel({ niveles = [], subtitulo }) {
         fecha={formatearFechaLarga(fechaHoy)}
       />
       <ModalConsultar
-        ref={modalConsultarRef}
+        abierto={consultarAbierto}
+        onCerrar={() => setConsultarAbierto(false)}
         nivel={nivel}
         atletas={atletas}
       />

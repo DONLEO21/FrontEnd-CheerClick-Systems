@@ -7,7 +7,7 @@ const estadoDe = (i) => ((i.cantidad ?? 0) <= 0 ? 'No Disponible' : i.estado)
 
 const aImplemento = (i) => ({
   id: i._id,
-  codigo: i.codigo ?? i._id,
+  codigo: i.codigo ?? '', // IM000 (backend); nunca el _id interno
   nombre: i.nombre,
   tipo: i.categoria,
   genero: i.genero,

@@ -66,6 +66,8 @@ export const TIPOS_FOTO = ['image/jpeg', 'image/png'];
 // Valores por defecto mientras carga el perfil real desde el backend
 export const DATOS_INICIALES = {
   fotoUrl: null,
+  nombre: '',
+  apellido: '',
   tipoDocumento: 'cedula',
   numeroDocumento: '',
   genero: '',

@@ -68,7 +68,7 @@
   --pqa-fondo: #f5f5f5;
   --pqa-texto: #1a1a1a;
   --pqa-texto-2: #555555;
-  --pqa-suave: #888888;
+  --ui-fade: #888888;
   --pqa-pendiente: #f5c62b;
   --pqa-pendiente-fondo: #fefce8;
   --pqa-pendiente-texto: #7a5a00;
@@ -100,7 +100,7 @@
   flex-wrap: wrap;
   gap: 16px;
   margin-bottom: 18px;
-  animation: pqa-arriba 0.7s ease 0.1s backwards;
+  animation: ui-bajar 0.7s ease 0.1s backwards;
 }
 
 .pqa-titulo-seccion {
@@ -115,7 +115,7 @@
   margin: 0;
   font-size: 13.5px;
   line-height: 1.5;
-  color: var(--pqa-suave);
+  color: var(--ui-fade);
 }
 
 .pqa-page hr.pqa-separador {
@@ -123,7 +123,7 @@
   border: 0;
   border-top: 1.5px dashed var(--pqa-borde);
   opacity: 1;
-  animation: pqa-suave 0.7s ease 0.2s backwards;
+  animation: ui-fade 0.7s ease 0.2s backwards;
 }
 
 .pqa-page .pqa-btn-nueva,
@@ -196,7 +196,7 @@
   flex-wrap: wrap;
   gap: 14px;
   margin-bottom: 22px;
-  animation: pqa-arriba 0.7s ease 0.25s backwards;
+  animation: ui-bajar 0.7s ease 0.25s backwards;
 }
 
 .pqa-busqueda {
@@ -212,7 +212,7 @@
   position: absolute;
   left: 12px;
   font-size: 14px;
-  color: var(--pqa-suave);
+  color: var(--ui-fade);
   pointer-events: none;
 }
 
@@ -290,41 +290,7 @@
 .pqa-vacio {
   padding: 40px 0;
   text-align: center;
-  color: var(--pqa-suave);
-}
-
-@keyframes pqa-tarjeta {
-  from {
-    opacity: 0;
-    transform: translateY(18px) scale(0.98);
-  }
-
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-@keyframes pqa-arriba {
-  from {
-    opacity: 0;
-    transform: translateY(-12px);
-  }
-
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-@keyframes pqa-suave {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
+  color: var(--ui-fade);
 }
 
 .pqa-card {
@@ -341,7 +307,7 @@
   border: 1px solid var(--pqa-borde);
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 4px 10px rgba(0, 0, 0, 0.04);
-  animation: pqa-tarjeta 0.6s ease backwards;
+  animation: ui-tarjeta 0.6s ease backwards;
   transition: box-shadow 0.4s ease, transform 0.4s ease;
 }
 
@@ -431,7 +397,7 @@
   font-weight: 700;
   letter-spacing: 0.8px;
   text-transform: uppercase;
-  color: var(--pqa-suave);
+  color: var(--ui-fade);
 }
 
 .pqa-titulo {
@@ -449,7 +415,7 @@
   gap: 10px;
   margin-bottom: 12px;
   font-size: 12.5px;
-  color: var(--pqa-suave);
+  color: var(--ui-fade);
 }
 
 .pqa-meta strong {
@@ -477,7 +443,7 @@
   margin-bottom: 14px;
   font-size: 13px;
   font-style: italic;
-  color: var(--pqa-suave);
+  color: var(--ui-fade);
 }
 
 .pqa-asignacion i {
@@ -509,7 +475,7 @@
 
 .pqa-respuesta__fecha {
   font-size: 11.5px;
-  color: var(--pqa-suave);
+  color: var(--ui-fade);
 }
 
 .pqa-respuesta__texto {
@@ -588,7 +554,7 @@
   background: var(--pqa-resuelto-fondo);
   border: 1px solid #bfdbfe;
   border-radius: 10px;
-  animation: pqa-suave 0.7s ease 0.5s backwards;
+  animation: ui-fade 0.7s ease 0.5s backwards;
 }
 
 .pqa-aviso-plazo i {
@@ -604,25 +570,13 @@
   color: var(--pqa-resuelto-texto);
 }
 
-@keyframes pqa-modal-entrada {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
 .pqa-modal {
   overflow-y: auto;
 }
 
 .pqa-modal .modal-dialog {
   max-width: 520px;
-  animation: pqa-modal-entrada 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  animation: ui-modal-entrada 0.35s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .pqa-modal .modal-content {
@@ -661,7 +615,7 @@
   margin: 0;
   font-size: 13px;
   line-height: 1.5;
-  color: var(--pqa-suave);
+  color: var(--ui-fade);
 }
 
 .pqa-modal__icono {
@@ -762,14 +716,14 @@
 
 .pqa-sin-archivo {
   font-size: 13px;
-  color: var(--pqa-suave);
+  color: var(--ui-fade);
   overflow-wrap: anywhere;
 }
 
 .pqa-nota {
   margin: 5px 0 0;
   font-size: 12px;
-  color: var(--pqa-suave);
+  color: var(--ui-fade);
 }
 
 .pqa-resumen {
@@ -795,7 +749,7 @@
   font-weight: 700;
   letter-spacing: 0.6px;
   text-transform: uppercase;
-  color: var(--pqa-suave);
+  color: var(--ui-fade);
 }
 
 .pqa-resumen__valor {
@@ -822,7 +776,7 @@
   font-weight: 700;
   letter-spacing: 0.7px;
   text-transform: uppercase;
-  color: var(--pqa-suave);
+  color: var(--ui-fade);
 }
 
 .pqa-seccion-texto {
@@ -865,7 +819,7 @@
 
 .pqa-seguimientos time {
   font-size: 11.5px;
-  color: var(--pqa-suave);
+  color: var(--ui-fade);
 }
 
 .pqa-modal .pqa-respuesta {

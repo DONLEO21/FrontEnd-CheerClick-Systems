@@ -17,19 +17,19 @@ export default function BloqueContacto({ numero, contacto, editando, onCambio })
       <div className="campos-grid">
         <Campo id={`${p}-nombre`} label="Nombre" icono={User}>
           <input
-            type="text" id={`${p}-nombre`} value={contacto.nombre} disabled={!editando}
+            type="text" placeholder="—" id={`${p}-nombre`} value={contacto.nombre} disabled={!editando}
             onChange={(e) => onCambio('nombre', e.target.value)}
           />
         </Campo>
         <Campo id={`${p}-apellido`} label="Apellido" icono={User}>
           <input
-            type="text" id={`${p}-apellido`} value={contacto.apellido} disabled={!editando}
+            type="text" placeholder="—" id={`${p}-apellido`} value={contacto.apellido} disabled={!editando}
             onChange={(e) => onCambio('apellido', e.target.value)}
           />
         </Campo>
         <Campo id={`${p}-telefono`} label="Teléfono" icono={Phone}>
           <input
-            type="tel" id={`${p}-telefono`} value={contacto.telefono} disabled={!editando}
+            type="tel" placeholder="—" id={`${p}-telefono`} value={contacto.telefono} disabled={!editando}
             onChange={(e) => onCambio('telefono', e.target.value)}
           />
         </Campo>

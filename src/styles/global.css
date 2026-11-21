@@ -110,6 +110,7 @@
   --alto-encabezado: 55px;
   --ancho-menu-abierto: 250px;   /* sidebar desplegado */
   --ancho-contenido: 1500px;     /* ancho máximo (centrado) del contenido de las vistas */
+  --espacio-header-contenido: 24px;   /* distancia ÚNICA entre el header y el contenido de TODAS las vistas */
   --ancho-sidebar: 60px;
   --sidebar-width: 62px;
   --header-height: 55px;
@@ -232,6 +233,25 @@ select {
 
 .contenido-ancho:has(.ui-ancho-total) {
   max-width: none;
+}
+
+/* Distancia header → contenido: se define AQUÍ, una sola vez. La raíz de cada vista (y el .contenedor interno de los
+   dashboards) NO aporta espacio superior propio: antes cada módulo ponía su padding/margin (10, 24, 28, 30, 32, 40 px)
+   y las vistas arrancaban a distancias distintas. */
+.contenido-ancho {
+  padding-top: var(--espacio-header-contenido);
+}
+
+.panel .contenido-ancho > *,
+.panel .contenido-ancho > * > :is(.contenedor, .p-4, .py-4, .container-fluid, .conteni, .perfil-main, .pagina-implementos),
+.panel .contenido-ancho .ui-contenido {
+  padding-top: 0 !important;
+  margin-top: 0 !important;
+}
+
+/* El primer título de la vista tampoco suma margen superior */
+.panel .contenido-ancho :is(h1, h2, h3):first-child {
+  margin-top: 0;
 }
 
 /* Sidebar desplegado: el header y el contenido se corren con transición para que el menú no los cubra */
@@ -450,6 +470,28 @@ dialog:modal:not(.dialog-carrito) {
   overscroll-behavior: contain;
 }
 
+/* CAUSA RAÍZ de los modales "cortados hacia la izquierda": varios módulos animaban el <dialog> con keyframes que
+   terminan en transform: translate(-50%, -50%) (+ forwards). Eso pisaba el `transform: none` de arriba y, sumado al
+   centrado con inset:0 + margin:auto, desplazaba el modal medio ancho a la izquierda y arriba.
+   Una sola animación para todos los modales, con la propiedad `translate` (no `transform`) y !important
+   para anular las de cada módulo. */
+@keyframes ui-dialog-entrar {
+  from { opacity: 0; scale: 0.96; translate: 0 10px; }
+  to { opacity: 1; scale: 1; translate: 0 0; }
+}
+
+dialog:modal:not(.dialog-carrito) {
+  animation: ui-dialog-entrar 0.25s cubic-bezier(0.22, 1, 0.36, 1) backwards !important;
+}
+
+dialog:modal:not(.dialog-carrito)::backdrop {
+  animation: ui-fade 0.2s ease backwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  dialog:modal:not(.dialog-carrito) { animation: none !important; }
+}
+
 @media (max-width: 560px) {
   dialog:modal:not(.dialog-carrito) {
     min-width: 0 !important;
@@ -623,6 +665,17 @@ dialog:modal:not(.dialog-carrito) {
 .ui-accion--rechazar:not(:disabled):hover { background: #a80000; }
 .ui-accion--detalle { background: var(--azul-light); color: var(--azul-oscuro); border-color: #bfdbfe; }
 .ui-accion--detalle:not(:disabled):hover { background: var(--azul); color: var(--blanco); border-color: var(--azul); }
+
+/* Acción no utilizable (p. ej. pedido ya ENTREGADO): semitransparente, sin hover ni clic.
+   Usar junto con disabled y aria-disabled en el botón. */
+.ui-accion--bloqueada,
+.ui-accion--bloqueada:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.ui-accion--bloqueada:hover { filter: none; }
 
 .ui-accion:focus-visible { outline: 2px solid var(--rojo); outline-offset: 2px; }
 
@@ -814,4 +867,124 @@ dialog:modal:not(.dialog-carrito) {
 @media (max-width: 560px) {
   .ui-saludo { padding: 18px 20px; }
   .ui-saludo__titulo { font-size: 1.3rem; }
+}
+
+/* ───────────────────── 13. ESTADO DE ERROR (.ui-estado-error) ─────────────── */
+/* components/Compartidos/EstadoError.jsx: mensaje real del backend + botón Reintentar */
+.ui-estado-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 28px 16px;
+  text-align: center;
+  color: var(--rojo);
+}
+
+.ui-estado-error p { margin: 0; max-width: 520px; color: var(--color-texto); }
+
+.ui-estado-error__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 18px;
+  border: 1.5px solid var(--rojo);
+  border-radius: 10px;
+  background: var(--blanco);
+  color: var(--rojo);
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.ui-estado-error__btn:hover { background: var(--rojo); color: var(--blanco); }
+
+/* ───────────────────── 14. ANIMACIONES COMPARTIDAS (.ui-anim-*) ───────────── */
+/* Extraídas de PQRS (pqrs-entrada, pqrs-modal-entrada, pqa-*) y usadas por TODO el proyecto.
+   Reglas: solo opacity y transform; 200–350 ms; `backwards` (NUNCA forwards/both) para que al terminar no quede un
+   `transform` residual en el contenedor (un transform en un ancestro rompe position: fixed en sus hijos).
+   Los modales siguen renderizándose con portal / <dialog> (top layer), que no dependen de los ancestros. */
+@keyframes ui-entrada {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes ui-bajar {
+  from { opacity: 0; transform: translateY(-12px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes ui-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes ui-tarjeta {
+  from { opacity: 0; transform: translateY(18px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes ui-modal-entrada {
+  from { opacity: 0; transform: translateY(10px) scale(0.96); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes ui-desplegar {
+  from { opacity: 0; transform: translateY(-6px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+
+.ui-anim-entrada { animation: ui-entrada 0.35s ease backwards; animation-delay: var(--retraso, 0s); }
+.ui-anim-pagina { animation: ui-entrada 0.3s ease backwards; }          /* vista completa al cambiar de ruta */
+.ui-anim-fila { animation: ui-entrada 0.3s ease backwards; animation-delay: calc(var(--i, 0) * 40ms); }
+.ui-anim-modal { animation: ui-modal-entrada 0.25s ease-out backwards; }  /* caja del modal */
+.ui-anim-overlay { animation: ui-fade 0.2s ease backwards; }             /* fondo del modal */
+.ui-anim-desplegable { animation: ui-desplegar 0.18s ease-out backwards; } /* dropdowns y panel de la campanita */
+
+/* Entrada escalonada de tarjetas/filas SOLO durante el montaje de la vista: PanelLayout agrega .ui-montando al
+   envoltorio de la ruta y lo quita a los ~1,4 s. Escribir en un buscador, filtrar o cambiar de página de una tabla
+   crea nodos nuevos DESPUÉS de esa ventana, así que no vuelven a animar. Máximo 10 elementos por grupo. */
+.ui-montando :is(.ui-tarjetas, .adm-hab__grid, .perfil-layout, .contactos-grid, .adm-met__lista, .de-grid, .panel-resumen-admin) > * {
+  animation: ui-entrada 0.35s ease backwards;
+  animation-delay: calc(var(--i, 0) * 40ms);
+}
+
+.ui-montando tbody > tr:nth-child(-n + 10) {
+  animation: ui-entrada 0.3s ease backwards;
+  animation-delay: calc(var(--i, 0) * 40ms);
+}
+
+.ui-montando :is(.ui-tarjetas, .adm-hab__grid, .perfil-layout, .contactos-grid, .adm-met__lista, .de-grid, .panel-resumen-admin) > :nth-child(2),
+.ui-montando tbody > tr:nth-child(2) { --i: 1; }
+.ui-montando :is(.ui-tarjetas, .adm-hab__grid, .perfil-layout, .contactos-grid, .adm-met__lista, .de-grid, .panel-resumen-admin) > :nth-child(3),
+.ui-montando tbody > tr:nth-child(3) { --i: 2; }
+.ui-montando :is(.ui-tarjetas, .adm-hab__grid, .perfil-layout, .contactos-grid, .adm-met__lista, .de-grid, .panel-resumen-admin) > :nth-child(4),
+.ui-montando tbody > tr:nth-child(4) { --i: 3; }
+.ui-montando :is(.ui-tarjetas, .adm-hab__grid, .perfil-layout, .contactos-grid, .adm-met__lista, .de-grid, .panel-resumen-admin) > :nth-child(5),
+.ui-montando tbody > tr:nth-child(5) { --i: 4; }
+.ui-montando :is(.ui-tarjetas, .adm-hab__grid, .perfil-layout, .contactos-grid, .adm-met__lista, .de-grid, .panel-resumen-admin) > :nth-child(6),
+.ui-montando tbody > tr:nth-child(6) { --i: 5; }
+.ui-montando :is(.ui-tarjetas, .adm-hab__grid, .perfil-layout, .contactos-grid, .adm-met__lista, .de-grid, .panel-resumen-admin) > :nth-child(7),
+.ui-montando tbody > tr:nth-child(7) { --i: 6; }
+.ui-montando :is(.ui-tarjetas, .adm-hab__grid, .perfil-layout, .contactos-grid, .adm-met__lista, .de-grid, .panel-resumen-admin) > :nth-child(8),
+.ui-montando tbody > tr:nth-child(8) { --i: 7; }
+.ui-montando :is(.ui-tarjetas, .adm-hab__grid, .perfil-layout, .contactos-grid, .adm-met__lista, .de-grid, .panel-resumen-admin) > :nth-child(n + 9),
+.ui-montando tbody > tr:nth-child(n + 9) { --i: 8; }
+
+/* Landing y pantallas de auth */
+.pagina-auth .tarjeta { animation: ui-entrada 0.4s ease backwards; }
+.landing-nosotros > .contenedor,
+.landing-servicios > .contenedor,
+.landing-niveles > .contenedor,
+.landing-horarios > .contenedor { animation: ui-entrada 0.5s ease backwards; }
+
+/* Accesibilidad: sin movimiento si el usuario lo pidió */
+@media (prefers-reduced-motion: reduce) {
+  .ui-anim-entrada, .ui-anim-pagina, .ui-anim-fila, .ui-anim-modal, .ui-anim-overlay, .ui-anim-desplegable,
+  .ui-montando *, .pagina-auth .tarjeta,
+  .landing-nosotros > .contenedor, .landing-servicios > .contenedor,
+  .landing-niveles > .contenedor, .landing-horarios > .contenedor,
+  dialog:modal:not(.dialog-carrito)::backdrop {
+    animation: none !important;
+  }
 }

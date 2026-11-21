@@ -4,13 +4,16 @@ const CLASE_ESTADO = {
   pagado: "atl-esta-paga",
   pendiente: "atl-esta-pen",
   vencido: "atl-esta-ven",
+  confirmando: "atl-esta-pen",
 };
 
 function TarjetaMensualidad({ mensualidad, onSubir, onVer }) {
   const estado = ESTADOS[mensualidad.estado] ?? ESTADOS.pendiente;
   const claseEstado = CLASE_ESTADO[mensualidad.estado] ?? CLASE_ESTADO.pendiente;
   // Hay comprobante cuando el atleta ya subió un archivo, o cuando el club ya validó el pago.
+  const enConfirmacion = mensualidad.estado === "confirmando"; // pago en efectivo ya solicitado
   const tieneComprobante = mensualidad.comprobante.startsWith("data:") || (mensualidad.estado === "pagado" && !!mensualidad.comprobante);
+  const hayDetalle = tieneComprobante || enConfirmacion;
 
   return (
     <div className="atl-tar-infor">
@@ -20,18 +23,20 @@ function TarjetaMensualidad({ mensualidad, onSubir, onVer }) {
       <p className="atl-tar-fecha">
         {mensualidad.estado === "pagado"
           ? `Pagado: ${mensualidad.fechaPago ?? "—"} · ${mensualidad.metodo ?? ""}`
-          : tieneComprobante
+          : enConfirmacion
+            ? "Pago en efectivo · pendiente de confirmación"
+            : tieneComprobante
             ? "Comprobante enviado · en revisión"
             : `Generado: ${mensualidad.generacion}`}
       </p>
 
-      {tieneComprobante ? (
+      {hayDetalle ? (
         <button type="button" className="atl-ver-compro" onClick={() => onVer(mensualidad)}>
           <svg className="atl-sim-compro" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0" />
             <circle cx="12" cy="12" r="3" />
           </svg>
-          Ver comprobante
+          {enConfirmacion ? "Ver detalle" : "Ver comprobante"}
         </button>
       ) : (
         <button type="button" className="atl-subir-compro" onClick={() => onSubir(mensualidad)}>

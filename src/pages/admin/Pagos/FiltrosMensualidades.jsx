@@ -27,6 +27,7 @@ function FiltrosMensualidades({
             <option value="">Estado</option>
             <option value="pagado">Pagado</option>
             <option value="pendiente">Pendiente</option>
+            <option value="confirmando">Por confirmar (efectivo)</option>
             <option value="vencido">Vencido</option>
           </select>
         </div>

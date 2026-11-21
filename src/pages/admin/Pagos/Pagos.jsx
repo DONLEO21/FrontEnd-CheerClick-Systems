@@ -81,7 +81,7 @@ function PagosContenido() {
 
   const mensualidadesFiltradas = useMemo(
     () => mensualidadesConAtleta.filter((m) =>
-      (m.atleta?.nombre ?? "").toLowerCase().includes(busqueda.toLowerCase().trim()) &&
+      `${m.atleta?.nombre ?? ""} ${m.codigo ?? ""}`.toLowerCase().includes(busqueda.toLowerCase().trim()) &&
       (!estadoSeleccionado || m.estado === estadoSeleccionado) &&
       (!mesSeleccionado || m.mes === mesSeleccionado) &&
       (!planSeleccionado || m.plan === planSeleccionado),
@@ -143,7 +143,7 @@ function PagosContenido() {
       etiquetas: [{ texto: pago.mes }, { texto: pago.plan }],
       generacion: pago.generacion,
       valor: pago.valor,
-      estadoTexto: pago.estado === "vencido" ? "Vencido" : "Pendiente",
+      estadoTexto: pago.estado === "vencido" ? "Vencido" : pago.estado === "confirmando" ? "Pago en efectivo por confirmar" : "Pendiente",
     });
   }
 
@@ -168,7 +168,7 @@ function PagosContenido() {
         await registrarPago(pagoAEditar.pagoId, datos);
         const actualizado = await obtenerMensualidad(pagoAEditar.id);
         setMensualidades((prev) => prev.map((m) => (m.id === actualizado.id ? actualizado : m)));
-        mostrarAviso("Pago registrado correctamente");
+        mostrarAviso(`Pago ${pagoAEditar.codigo || ""} registrado correctamente`.replace("  ", " "));
       } else {
         await registrarPago(pagoAEditar.pagoId, datos);
         setPagosCompetencia((prev) =>
@@ -189,11 +189,13 @@ function PagosContenido() {
     setComprobante({
       tipo: "mensualidad",
       atleta: pago.atleta,
+      codigo: pago.codigo,
       etiqueta: pago.mes,
       archivo: pago.comprobante,
       referencia: pago.referencia,
       metodo: pago.metodo,
       fecha: pago.fechaPago,
+      efectivo: pago.efectivo,
     });
   }
 

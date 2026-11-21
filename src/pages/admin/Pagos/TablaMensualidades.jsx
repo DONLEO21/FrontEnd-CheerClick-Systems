@@ -21,7 +21,7 @@ function TablaMensualidades({ pagos, onRegistrar, onVerComprobante }) {
               const estilo = obtenerEstiloEstadoPago(pago.estado);
               return (
                 <tr key={pago.id}>
-                  <td className="edad-ne">{pago.codigo ?? pago.id}</td>
+                  <td className="edad-ne">{pago.codigo || "—"}</td>
                   <td>
                     <span className="tex-tabla">{pago.atleta?.nombre ?? "Atleta no encontrado"}</span>
                   </td>
@@ -61,7 +61,7 @@ function TablaMensualidades({ pagos, onRegistrar, onVerComprobante }) {
                           className="btn-registrar"
                           onClick={() => onRegistrar(pago)}
                         >
-                          Registrar pago
+                          {pago.estado === "confirmando" ? "Confirmar pago" : "Registrar pago"}
                         </button>
                       )}
                       <button

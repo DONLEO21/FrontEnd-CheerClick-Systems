@@ -35,8 +35,9 @@ function ModalComprobante({ comprobante, onCerrar }) {
               <div className="adm-pagos-usu-tex">
                 <h4>{comprobante.atleta?.nombre ?? "Atleta no encontrado"}</h4>
                 <div className="adm-pagos-id-usu">
-                  <h5>ID atleta:</h5>
-                  <button className="fon-blanco">{comprobante.atleta?.id}</button>
+                  <h5>Código atleta:</h5>
+                  <button className="fon-blanco">{comprobante.atleta?.codigo || "—"}</button>
+                  {comprobante.codigo && (<><h5>Pago:</h5><button className="fon-blanco">{comprobante.codigo}</button></>)}
                 </div>
               </div>
             </div>
@@ -86,6 +87,15 @@ function ModalComprobante({ comprobante, onCerrar }) {
                 )}
               </footer>
             </>
+          ) : comprobante.efectivo ? (
+            <section className="adm-pagos-conte-compro">
+              <div className="adm-pagos-docu-infor">
+                <div>
+                  <h4>Pago en efectivo, sin comprobante</h4>
+                  <span>Confírmalo con «Confirmar pago» cuando recibas el dinero{comprobante.fecha ? ` (fecha indicada: ${comprobante.fecha})` : ""}.</span>
+                </div>
+              </div>
+            </section>
           ) : (
             <section className="adm-pagos-conte-compro">
               <div className="adm-pagos-docu-infor">

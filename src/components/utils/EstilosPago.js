@@ -20,6 +20,8 @@ export function obtenerEstiloEstadoPago(estado) {
       return { backgroundColor: "#e6f9ee", color: "#1eaf52", texto: "Por validar" };
     case "vencido":
       return { backgroundColor: "#fdeaea", color: "#d71920", texto: "Vencido" };
+    case "confirmando":
+      return { backgroundColor: "#fff3c4", color: "#92400e", texto: "Por confirmar" };
     default:
       return { backgroundColor: "#dce5f8", color: "#6b7280", texto: "Pendiente" };
   }

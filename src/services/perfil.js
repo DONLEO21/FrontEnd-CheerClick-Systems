@@ -42,6 +42,9 @@ export function perfilDesdeApi(mi, cantidadContactos) {
   while (lista.length < cantidadContactos) lista.push(contactoVacio())
 
   const datos = {
+    // El backend (GET /perfilusuario/me) devuelve nombre y apellido por separado en usuario
+    nombre: usuario?.nombre ?? '',
+    apellido: usuario?.apellido ?? '',
     fotoUrl: getImageUrl(perfil?.fotoPerfil) || null,
     tipoDocumento: tipoDocDesdeApi(perfil?.tipoDocumento),
     numeroDocumento: perfil?.numDocumento ?? '',
@@ -96,11 +99,14 @@ export async function guardarPerfilPropio(borrador, cantidadContactos) {
     epsOtra: borrador.eps === 'otra' ? (borrador._epsOtra || 'Otra') : null,
   }
 
+  // nombre, apellido y correo viven en el usuario (PATCH /perfilusuario/me los actualiza junto con el perfil)
+  const datosUsuario = { nombre: borrador.nombre.trim(), apellido: borrador.apellido.trim() }
+
   if (borrador._existePerfil) {
-    await perfilApi.actualizarMe({ ...camposPerfil, email: borrador.correo })
+    await perfilApi.actualizarMe({ ...camposPerfil, ...datosUsuario, email: borrador.correo })
   } else {
     await perfilApi.crear(camposPerfil)
-    if (borrador.correo) await perfilApi.actualizarMe({ email: borrador.correo })
+    await perfilApi.actualizarMe({ ...datosUsuario, ...(borrador.correo ? { email: borrador.correo } : {}) })
   }
 
   if (borrador.certificadoEpsArchivo) {

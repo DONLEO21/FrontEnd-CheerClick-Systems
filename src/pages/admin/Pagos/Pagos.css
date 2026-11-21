@@ -1624,3 +1624,7 @@
 .adm-met__qr-vista img { width: 96px; height: 96px; object-fit: contain; border: 1px solid #e5e7eb; border-radius: 10px; background: #fff; }
 .adm-met__qr-subir { display: inline-flex; align-items: center; gap: 8px; align-self: flex-start; padding: 9px 16px; border: 1.5px dashed #cbd5e1; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 14px; }
 .adm-met__qr-subir:hover { border-color: var(--rojo); color: var(--rojo); }
+
+/* ── Bloque 2: interruptor "requiere comprobante" del método de pago ── */
+.adm-met__interruptor { display: flex; align-items: flex-start; gap: 10px; margin-top: 6px; font-size: 14px; cursor: pointer; }
+.adm-met__interruptor input { margin-top: 3px; accent-color: var(--rojo); }

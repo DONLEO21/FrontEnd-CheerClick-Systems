@@ -6,7 +6,7 @@ import { TIPOS_DOCUMENTO, GENEROS, EPS } from './perfilData.js';
 import { fechaMaximaPermitida } from '../../utils/fechaNacimiento.js';
 
 export default function TarjetaInfoPersonal({
-  vista, editando, bloqueos, onCambiar, onCambiarArchivoEps, rol, errorFecha,
+  vista, editando, bloqueos, onCambiar, onCambiarArchivoEps, rol, errorFecha, errorNombre,
 }) {
   const editable = (campo) => editando && !bloqueos[campo];
 
@@ -30,6 +30,22 @@ export default function TarjetaInfoPersonal({
 
       <div className="campos-grid">
 
+        <Campo id="perfil-nombre" label="Nombre" icono={User} error={errorNombre && !vista.nombre?.trim() ? errorNombre : undefined}>
+          <input
+            type="text" id="perfil-nombre" autoComplete="given-name" maxLength={60} placeholder="—"
+            value={vista.nombre} disabled={!editando}
+            onChange={(e) => onCambiar('nombre', e.target.value)}
+          />
+        </Campo>
+
+        <Campo id="perfil-apellido" label="Apellido" icono={User} error={errorNombre && vista.nombre?.trim() && !vista.apellido?.trim() ? errorNombre : undefined}>
+          <input
+            type="text" id="perfil-apellido" autoComplete="family-name" maxLength={60} placeholder="—"
+            value={vista.apellido} disabled={!editando}
+            onChange={(e) => onCambiar('apellido', e.target.value)}
+          />
+        </Campo>
+
         <Campo id="tipo-documento" label="Tipo de documento" icono={User}>
           <select
             id="tipo-documento" value={vista.tipoDocumento} disabled={!editando}
@@ -44,7 +60,7 @@ export default function TarjetaInfoPersonal({
           aviso={avisoUnaVez('numeroDocumento')}
         >
           <input
-            type="text" id="numero-doc" inputMode="numeric"
+            type="text" id="numero-doc" inputMode="numeric" placeholder="—"
             value={vista.numeroDocumento} disabled={!editable('numeroDocumento')}
             onChange={(e) => onCambiar('numeroDocumento', e.target.value.replace(/\D/g, ''))}
           />
@@ -81,7 +97,7 @@ export default function TarjetaInfoPersonal({
 
         <Campo id="telefono-personal" label="Teléfono" icono={Phone}>
           <input
-            type="tel" id="telefono-personal" value={vista.telefono} disabled={!editando}
+            type="tel" id="telefono-personal" placeholder="—" value={vista.telefono} disabled={!editando}
             onChange={(e) => onCambiar('telefono', e.target.value)}
           />
         </Campo>

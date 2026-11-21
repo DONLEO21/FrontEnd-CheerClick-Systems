@@ -1,4 +1,4 @@
-import { esMetodoPresencial } from '../utils/metodosPago'
+import { esMetodoPresencial, esMetodoEfectivo } from '../utils/metodosPago'
 import { metodosPagoApi } from '../api/metodos_pago.api'
 import { mensualidadesApi } from '../api/mensualidades.api'
 import { planesApi } from '../api/planes.api'
@@ -18,7 +18,13 @@ const nombreDe = (u) => (u ? [u.nombre, u.apellido].filter(Boolean).join(' ') : 
 /* ───────── métodos de pago ───────── */
 export async function listarMetodosPago() {
   const { data } = await metodosPagoApi.list()
-  return (data ?? []).filter((m) => !esMetodoPresencial(m.nombre)).map((m) => ({ id: m._id, nombre: m.nombre, qr: m.qr ?? '' }))
+  return (data ?? []).filter((m) => !esMetodoPresencial(m.nombre)).map((m) => ({
+    id: m._id,
+    nombre: m.nombre,
+    qr: m.qr ?? '',
+    // ¿hay que adjuntar comprobante con este método? (Efectivo: no). Si el backend no lo informa, se deduce del nombre.
+    requiereComprobante: m.requiereComprobante ?? !esMetodoEfectivo(m.nombre),
+  }))
 }
 
 // TODO(backend): los métodos del formulario ("Efectivo", "Billetera Digital") deben existir con ese nombre en /metodo-pago.
@@ -31,7 +37,11 @@ async function idMetodo(nombre) {
 }
 
 /* ───────── mensualidades ───────── */
-const estadoDe = (e) => (e ?? 'Pendiente').toLowerCase() // pagado | pendiente | vencido
+// pagado | pendiente | vencido | confirmando ("Pendiente de confirmación": pago en efectivo ya solicitado)
+const estadoDe = (e) => {
+  const v = (e ?? 'Pendiente').toLowerCase()
+  return v.startsWith('pendiente de') ? 'confirmando' : v
+}
 
 export function mensualidadDesdeApi(m, metodos = []) {
   const pago = m.pago && typeof m.pago === 'object' ? m.pago : {}
@@ -39,7 +49,7 @@ export function mensualidadDesdeApi(m, metodos = []) {
   return {
     id: m._id,
     // código consecutivo PG000 del pago (backend); mientras no exista se muestra el id
-    codigo: pago.codigo ?? m._id,
+    codigo: pago.codigo ?? '', // PG000 (backend); nunca el _id interno
     pagoId: idDe(m.pago),
     atletaId: idDe(m.usuario),
     mes: mesDe(m.fechaGeneracion),
@@ -51,6 +61,7 @@ export function mensualidadDesdeApi(m, metodos = []) {
     comprobante: pago.comprobante ?? '',
     referencia: m.numReferencia ?? '',
     metodo: metodo ?? '',
+    efectivo: esMetodoEfectivo(metodo),
     fechaPago: fechaISO(pago.fechaPago),
     observaciones: pago.observaciones ?? '',
   }
@@ -67,7 +78,7 @@ export async function cargarPagosAdmin() {
   ])
 
   const atletas = new Map()
-  const registrar = (u) => { if (u && typeof u === 'object') atletas.set(u._id, { id: u._id, nombre: nombreDe(u), email: u.email }) }
+  const registrar = (u) => { if (u && typeof u === 'object') atletas.set(u._id, { id: u._id, codigo: u.codigo ?? '', nombre: nombreDe(u), email: u.email }) }
 
   const mensualidades = (mens.data ?? []).map((m) => { registrar(m.usuario); return mensualidadDesdeApi(m, metodos) })
   const pagosCompetencia = (insc.data ?? []).map((i) => {
@@ -75,7 +86,7 @@ export async function cargarPagosAdmin() {
     const p = i.pago && typeof i.pago === 'object' ? i.pago : {}
     return {
       id: i._id,
-      codigo: p.codigo ?? i._id,
+      codigo: p.codigo ?? '',
       pagoId: idDe(i.pago),
       competenciaId: idDe(i.competencia),
       atletaId: idDe(i.usuario),
@@ -143,13 +154,20 @@ export async function cargarPagosAtleta(usuario) {
 //   data-URL dentro del campo `comprobante`. Requiere que el backend acepte JSON de hasta ~5 MB
 //   (express.json({ limit: '5mb' })). TODO(backend): endpoint de subida (multer) y campo de referencia.
 //   La referencia se anota en observaciones.
+// Pago en EFECTIVO (método sin comprobante): no se envía ningún campo de archivo; el backend deja el pago en
+// "Pendiente de confirmación" y avisa a los administradores. datos = { metodoId, fechaPago }.
 export async function enviarComprobanteMensualidad(m, datos) {
-  await pagosApi.update(m.pagoId, {
-    comprobante: datos.comprobante,
+  const cuerpo = {
     fechaPago: datos.fechaPago,
     metodoPago: datos.metodoId ?? await idMetodo(datos.metodo),
-    observaciones: `Ref: ${datos.referencia}`,
-  })
+  }
+  if (datos.comprobante) {
+    cuerpo.comprobante = datos.comprobante
+    cuerpo.observaciones = `Ref: ${datos.referencia}`
+  } else {
+    cuerpo.observaciones = 'Pago en efectivo: pendiente de confirmación por el administrador'
+  }
+  await pagosApi.update(m.pagoId, cuerpo)
   return obtenerMensualidad(m.id)
 }
 
@@ -161,7 +179,8 @@ export async function enviarPagoCompetencia(usuarioId, datos) {
     valorTotal: Number(String(datos.monto ?? '').replace(/[^\d.]/g, '')) || 0,
     fechaGenera: new Date().toISOString(),
     fechaPago: datos.fechaPago,
-    comprobante: datos.comprobante || 'sin-comprobante',
+    // En efectivo no se envía archivo (el backend deja el pago pendiente de confirmación)
+    ...(datos.comprobante ? { comprobante: datos.comprobante } : {}),
     observaciones: datos.referencia ? `Ref: ${datos.referencia}` : undefined,
     metodoPago: await idMetodo(datos.metodo),
     usuario: usuarioId,
