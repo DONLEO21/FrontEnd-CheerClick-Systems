@@ -1,5 +1,10 @@
 import { Link } from "react-router-dom";
+import useFuente from "../../hooks/useFuente";
+import { cargarNivelesLanding } from "../../services/landing";
+
 function Hero() {
+  // Cantidad de niveles activos desde la API (si no carga, se muestra un guion; nunca una cifra inventada)
+  const { datos } = useFuente(cargarNivelesLanding);
   return (
     <section id="hero" className="landing-hero">
       <div className="contenedor hero-layout">
@@ -31,7 +36,7 @@ function Hero() {
               <p>Años de experiencia</p>
             </div>
             <div>
-              <h2>5</h2>
+              <h2>{datos ? datos.length : "—"}</h2>
               <p>Niveles de competencia</p>
             </div>
             <div>

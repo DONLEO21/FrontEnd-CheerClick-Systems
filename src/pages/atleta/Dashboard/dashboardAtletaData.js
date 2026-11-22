@@ -1,5 +1,4 @@
 import { almacenSesion } from '../../../api/client'
-;
 import { obtenerNivel, listarCompetencias, listarSesiones } from '../../../services/horariosService';
 import { asistenciaApi } from '../../../api/asistencia.api'
 import { rendimientoApi } from '../../../api/rendimiento.api'
@@ -19,8 +18,6 @@ export const RUTAS = {
 };
 
 export const RUTA_INICIO_ATLETA = '/atleta';
-export const USAR_DATOS_DEMO = false; // true = siempre datos quemados
-export const DEMO_SI_FALLA = false;   // true = si no hay datos/BD, usa quemados
 export const TORNEOS_POR_PAGINA = 4;
 
 const CATEGORIAS = [
@@ -28,9 +25,6 @@ const CATEGORIAS = [
   { id: 'avanzada', nombre: 'Avanzada', color: 'amarillo' },
   { id: 'elite', nombre: 'Elite', color: 'azul' },
 ];
-
-// valores de respaldo cuando una categoría no tiene datos reales todavía
-const VALORES_RESPALDO = {}; // sin datos de ejemplo: si no hay evaluaciones, no se muestra valor
 
 export const MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 export const MESES_CORTO = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
@@ -43,6 +37,8 @@ export const hace = (dias) => { const d = new Date(); d.setDate(d.getDate() - di
 export const dia10 = (f) => String(f).slice(0, 10);
 export const fechaLocal = (f) => new Date(`${dia10(f)}T00:00:00`);
 const prom = (arr) => (arr.length ? arr.reduce((s, x) => s + x, 0) / arr.length : null);
+// Number(null) daría 0: un porcentaje sin dato debe seguir siendo "sin dato" y no contar como 0 %
+const num = (v) => (v === null || v === undefined ? NaN : Number(v))
 export const mayus = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 
 export const hora12 = (h) => {
@@ -128,18 +124,16 @@ async function cargarEntrenos(idNivel, desde, hasta) {
     .sort((a, b) => a.fecha.localeCompare(b.fecha) || a.hora_inicio.localeCompare(b.hora_inicio));
 }
 
-// Punto único de acceso: decide entre datos demo o reales
-export function obtenerEntrenos({ demo, idNivel, desde, hasta }) {
-  return demo
-    ? Promise.resolve(demoEntrenos(desde, hasta))
-    : cargarEntrenos(idNivel, desde, hasta);
+// Punto único de acceso a los entrenamientos del nivel (desde el backend)
+export function obtenerEntrenos({ idNivel, desde, hasta }) {
+  return cargarEntrenos(idNivel, desde, hasta);
 }
 
 /* ───────── cálculos ───────── */
 export function calcularMetricas(evals, asist) {
   const porCat = CATEGORIAS.map((c) => {
-    const v = evals.map((e) => Number(e[c.id])).filter(Number.isFinite);
-    const valor = v.length ? Math.round(prom(v)) : (VALORES_RESPALDO[c.id] ?? null);
+    const v = evals.map((e) => num(e[c.id])).filter(Number.isFinite);
+    const valor = v.length ? Math.round(prom(v)) : null; // sin evaluaciones no se inventa ningún valor
     return { ...c, valor };
   });
 
@@ -148,7 +142,7 @@ export function calcularMetricas(evals, asist) {
     const hasta = iso(hace(7 * i));
     const v = evals
       .filter((e) => dia10(e.fecha) >= desde && dia10(e.fecha) <= hasta)
-      .flatMap((e) => CATEGORIAS.map((c) => Number(e[c.id])).filter(Number.isFinite));
+      .flatMap((e) => CATEGORIAS.map((c) => num(e[c.id])).filter(Number.isFinite));
     return prom(v);
   };
 
@@ -187,66 +181,4 @@ export function resumirPagos(listaPagos, hoy) {
     : null;
 
   return { ultimo, siguiente, estado, dias };
-}
-
-/* ───────── datos quemados (respaldo cuando no hay BD) ───────── */
-export const DEMO_BASE = (() => {
-  const estados = ['aprobado','aprobado','aprobado','reprobado','aprobado','aprobado','aprobado','reprobado','aprobado','reprobado','reprobado','aprobado'];
-  const evals = [62, 68, 74, 80].map((b, w) => ({
-    fecha: iso(hace(3 + 7 * (3 - w))), apropiadas: b + 8, avanzada: b + 12, elite: b - 6,
-  }));
-
-  // Los entrenos demo caen Mar/Jue/Sáb (ver demoEntrenos). La asistencia demo
-  // se genera SOLO para esos días, y de esos, 2 quedan en rojo (falté).
-  const diasEntrenoDemo = Array.from({ length: 60 }, (_, i) => hace(i))
-    .filter((f) => [2, 4, 6].includes(f.getDay()))
-    .sort((a, b) => a - b); // de más antiguo a más reciente
-
-  // Se eligen entre los más recientes para que caigan en el mes visible por defecto
-  const INDICES_FALTA = [diasEntrenoDemo.length - 3, diasEntrenoDemo.length - 8];
-  const asist = diasEntrenoDemo.map((f, i) => ({
-    fecha: iso(f),
-    presente: !INDICES_FALTA.includes(i),
-  }));
-
-  const y = new Date().getFullYear();
-  return {
-    yo: { id: 'demo', nombre: 'Gabriela Deaquiz', id_nivel: 1, foto: null },
-    nivel: { id: 1, nombre: 'Nivel 3 Magic' },
-    asist,
-    evals,
-    habilidades: estados.map((estado) => ({ estado })),
-    pagos: [
-      { mes: 'Agosto', valor: 120000, estado: 'pagado', fecha_pago: iso(hace(20)), fecha_vencimiento: iso(hace(15)) },
-      { mes: 'Septiembre', valor: 120000, estado: 'pendiente', fecha_pago: null, fecha_vencimiento: iso(new Date(Date.now() + 8 * 864e5)) },
-    ],
-    torneos: [
-      { id: 'universal', nombre: 'Torneo Universal', fecha: `${y}-10-25`, lugar: 'Bogotá - Colegio San Viator' },
-      { id: 'nfinity', nombre: 'Torneo Nfinity League', fecha: `${y}-11-20`, lugar: 'Bogotá - City Hall' },
-      { id: 'summer', nombre: 'Torneo Summer', fecha: `${y}-12-10`, lugar: 'Tocaima - Parque acuático' },
-      { id: 'xiua', nombre: 'Torneo Xiua', fecha: `${y + 1}-01-29`, lugar: 'Sibaté - Coliseo' },
-      { id: 'allcheer', nombre: 'ALLCHEER Nacional', fecha: `${y + 1}-03-14`, lugar: 'Medellín - Atanasio' },
-      { id: 'copa', nombre: 'Copa Colombia', fecha: `${y + 1}-04-18`, lugar: 'Cali - Coliseo El Pueblo' },
-    ],
-    inscritos: ['universal'],
-    pqrs: [{ estado: 'respondida' }, { estado: 'respondida' }, { estado: 'proceso' }, { estado: 'pendiente' }],
-    errores: [],
-  };
-})();
-
-const TIPOS_ENTRENO = ['Bailes', 'Gimnasia', 'Partner'];
-
-function demoEntrenos(desde, hasta) {
-  const out = [];
-  const fin = new Date(`${hasta}T00:00:00`);
-  for (let d = new Date(`${desde}T00:00:00`); d <= fin; d.setDate(d.getDate() + 1)) {
-    if (![2, 4, 6].includes(d.getDay())) continue;
-    const n = d.getDate();
-    const s = [{ t: TIPOS_ENTRENO[n % 3], i: '16:00:00', f: '17:30:00' }];
-    if (n % 4 === 0) s.push({ t: TIPOS_ENTRENO[(n + 1) % 3], i: '17:30:00', f: '19:00:00' });
-    s.forEach((x, k) => out.push({
-      id: `${iso(d)}-${k}`, id_nivel: 1, titulo: x.t, fecha: iso(d), hora_inicio: x.i, hora_fin: x.f,
-    }));
-  }
-  return out;
 }

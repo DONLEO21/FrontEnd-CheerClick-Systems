@@ -19,11 +19,14 @@ const aPedido = (s) => ({
     resenaEnviada: !!s.tieneResena,
   })),
   total: s.total ?? 0,
-  // TODO(backend): la solicitud aún no guarda método de pago ni comprobante.
-  metodoPagoId: '',
-  metodoPago: '',
-  llavePago: '',
-  comprobante: '',
+  // El pago del pedido (/api/solicitud lo devuelve poblado): método, comprobante y estado del pago
+  metodoPagoId: s.pago?.metodoPago?._id ?? '',
+  metodoPago: s.pago?.metodoPago?.nombre ?? '',
+  requiereComprobante: s.pago?.metodoPago ? s.pago.metodoPago.requiereComprobante !== false : false,
+  llavePago: '', // TODO(backend): el método de pago aún no guarda llave/cuenta
+  comprobante: s.pago?.comprobante ?? '',
+  estadoPago: s.pago?.estado ?? '',
+  codigoPago: s.pago?.codigo ?? '',
   estado: s.condicion, // Pendiente | Aprobado | Entregado | Cancelado | Rechazado
   motivoRechazo: s.motivoRechazo ?? '',
   recibido: s.condicion === 'Entregado',
@@ -45,6 +48,9 @@ export async function getPedido(id) {
 export async function crearPedido(datos) {
   const { data } = await solicitudesApi.create({
     items: datos.items.map((i) => ({ implemento: i.implementoId, grupo: i.grupoTalla, talla: i.talla, cantidad: i.cantidad })),
+    metodoPago: datos.metodoPagoId,
+    // Efectivo no envía comprobante: no se manda el campo vacío
+    ...(datos.comprobante ? { comprobante: datos.comprobante } : {}),
   })
   return aPedido(data)
 }

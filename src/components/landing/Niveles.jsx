@@ -1,12 +1,11 @@
-const niveles = [
-  ['INICIO', 'NIVEL FORMATIVO KING', 'El punto de partida ideal. Aprende las bases del cheerleading en un ambiente seguro', '../src/assets/img/entrenador.png', 'Jonathan Cruz', false],
-  ['NIVEL 1', 'QUEENS', 'Desarrollo de habilidades fundamentales con enfoque en coordinación, técnico y trabajo en equipo', '../src/assets/img/entrenador.png', 'Ronald Linares', false],
-  ['NIVEL 2', 'PRINCESS', 'Categoría nivel 2 con formación técnica sólida, expresión y disciplina como pilares centrales', '../src/assets/img/entrenador.png', 'Ronald Linares', false],
-  ['NIVEL 3', 'MAGIC', 'Acrobacias avanzadas, stunts de nivel 3 y rutinas de alto impacto para competencia regional.', '../src/assets/img/entrenador.png', 'Stuard Reyes', false],
-  ['NIVEL 4', 'BLOOD TIGERS', 'Nuestro equipo insignia. Atletas seleccionados que representan el club en competencias nacionales e internacionales.', '../src/assets/img/entrenador.png', 'Ronald Linares', true],
-]
+import useFuente from '../../hooks/useFuente'
+import EstadoTarjeta from '../Compartidos/EstadoTarjeta'
+import { cargarNivelesLanding } from '../../services/landing'
 
 function Niveles() {
+  const { datos, cargando, error, recargar } = useFuente(cargarNivelesLanding)
+  const niveles = datos ?? []
+
   return (
     <section id="niveles" className="landing-niveles">
       <div className="contenedor">
@@ -14,27 +13,30 @@ function Niveles() {
           <div className="seccion-titulo">
             <h1>Nuestras Divisiones</h1>
           </div>
-          <h2>5 NIVELES DE COMPETENCIA</h2>
+          <h2>{niveles.length > 0 ? `${niveles.length} NIVELES DE COMPETENCIA` : 'NIVELES DE COMPETENCIA'}</h2>
           <p>Desde quienes dan sus primeros pasos hasta los atletas de alto rendimiento.<br />Hay un equipo Blood Tigers para cada etapa de tu camino</p>
 
-          <div className="niveles-valores">
-            {niveles.map(([etiqueta, nombre, descripcion, fotoEntrenador, entrenador, destacado]) => (
-              <article
-                className={`nivel-tarjetas${destacado ? ' nivel-destacado' : ''}`}
-                key={nombre}
-              >
-                <header className="tarjeta-encabezado">
-                  <h3>{etiqueta}</h3>
-                  <h4>{nombre}</h4>
-                  <p>{descripcion}</p>
-                </header>
-                <div className="nivel-entrenador">
-                  <img src={fotoEntrenador} alt="Entrenador" />
-                  <p>{entrenador}</p>
-                </div>
-              </article>
-            ))}
-          </div>
+          <EstadoTarjeta cargando={cargando} error={error} onReintentar={recargar} vacio={niveles.length === 0}
+            textoVacio="Pronto publicaremos nuestras divisiones." lineas={3}>
+            <div className="niveles-valores">
+              {niveles.map((n, i) => (
+                <article
+                  className={`nivel-tarjetas${i === niveles.length - 1 && niveles.length > 1 ? ' nivel-destacado' : ''}`}
+                  key={n.id}
+                >
+                  <header className="tarjeta-encabezado">
+                    <h3>{n.etiqueta}</h3>
+                    <h4>{n.division}</h4>
+                    <p>{n.descripcion}</p>
+                  </header>
+                  <div className="nivel-entrenador">
+                    <img src="../src/assets/img/entrenador.png" alt="Entrenador" />
+                    <p>{n.entrenador || 'Por asignar'}</p>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </EstadoTarjeta>
         </div>
       </div>
     </section>

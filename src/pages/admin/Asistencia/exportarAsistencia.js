@@ -2,6 +2,9 @@
 // o guardar como PDF desde el navegador). Incluye logo del club, título, fecha de generación, resumen,
 // tabla ordenada alfabéticamente por apellido y leyenda.
 
+import { porcentajeAsistencia } from "../../../services/asistenciaService";
+import { fechaHoyISO } from "../../../services/data";
+
 const esc = (v) =>
   String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
@@ -15,9 +18,8 @@ const SIMBOLO = {
 const fechaHoraActual = () =>
   new Date().toLocaleString("es-CO", { dateStyle: "long", timeStyle: "short" });
 
-function porcentajeDe(dias, historialAtleta) {
-  const presentes = dias.filter(({ dia }) => ["presente", "inpuntual"].includes(historialAtleta[dia]?.estado)).length;
-  return dias.length ? Math.round((presentes / dias.length) * 100) : 0;
+function porcentajeDe(dias, historialAtleta, historialNivel) {
+  return porcentajeAsistencia(dias, historialAtleta, fechaHoyISO(), historialNivel);
 }
 
 export function construirReporteAsistencia({ nivel, mesLabel, dias, atletas, historial, resumen, logoUrl }) {
@@ -39,7 +41,7 @@ export function construirReporteAsistencia({ nivel, mesLabel, dias, atletas, his
           return `<td class="dia">${s ? `<span class="m ${s.clase}" title="${esc(s.texto)}">${s.letra}</span>` : ""}</td>`;
         })
         .join("");
-      return `<tr><td class="n">${i + 1}</td><td class="nom">${esc(a.apellido)} ${esc(a.nombre)}</td>${celdas}<td class="pct">${porcentajeDe(dias, h)}%</td></tr>`;
+      return `<tr><td class="n">${i + 1}</td><td class="nom">${esc(a.apellido)} ${esc(a.nombre)}</td>${celdas}<td class="pct">${porcentajeDe(dias, h, historial)}%</td></tr>`;
     })
     .join("");
 

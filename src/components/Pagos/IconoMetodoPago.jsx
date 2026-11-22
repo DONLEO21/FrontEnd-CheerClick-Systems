@@ -1,5 +1,8 @@
-// Iconos genéricos por método de pago (efectivo / Nequi / Davivienda)
-export default function IconoMetodoPago({ id, size = 22 }) {
+// Icono por TIPO de método de pago, deducido del nombre: efectivo (billete), banco/transferencia (edificio),
+// billetera móvil (celular) y, para cualquier otro método digital, tarjeta. Así un método nuevo se ve bien sin tocar código.
+import { tipoMetodoPago } from "../../utils/metodosPago";
+
+export default function IconoMetodoPago({ nombre, size = 22 }) {
   const comun = {
     xmlns: "http://www.w3.org/2000/svg",
     width: size,
@@ -13,7 +16,9 @@ export default function IconoMetodoPago({ id, size = 22 }) {
     "aria-hidden": true,
   };
 
-  if (id === "nequi") {
+  const tipo = tipoMetodoPago(nombre);
+
+  if (tipo === "movil") {
     return (
       <svg {...comun}>
         <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
@@ -21,7 +26,7 @@ export default function IconoMetodoPago({ id, size = 22 }) {
       </svg>
     );
   }
-  if (id === "davivienda") {
+  if (tipo === "banco") {
     return (
       <svg {...comun}>
         <line x1="3" y1="21" x2="21" y2="21" />
@@ -30,8 +35,15 @@ export default function IconoMetodoPago({ id, size = 22 }) {
         <line x1="14" y1="10" x2="14" y2="17" />
         <line x1="19" y1="10" x2="19" y2="17" />
         <path d="M12 3 3 8h18z" />
-        <line x1="3" y1="21" x2="3" y2="19" />
-        <line x1="21" y1="21" x2="21" y2="19" />
+      </svg>
+    );
+  }
+  if (tipo === "tarjeta") {
+    return (
+      <svg {...comun}>
+        <rect x="2" y="5" width="20" height="14" rx="2" />
+        <line x1="2" y1="10" x2="22" y2="10" />
+        <line x1="6" y1="15" x2="10" y2="15" />
       </svg>
     );
   }

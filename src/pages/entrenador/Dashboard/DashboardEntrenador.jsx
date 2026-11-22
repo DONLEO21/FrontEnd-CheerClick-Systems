@@ -15,6 +15,7 @@ import TarjetaRendimientoEquipo from './TarjetaRendimientoEquipo.jsx'
 
 import './DashboardEntrenador.css'
 import SaludoDashboard from '../../../components/Compartidos/SaludoDashboard'
+import EstadoError from '../../../components/Compartidos/EstadoError'
 
 export default function DashboardEntrenador({
   nombreEntrenador = 'Entrenador',
@@ -28,7 +29,7 @@ export default function DashboardEntrenador({
   const { aviso, mostrarAviso } = useAviso()
 
   const {
-    base, cargando, hoy, nombreNivel, tieneNivel,
+    base, cargando, error, recargar, hoy, nombreNivel, tieneNivel,
     metricas, atletasActivos, entrenosHoy, calendario,
   } = useDashboardEntrenador(mostrarAviso)
 
@@ -40,6 +41,8 @@ export default function DashboardEntrenador({
               <SquarePen size={22} strokeWidth={2} /> Perfil
             </button>
           </SaludoDashboard>
+
+          {error && <EstadoError mensaje={error} onReintentar={recargar} />}
 
           <TarjetaResumen
             cargando={cargando}
@@ -73,7 +76,6 @@ export default function DashboardEntrenador({
           <TarjetaRendimientoEquipo
             equipo={metricas.equipo}
             cargando={cargando}
-            esDemo={metricas.esDemo}
           />
         </div>
       <AvisoToast aviso={aviso} />

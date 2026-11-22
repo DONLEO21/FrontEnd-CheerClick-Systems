@@ -68,4 +68,18 @@ export function calcularResumen(registros) {
   }
 }
 
+/**
+ * % de asistencia de un atleta en un mes: (presentes + impuntuales) / sesiones con asistencia tomada, hasta hoy inclusive.
+ * Cuentan solo los días de sesión que ya ocurrieron Y en los que se registró asistencia a alguien del nivel (un día
+ * sin lista tomada no es una falta de todos). Las sesiones futuras son neutras.
+ * `dias`: [{ dia, fechaISO }], `historialAtleta`: { [dia]: { estado } }, `historialNivel`: { [atletaId]: { [dia]: ... } }.
+ */
+export function porcentajeAsistencia(dias, historialAtleta = {}, hoyISO, historialNivel = null) {
+  const hayLista = (dia) => !historialNivel || Object.values(historialNivel).some((h) => h?.[dia])
+  const transcurridas = dias.filter((d) => d.fechaISO <= hoyISO && hayLista(d.dia))
+  if (transcurridas.length === 0) return 0
+  const asistio = transcurridas.filter(({ dia }) => ['presente', 'inpuntual'].includes(historialAtleta[dia]?.estado)).length
+  return Math.round((asistio / transcurridas.length) * 100)
+}
+
 export { aRegistro }

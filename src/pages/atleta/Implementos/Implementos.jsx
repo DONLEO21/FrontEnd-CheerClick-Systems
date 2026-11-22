@@ -23,7 +23,7 @@ function PaginaImplementos() {
   const pedidoCreado = (pedido) => {
     setPestana("pedidos");
     setVersion((v) => v + 1);
-    mostrarAviso(`Pedido ${pedido.id} enviado correctamente.`);
+    mostrarAviso(`Pedido ${pedido.codigo || ""} enviado correctamente.`.replace("Pedido  ", "Pedido "));
   };
 
   return (

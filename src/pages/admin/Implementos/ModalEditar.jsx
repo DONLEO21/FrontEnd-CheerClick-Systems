@@ -3,6 +3,7 @@ import { actualizarImplemento } from "../../../services/ImplementosService";
 import EditorTallas from "./EditorTallas";
 import { gruposDeTipo, totalStock } from "../../../data/tallas";
 
+import ImagenImplemento from "../../../components/Compartidos/ImagenImplemento";
 const ModalEditar = forwardRef(function ModalEditar({ implemento, onGuardado }, ref) {
   const [form, setForm] = useState(null);
   const [guardando, setGuardando] = useState(false);
@@ -118,7 +119,7 @@ const ModalEditar = forwardRef(function ModalEditar({ implemento, onGuardado }, 
                     onClick={() => fileRef.current.click()}
                     onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && fileRef.current.click()}
                   >
-                    <img
+                    <ImagenImplemento
                       src={form.imagen || "/img/placeholder.svg"}
                       alt={form.nombre}
                       className="img-modal"

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import { listarHabilidades, listarProgresoAtleta, guardarProgresoAtleta } from "../../../services/rendimientoAdminService";
+import { listarHabilidades, listarProgresoAtleta, guardarProgresoAtleta, listarSesionesRecientes } from "../../../services/rendimientoAdminService";
+import TextareaContador from "../../../components/Compartidos/TextareaContador";
 import imgusuario from "../../../assets/icons/usuarios.png";
 import { obtenerEstiloNivel } from "../../../components/utils/nivelEstilos";
 import "./RegistrarRendimiento.css";
@@ -29,6 +30,21 @@ function RegistrarRendimiento({ atleta, onVolver, onAviso }) {
   const [busquedaHabilidad, setBusquedaHabilidad] = useState("");
   const [fecha, setFecha] = useState(obtenerFechaHoy());
   const [notaSesion, setNotaSesion] = useState("");
+  // Días de sesión del nivel del atleta (nunca futuros). sinHorario: el nivel no tiene horario cargado.
+  const [sesiones, setSesiones] = useState({ cargadas: false, sinHorario: false, hoy: obtenerFechaHoy(), lista: [] });
+
+  useEffect(() => {
+    if (!atleta?.nivelId) return;
+    let cancelado = false;
+    listarSesionesRecientes(atleta.nivelId)
+      .then(({ hoy, sinHorario, sesiones: lista }) => {
+        if (cancelado) return;
+        setSesiones({ cargadas: true, sinHorario, hoy, lista });
+        if (lista.length > 0) setFecha(lista[0].fecha); // la sesión más reciente
+      })
+      .catch(() => { if (!cancelado) setSesiones((s) => ({ ...s, cargadas: true, sinHorario: true })); });
+    return () => { cancelado = true; };
+  }, [atleta?.nivelId]);
 
   useEffect(() => {
     if (!atleta) return;
@@ -168,12 +184,12 @@ function RegistrarRendimiento({ atleta, onVolver, onAviso }) {
 
           <div className="adm-rendimiento-targetas-ren">
             <div className="tar">
-              <h5 className="adm-rendimiento-ti-tar">ID rendimiento</h5>
-              <span className="adm-rendimiento-va-tar">{`RE${String(atleta.id).padStart(3, "0")}`}</span>
+              <h5 className="adm-rendimiento-ti-tar">Código del atleta</h5>
+              <span className="adm-rendimiento-va-tar">{atleta.codigo || "—"}</span>
             </div>
             <div className="tar">
-              <h5 className="adm-rendimiento-ti-tar">ID usuario</h5>
-              <span className="adm-rendimiento-va-tar">{atleta.id}</span>
+              <h5 className="adm-rendimiento-ti-tar">Nivel</h5>
+              <span className="adm-rendimiento-va-tar">{atleta.nivel || "—"}</span>
             </div>
           </div>
 
@@ -185,23 +201,37 @@ function RegistrarRendimiento({ atleta, onVolver, onAviso }) {
             <label className="titu-input" htmlFor="fecha">
               Fecha
             </label>
-            <input
-              id="fecha" className="adm-rendimiento-fecha"
-              type="date"
-              value={fecha}
-              onChange={(e) => setFecha(e.target.value)}
-            />
+            {sesiones.lista.length > 0 ? (
+              <select
+                id="fecha" className="adm-rendimiento-fecha"
+                value={fecha}
+                onChange={(e) => setFecha(e.target.value)}
+              >
+                {sesiones.lista.map((s) => (
+                  <option key={s.fecha} value={s.fecha}>{s.etiqueta}</option>
+                ))}
+              </select>
+            ) : (
+              // Sin horario cargado para el nivel: se permite cualquier día hasta hoy (nunca futuro)
+              <input
+                id="fecha" className="adm-rendimiento-fecha"
+                type="date"
+                max={sesiones.hoy}
+                value={fecha}
+                onChange={(e) => setFecha(e.target.value)}
+              />
+            )}
           </div>
 
           <div className="conte-input">
             <label className="titu-input" htmlFor="nota-sesion">
               Notas de la sesión
             </label>
-            <textarea
+            <TextareaContador
               className="cua-ren adm-rendimiento-nota-sesion"
               id="nota-sesion"
               value={notaSesion}
-              onChange={(e) => setNotaSesion(e.target.value)}
+              onChange={setNotaSesion}
               placeholder="Ej. Reforzar la parada de manos"
             />
           </div>

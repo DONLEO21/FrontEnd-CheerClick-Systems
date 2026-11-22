@@ -128,7 +128,7 @@ export default function PlanesPanel({ mostrarAviso }) {
             )}
             {planes.map((p) => (
               <tr key={p.id} className={p.estado === "Inactivo" ? "adm-plan__fila--inactiva" : ""}>
-                <td><strong>{p.nombre}</strong></td>
+                <td><strong>{p.nombre}</strong>{p.codigo && <span className="ui-codigo">{p.codigo}</span>}</td>
                 <td className="adm-plan__desc">{p.descripcion || "—"}</td>
                 <td>{cop(p.valor)}</td>
                 <td>

@@ -22,8 +22,10 @@ desempaquetado y lanza `ApiError` (mensaje legible) en los errores. Token: cabec
 | Planes asociados | `services/planesService.js` | `planes.api.js` | GET/POST/PATCH `/plan-asociado` (no hay DELETE: se deshabilita) |
 | Habilidades (admin y entrenador, un solo módulo) | `services/rendimientoAdminService.js` | `habilidades.api.js`, `tipos_habilidad.api.js` | GET `/habilidad?nivelId=` (**nuevo**: nivel + generales; el entrenador solo sus niveles), PATCH `/habilidad` (entrenador: solo `estado`), POST `/habilidad` (solo admin, `nivel` opcional), GET `/tipo-habilidad` |
 | Rendimiento (listado de TODOS los atletas) | `services/rendimientoAdminService.js`, `rendimientoAtletaService.js` | `rendimiento.api.js` | GET `/rendimiento/resumen` (todos los atletas con `edad` calculada en el backend y `rendimiento: null` si no tienen evaluaciones; el entrenador, solo sus niveles), GET/PUT `/rendimiento/atleta/:id` |
-| Implementos y pedidos | `services/ImplementosService.js`, `PedidosService.js`, `SolicitudesService.js`, `ResenaService.js` | `implementos.api.js`, `solicitudes.api.js`, `resenas.api.js` | GET/POST/PATCH `/implementos`, `/solicitud`, `/resena` |
+| Implementos y pedidos | `services/ImplementosService.js`, `PedidosService.js`, `SolicitudesService.js`, `ResenaService.js` | `implementos.api.js`, `solicitudes.api.js`, `resenas.api.js` | GET/POST/PATCH `/implementos`, `/solicitud`, `/resena`. **Nuevo:** `POST /solicitud { items, metodoPago, comprobante? }` crea el pago del pedido (efectivo sin comprobante → «Pendiente de confirmación» + aviso al admin); el listado trae `pago` poblado |
 | PQRS | `services/pqrsService.js` | `pqrs.api.js`, `respuestas_pqrs.api.js` | GET/POST/PATCH `/pqrs`; GET/POST `/respuesta_pqrs` |
+| Sesiones válidas (rendimiento) | `services/rendimientoAdminService.js` | `horarios.api.js` | **Nuevo:** GET `/horarios/sesiones?nivelId=&hasta=hoy&limite=` |
+| Landing (niveles y horarios) | `services/landing.js` | `niveles.api.js` | GET `/niveles/publico` (sin token; ahora con `entrenador` y `horarios`) |
 | Notificaciones (campana, `useNotificaciones`) | `services/notificacionesService.js` | `notificaciones.api.js` | GET `/notificaciones`, GET `/notificaciones/no-leidas` (polling 60 s); PATCH `/notificaciones/:id/leida`, `/notificaciones/leer-todas` |
 | Dashboards | `pages/*/Dashboard/*Data.js` | `asistencia.api.js`, `rendimiento.api.js`, `mensualidades.api.js`, `pqrs.api.js`, `inscripciones_competencias.api.js` | lecturas GET de los anteriores |
 
@@ -44,3 +46,11 @@ Módulos del backend que existen y tienen archivo api pero la interfaz aún no u
 `IM001` implementos · `PG001` pagos · `HA001` habilidades · `SL001` pedidos. Cada lista/detalle devuelve `codigo`; las búsquedas
 (`?buscar=`) lo aceptan. El `_id` interno solo se usa para relaciones y nunca se muestra. Migración de datos existentes:
 `node --env-file .env scripts/migrar-codigos.js` (ver `docs/backend-cambios.md`).
+
+## Dashboards
+No hay `/dashboard/*`: se calculan con endpoints existentes (`/mensualidades`, `/competencias`, `/pqrs`, `/solicitud`, `/asistencia`, `/rendimiento`).
+Cada tarjeta carga su fuente por separado (`hooks/useFuente.js`): esqueleto, error con «Reintentar» y mensaje de vacío; nunca cifras de relleno.
+
+## Códigos visibles (actualizado)
+Nuevos: `NV` niveles · `PL` planes · `MP` métodos de pago · `HR` horarios · `JU` justificaciones · `RS` reseñas · `RD` rendimiento ·
+`NT` notificaciones · `CP` competencias · `IC` inscripciones. Sin cambios: `AT/EN/AD`, `PQ`, `IM`, `PG`, `HA`, `SL`.

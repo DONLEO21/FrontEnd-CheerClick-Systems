@@ -1,8 +1,5 @@
 // Helpers compartidos por los módulos de pedidos (atleta y admin)
 
-// Efectivo: se paga al recoger el pedido en el club. No lleva QR ni comprobante.
-export const METODO_EFECTIVO = { id: "efectivo", nombre: "Efectivo" };
-
 export const formatoCOP = (valor) => `$${Number(valor || 0).toLocaleString("es-CO")}`;
 
 // Fecha local en formato AAAA-MM-DD (toISOString usaría UTC y puede adelantar el día)
@@ -24,8 +21,6 @@ export const unidadesPedido = (pedido) =>
 export const totalPedido = (pedido) =>
   pedido.total ??
   (pedido.items ?? []).reduce((suma, i) => suma + Number(i.precioUnitario) * Number(i.cantidad), 0);
-
-export const esPagoDigital = (pedido) => !!pedido.metodoPagoId && pedido.metodoPagoId !== METODO_EFECTIVO.id;
 
 // Un mismo producto en otra talla es otra línea del carrito
 export const claveItem = ({ implementoId, grupoTalla, talla }) =>

@@ -1,32 +1,11 @@
-const horarios = [
-  ['Nivel Inicio | Formativo King', 'Entrenador: Jonathan Cruz', [
-    ['Lunes', '4:00 - 6:00 PM'],
-    ['Martes', '4:00 - 6:00 PM'],
-    ['Viernes', '4:00 - 6:00 PM'],
-  ]],
-  ['Nivel 1 | Queens', 'Entrenador: Ronald Linares', [
-    ['Martes', '6:00 - 8:00 PM'],
-    ['Jueves', '6:00 - 8:00 PM'],
-    ['Sábado', '6:00 - 8:00 PM'],
-  ]],
-  ['Nivel 2 | Princess', 'Entrenador: Ronald Linares', [
-    ['Martes', '6:00 - 8:00 PM'],
-    ['Viernes', '6:00 - 8:00 PM'],
-    ['Sábado', '10:00 - 12:00 PM'],
-  ]],
-  ['Nivel 3 | Magic', 'Entrenador: Stuard Reyes', [
-    ['Lunes', '6:00 - 8:00 PM'],
-    ['Miércoles', '6:00 - 8:00 PM'],
-    ['Sábado', '4:00 - 6:00 PM'],
-  ]],
-  ['Nivel 4 | Blood Tigers', 'Entrenador: Ronald Linares', [
-    ['Miércoles', '8:00 - 10:00 PM'],
-    ['Sábado', '8:00 - 10:00 PM'],
-    ['Domingo', '8:00 - 10:00 AM'],
-  ]],
-]
+import useFuente from '../../hooks/useFuente'
+import EstadoTarjeta from '../Compartidos/EstadoTarjeta'
+import { cargarNivelesLanding } from '../../services/landing'
 
 function Horarios() {
+  const { datos, cargando, error, recargar } = useFuente(cargarNivelesLanding)
+  const niveles = datos ?? []
+
   return (
     <section id="horarios" className="landing-horarios">
       <div className="contenedor">
@@ -37,24 +16,31 @@ function Horarios() {
           <h2>HORARIOS DE ENTRENAMIENTO</h2>
           <p>Cada entrenador y nivel tiene sus horarios definidos. ¡Encuentra el tuyo y únete al equipo!</p>
 
-          <div className="horario-valores">
-            {horarios.map(([titulo, entrenador, dias]) => (
-              <article className="horario-tarjeta" key={titulo}>
-                <header className="tarjeta-encabezado">
-                  <h3>{titulo}</h3>
-                  <h4>{entrenador}</h4>
-                </header>
-                <ul className="lista-horarios">
-                  {dias.map(([dia, hora]) => (
-                    <li key={dia}>
-                      <p className="dia">{dia}</p>
-                      <p className="hora">{hora}</p>
-                    </li>
-                  ))}
-                </ul>
-              </article>
-            ))}
-          </div>
+          <EstadoTarjeta cargando={cargando} error={error} onReintentar={recargar} vacio={niveles.length === 0}
+            textoVacio="Pronto publicaremos los horarios de entrenamiento." lineas={3}>
+            <div className="horario-valores">
+              {niveles.map((n) => (
+                <article className="horario-tarjeta" key={n.id}>
+                  <header className="tarjeta-encabezado">
+                    <h3>{n.titulo}</h3>
+                    <h4>Entrenador: {n.entrenador || 'Por asignar'}</h4>
+                  </header>
+                  {n.horarios.length === 0 ? (
+                    <p className="ui-vacio">Horario por definir.</p>
+                  ) : (
+                    <ul className="lista-horarios">
+                      {n.horarios.map((h) => (
+                        <li key={`${h.dia}-${h.hora}`}>
+                          <p className="dia">{h.dia}</p>
+                          <p className="hora">{h.hora}</p>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </article>
+              ))}
+            </div>
+          </EstadoTarjeta>
         </div>
       </div>
     </section>

@@ -8,7 +8,7 @@ export default function NivelCard({ nivel, onModificar, onInhabilitar, delay = 0
       className={`tarjeta-categoria ${nivel.inhabilitado ? "inhabilitada" : ""}`}
       style={{ animationDelay: `${delay}s` }}
     >
-      <div className="encabezado-categoria">{nivel.categoria}</div>
+      <div className="encabezado-categoria">{nivel.categoria}{nivel.codigo && <span className="ui-codigo ui-codigo--claro">{nivel.codigo}</span>}</div>
       <div className="cuerpo-categoria">
         <div className="info-entrenador">
           <img src={nivel.foto} alt={nivel.entrenador} className="foto-entrenador" />

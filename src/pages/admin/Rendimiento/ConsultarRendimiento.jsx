@@ -181,7 +181,7 @@ function ConsultarRendimiento({ atleta }) {
               <span className="titu-notas">
                 {nota.fecha} — {nota.autor}
               </span>
-              <p className="texto-notas">{nota.texto}</p>
+              <p className="texto-notas ui-nota-recortada" title={nota.texto}>{nota.texto}</p>
             </div>
           ))
         ) : (

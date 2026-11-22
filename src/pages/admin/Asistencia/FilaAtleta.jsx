@@ -25,7 +25,7 @@ export default function FilaAtleta({
       <td className="acciones-cell d-flex align-items-center gap-2">
         <button
           type="button"
-          className="btn-accion btn-presente"
+          className={`btn-accion btn-presente${bloqueada ? " ui-accion--bloqueada" : ""}`}
           title="Presente"
           disabled={bloqueada}
           onClick={() => onMarcar("presente")}
@@ -36,7 +36,7 @@ export default function FilaAtleta({
         </button>
         <button
           type="button"
-          className="btn-accion btn-falta"
+          className={`btn-accion btn-falta${bloqueada ? " ui-accion--bloqueada" : ""}`}
           title="Falta"
           disabled={bloqueada}
           onClick={() => onMarcar("falta")}
@@ -49,7 +49,7 @@ export default function FilaAtleta({
         <div className="dropdown">
           <button
             type="button"
-            className="btn-accion btn-mas"
+            className={`btn-accion btn-mas${bloqueada ? " ui-accion--bloqueada" : ""}`}
             title="Más opciones"
             disabled={bloqueada}
             onClick={onToggleMenu}

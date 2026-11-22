@@ -1,9 +1,10 @@
 import { forwardRef } from "react";
 import { etiquetaTalla } from "../../../data/tallas";
-import { esPagoDigital, fechaCorta, formatoCOP, totalPedido, unidadesPedido } from "../../../data/pedidos";
+import { fechaCorta, formatoCOP, totalPedido, unidadesPedido } from "../../../data/pedidos";
 import { abrirDataURL } from "../../../utils/archivos";
 import IconoMetodoPago from "../../../components/Pagos/IconoMetodoPago";
 
+import ImagenImplemento from "../../../components/Compartidos/ImagenImplemento";
 const badgeEstado = {
   Pendiente: "badge-estado-pendiente",
   Aprobado: "badge-estado-aprobado",
@@ -17,7 +18,8 @@ const ModalVerPedido = forwardRef(function ModalVerPedido({ pedido }, ref) {
   if (!pedido) return <dialog ref={ref} className="dialog-bootstrap" />;
 
   const items = pedido.items ?? [];
-  const digital = esPagoDigital(pedido);
+  const digital = !!pedido.requiereComprobante; // el método exige comprobante (los datos mandan, no el texto)
+  const efectivo = !!pedido.metodoPago && !digital;
   const comprobanteEsImagen = pedido.comprobante?.startsWith("data:image");
 
   return (
@@ -47,7 +49,7 @@ const ModalVerPedido = forwardRef(function ModalVerPedido({ pedido }, ref) {
                 className="caja-gris caja-implemento"
                 key={`${item.implementoId}-${item.grupoTalla ?? ""}-${item.talla}`}
               >
-                <img
+                <ImagenImplemento
                   src={item.implementoImagen }
                   alt={item.implementoNombre}
                   className="img-modal"
@@ -111,11 +113,25 @@ const ModalVerPedido = forwardRef(function ModalVerPedido({ pedido }, ref) {
           <p className="seccion-detalle">Método de Pago</p>
           <div className="caja-metodo-pago">
             <span className="metodo-pago-icono-inline">
-              <IconoMetodoPago id={pedido.metodoPagoId} size={20} />
+              <IconoMetodoPago nombre={pedido.metodoPago} size={20} />
             </span>
             <strong>{pedido.metodoPago}</strong>
             <span className="check-metodo-pago">✓</span>
           </div>
+          {pedido.estadoPago && (
+            <p className="pedido-adm-llave">
+              Estado del pago: <strong>{pedido.estadoPago}</strong>
+              {pedido.codigoPago ? ` · ${pedido.codigoPago}` : ""}
+            </p>
+          )}
+          {efectivo && (
+            <>
+              <p className="seccion-detalle">Comprobante</p>
+              <div className="caja-comprobante">
+                <span className="text-muted">Pago en efectivo, sin comprobante</span>
+              </div>
+            </>
+          )}
           {digital && pedido.llavePago && (
             <p className="pedido-adm-llave">
               Llave de destino: <strong>{pedido.llavePago}</strong>

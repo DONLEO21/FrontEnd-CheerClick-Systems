@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { almacenSesion } from '../../../api/client';
 import {
-  USAR_DATOS_DEMO, DEMO_SI_FALLA, DEMO_BASE, BASE_VACIA,
+  BASE_VACIA,
   iso, dia10, cargarBase, obtenerEntrenos,
   calcularMetricas, resumirPqrs, resumirPagos,
 } from './dashboardAtletaData.js';
@@ -16,14 +16,13 @@ export default function useDashboardAtleta(mostrarAviso) {
   /* ── datos base ── */
   const [base, setBase] = useState(BASE_VACIA);
   const [cargando, setCargando] = useState(true);
-  const [demo, setDemo] = useState(USAR_DATOS_DEMO);
+  const [error, setError] = useState('');
+  const [intento, setIntento] = useState(0);
 
   useEffect(() => {
     let vivo = true;
-    const usarDemo = () => { setBase(DEMO_BASE); setDemo(true); };
 
     const cargar = async () => {
-      if (USAR_DATOS_DEMO) return DEMO_BASE;
       const uid = almacenSesion.usuario()?.id;
       if (!uid) throw new Error('No hay una sesión activa.');
       return cargarBase(uid);
@@ -32,22 +31,21 @@ export default function useDashboardAtleta(mostrarAviso) {
     cargar()
       .then((b) => {
         if (!vivo) return;
-        if (DEMO_SI_FALLA && !b.yo) {
-          if (b.errores?.length) console.warn('Dashboard atleta (datos de ejemplo):', b.errores);
-          return usarDemo();
-        }
         setBase(b);
-        if (b.errores.length) mostrarAviso(`No se pudo leer: ${b.errores[0]}`, 'error');
+        // Todas las fuentes fallaron (no hay nada que mostrar): error con "Reintentar". Si solo falló alguna,
+        // las tarjetas sin datos muestran su estado vacío y se avisa con un toast.
+        if (b.errores.length) {
+          if (!b.yo || b.errores.length >= 4) setError(b.errores[0]);
+          else mostrarAviso(`No se pudo leer: ${b.errores[0]}`, 'error');
+        }
       })
-      .catch((e) => {
-        if (!vivo) return;
-        mostrarAviso(e.message, 'error');
-        if (DEMO_SI_FALLA) usarDemo();
-      })
+      .catch((e) => { if (vivo) setError(e.message || 'No se pudo cargar tu información.'); })
       .finally(() => vivo && setCargando(false));
 
     return () => { vivo = false; };
-  }, []);
+  }, [intento]);
+
+  const recargar = useCallback(() => { setError(''); setCargando(true); setIntento((n) => n + 1); }, []);
 
   const idNivel = base.yo?.id_nivel ?? null;
 
@@ -66,7 +64,7 @@ export default function useDashboardAtleta(mostrarAviso) {
     let vivo = true;
     setCargandoCal(true);
     obtenerEntrenos({
-      demo, idNivel,
+      idNivel,
       desde: iso(mes),
       hasta: iso(new Date(mes.getFullYear(), mes.getMonth() + 1, 0)),
     })
@@ -74,7 +72,7 @@ export default function useDashboardAtleta(mostrarAviso) {
       .catch((e) => { if (vivo) { setEntrenos([]); mostrarAviso(e.message, 'error'); } })
       .finally(() => vivo && setCargandoCal(false));
     return () => { vivo = false; };
-  }, [mesClave, cargando, idNivel, demo]);
+  }, [mesClave, cargando, idNivel]);
 
   const porDia = useMemo(() => {
     const m = {};
@@ -92,7 +90,7 @@ export default function useDashboardAtleta(mostrarAviso) {
     let vivo = true;
     const fin = new Date();
     fin.setDate(fin.getDate() + 30);
-    obtenerEntrenos({ demo, idNivel, desde: hoy, hasta: iso(fin) })
+    obtenerEntrenos({ idNivel, desde: hoy, hasta: iso(fin) })
       .then((r) => {
         if (!vivo) return;
         const ahora = new Date();
@@ -101,7 +99,7 @@ export default function useDashboardAtleta(mostrarAviso) {
       })
       .catch(() => vivo && setProximo(null));
     return () => { vivo = false; };
-  }, [cargando, idNivel, demo]);
+  }, [cargando, idNivel]);
 
   /* ── métricas derivadas ── */
   const metricas = useMemo(() => calcularMetricas(base.evals, base.asist), [base.evals, base.asist]);
@@ -109,7 +107,7 @@ export default function useDashboardAtleta(mostrarAviso) {
   const pagos = useMemo(() => resumirPagos(base.pagos, hoy), [base.pagos, hoy]);
 
   return {
-    base, hoy, metricas, pqrsResumen, pagos, proximo,
+    base, hoy, metricas, pqrsResumen, pagos, proximo, cargando, error, recargar,
     calendario: { mes, cambiarMes, porDia, cargando: cargandoCal, diaSel, setDiaSel },
   };
 }

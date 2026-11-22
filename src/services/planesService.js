@@ -6,6 +6,7 @@ import { planesApi } from '../api/planes.api'
 //   no exista, la descripción no se guarda y se muestra vacía.
 const aPlan = (p) => ({
   id: p._id,
+  codigo: p.codigo ?? '', // PL001 (backend)
   nombre: p.nombre,
   descripcion: p.descripcion ?? '',
   valor: p.valor ?? 0,

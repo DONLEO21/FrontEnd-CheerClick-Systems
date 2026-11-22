@@ -1,4 +1,4 @@
-export default function TarjetaRendimientoEquipo({ equipo, cargando, esDemo }) {
+export default function TarjetaRendimientoEquipo({ equipo, cargando }) {
   return (
     <article className="de-tarjeta de-col-5">
       <h2 className="de-titulo">Rendimiento del Equipo</h2>
@@ -16,9 +16,6 @@ export default function TarjetaRendimientoEquipo({ equipo, cargando, esDemo }) {
           </li>
         ))}
       </ul>
-      {!cargando && esDemo && (
-        <p className="de-nota">Datos de ejemplo — se reemplazarán cuando haya evaluaciones registradas.</p>
-      )}
     </article>
   )
 }

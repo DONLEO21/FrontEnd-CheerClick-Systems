@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
-import { obtenerRegistrosRango, calcularResumen } from "../../../services/asistenciaService";
+import { obtenerRegistrosRango, calcularResumen, porcentajeAsistencia } from "../../../services/asistenciaService";
 import { abrirReporteAsistencia } from "./exportarAsistencia";
-import { diasDeSesion, horarioDiasUnicos, nombreMes, hoy } from "../../../services/data";
+import { diasDeSesion, horarioDiasUnicos, nombreMes, fechaHoyISO } from "../../../services/data";
 
 const IconoPorEstado = {
   presente: (
@@ -19,22 +19,24 @@ const IconoPorEstado = {
   ),
 };
 
+// Hoy lleva el chip destacado; los días futuros quedan neutros (sin icono y atenuados)
+const claseDia = (fechaISO, hoyStr) => (fechaISO === hoyStr ? "dia-hoy" : fechaISO > hoyStr ? "dia-futuro" : "");
+
 function iniciales(nombre, apellido) {
   const palabras = `${nombre ?? ""} ${apellido ?? ""}`.trim().split(/\s+/);
   return palabras.slice(0, 2).map((p) => p[0]).join("").toUpperCase();
 }
 
+const ETIQUETA_ESTADO = { presente: "Presente", inpuntual: "Impuntual", falta: "Falta", justificado: "Justificado" };
+
+// Mismos datos que la tabla del modal: días de sesión, estado de cada día (futuros vacíos) y el mismo %
 function exportarCSV(nivel, mesLabel, dias, atletas, historial) {
+  const hoyStr = fechaHoyISO();
   const encabezado = ["Nombre", ...dias.map((d) => `${d.dia}`), "%"];
   const filas = atletas.map((atleta) => {
     const historialAtleta = historial[atleta.id] ?? {};
-    const diasConRegistro = dias.filter(({ dia }) => historialAtleta[dia]);
-    const diasPresentes = diasConRegistro.filter(
-      ({ dia }) =>
-        historialAtleta[dia].estado === "presente" || historialAtleta[dia].estado === "inpuntual"
-    ).length;
-    const porcentaje = dias.length ? Math.round((diasPresentes / dias.length) * 100) : 0;
-    const celdas = dias.map(({ dia }) => historialAtleta[dia]?.estado ?? "");
+    const porcentaje = porcentajeAsistencia(dias, historialAtleta, hoyStr, historial);
+    const celdas = dias.map(({ dia }) => ETIQUETA_ESTADO[historialAtleta[dia]?.estado] ?? "");
     return [`${atleta.nombre} ${atleta.apellido}`, ...celdas, `${porcentaje}%`];
   });
 
@@ -53,11 +55,14 @@ function exportarCSV(nivel, mesLabel, dias, atletas, historial) {
 
 // Modal en portal (document.body): ningún ancestro (transform, overflow, márgenes del layout) puede desplazarlo o cortarlo.
 function ModalConsultar({ abierto, onCerrar, nivel, atletas }) {
-  const ahora = hoy();
-  const [anio, setAnio] = useState(ahora.getFullYear());
-  const [mesIndex, setMesIndex] = useState(ahora.getMonth());
+  // "Hoy" en la zona del club (America/Bogota), no la del navegador: el mes y el día de hoy coinciden con los del guardado
+  const hoyStr = fechaHoyISO();
+  const [anioHoy, mesHoy, diaHoyNum] = hoyStr.split("-").map(Number);
+  const [anio, setAnio] = useState(anioHoy);
+  const [mesIndex, setMesIndex] = useState(mesHoy - 1);
   const [registros, setRegistros] = useState([]);
   const [cargando, setCargando] = useState(false);
+  const [errorHistorial, setErrorHistorial] = useState("");
   const [busqueda, setBusqueda] = useState("");
 
   const cerrar = onCerrar;
@@ -83,11 +88,16 @@ function ModalConsultar({ abierto, onCerrar, nivel, atletas }) {
     }
     let cancelado = false;
     setCargando(true);
+    setErrorHistorial("");
     const inicio = dias[0].fechaISO;
     const fin = dias[dias.length - 1].fechaISO;
     obtenerRegistrosRango(nivel.id, inicio, fin)
       .then((r) => { if (!cancelado) setRegistros(r); })
-      .catch(() => { if (!cancelado) setRegistros([]); })
+      .catch((e) => {
+        if (cancelado) return;
+        setRegistros([]);
+        setErrorHistorial(e?.message || "No se pudo cargar el historial de asistencia.");
+      })
       .finally(() => { if (!cancelado) setCargando(false); });
     return () => { cancelado = true; };
   }, [abierto, nivel?.id, anio, mesIndex, dias.length]);
@@ -147,8 +157,6 @@ function ModalConsultar({ abierto, onCerrar, nivel, atletas }) {
     setAvisoExport(abierto ? "" : "El navegador bloqueó la ventana del documento. Permite las ventanas emergentes e inténtalo de nuevo.");
   };
 
-  const esMesActual = anio === ahora.getFullYear() && mesIndex === ahora.getMonth();
-  const diaHoyNum = ahora.getDate();
 
   const mesAnterior = () => {
     if (mesIndex === 0) {
@@ -228,6 +236,8 @@ function ModalConsultar({ abierto, onCerrar, nivel, atletas }) {
         <div className="consultar-tabla-wrapper">
           {cargando ? (
             <p className="asist-cargando">Cargando historial…</p>
+          ) : errorHistorial ? (
+            <p className="asist-error" role="alert">{errorHistorial}</p>
           ) : dias.length === 0 ? (
             <p className="asist-cargando">Este nivel no tiene sesiones programadas en este mes.</p>
           ) : (
@@ -235,8 +245,8 @@ function ModalConsultar({ abierto, onCerrar, nivel, atletas }) {
               <thead>
                 <tr>
                   <th className="col-nombre-mes">Nombre</th>
-                  {dias.map(({ dia, letra }) => (
-                    <th key={dia} className={esMesActual && dia === diaHoyNum ? "dia-hoy" : ""}>
+                  {dias.map(({ dia, letra, fechaISO }) => (
+                    <th key={dia} className={claseDia(fechaISO, hoyStr)}>
                       <span className="dia-num">{dia}</span>
                       <span className="dia-letra">{letra}</span>
                     </th>
@@ -247,15 +257,7 @@ function ModalConsultar({ abierto, onCerrar, nivel, atletas }) {
               <tbody>
                 {atletasFiltrados.map((atleta) => {
                   const historialAtleta = historial[atleta.id] ?? {};
-                  const diasConRegistro = dias.filter(({ dia }) => historialAtleta[dia]);
-                  const diasPresentes = diasConRegistro.filter(
-                    ({ dia }) =>
-                      historialAtleta[dia].estado === "presente" ||
-                      historialAtleta[dia].estado === "inpuntual"
-                  ).length;
-                  const porcentajeAtleta = dias.length
-                    ? Math.round((diasPresentes / dias.length) * 100)
-                    : 0;
+                  const porcentajeAtleta = porcentajeAsistencia(dias, historialAtleta, hoyStr, historial);
 
                   return (
                     <tr key={atleta.id}>
@@ -263,10 +265,10 @@ function ModalConsultar({ abierto, onCerrar, nivel, atletas }) {
                         <span className="avatar-iniciales">{iniciales(atleta.nombre, atleta.apellido)}</span>
                         {atleta.nombre} {atleta.apellido}
                       </td>
-                      {dias.map(({ dia }) => {
+                      {dias.map(({ dia, fechaISO }) => {
                         const registro = historialAtleta[dia];
                         return (
-                          <td key={dia} className={esMesActual && dia === diaHoyNum ? "dia-hoy" : ""}>
+                          <td key={dia} className={claseDia(fechaISO, hoyStr)}>
                             {registro && (
                               <span
                                 className={`ico-${registro.estado}`}
@@ -308,21 +310,9 @@ function ModalConsultar({ abierto, onCerrar, nivel, atletas }) {
 
         <div className="adm-asist-consultar__pie">
         <div className="calendario-leyenda">
-          <span className="leyenda-item"><span className="ico-presente">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-check2" viewBox="0 0 16 16">
-              <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0" />
-            </svg>
-          </span> Presente</span>
-          <span className="leyenda-item"><span className="ico-inpuntual">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-clock" viewBox="0 0 16 16">
-              <path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71z" />
-              <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0" />
-            </svg></span> Inpuntual</span>
-          <span className="leyenda-item"><span className="ico-falta">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M18 6 6 18" /><path d="m6 6 12 12" />
-            </svg>
-          </span> Falta</span>
+          <span className="leyenda-item"><span className="ico-presente">{IconoPorEstado.presente}</span> Presente</span>
+          <span className="leyenda-item"><span className="ico-inpuntual">{IconoPorEstado.inpuntual}</span> Impuntual</span>
+          <span className="leyenda-item"><span className="ico-falta">{IconoPorEstado.falta}</span> Falta</span>
           <span className="leyenda-item"><span className="ico-justificado">{IconoPorEstado.justificado}</span> Justificado</span>
           <span className="leyenda-item"><span className="leyenda-dia-hoy-num">{diaHoyNum}</span> Día de hoy</span>
 

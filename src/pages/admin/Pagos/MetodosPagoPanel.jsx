@@ -106,7 +106,7 @@ export default function MetodosPagoPanel({ metodos, setMetodos, mostrarAviso }) 
             <li key={m.id} className="adm-met__tarjeta">
               <span className="adm-met__icono" aria-hidden="true"><Wallet size={22} /></span>
               <div className="adm-met__info">
-                <strong className="adm-met__nombre">{m.nombre}</strong>
+                <strong className="adm-met__nombre">{m.nombre}</strong>{m.codigo && <span className="ui-codigo">{m.codigo}</span>}
                 <span className="adm-met__estado">
                   {esMetodoEfectivo(m.nombre) ? "Se paga en el club · sin comprobante" : `${m.qr ? "Con código QR" : "Sin código QR"} · ${m.requiereComprobante === false ? "sin comprobante" : "con comprobante"}`}
                 </span>

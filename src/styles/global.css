@@ -109,8 +109,9 @@
   --ancho-barra: 56px;
   --alto-encabezado: 55px;
   --ancho-menu-abierto: 250px;   /* sidebar desplegado */
-  --ancho-contenido: 1500px;     /* ancho máximo (centrado) del contenido de las vistas */
-  --espacio-header-contenido: 24px;   /* distancia ÚNICA entre el header y el contenido de TODAS las vistas */
+  --ancho-contenido-max: 1400px; /* ancho máximo (centrado) del contenido de las vistas */
+  --espacio-lateral: 24px;       /* margen lateral ÚNICO del contenido (16px en móvil) */
+  --espacio-header-contenido: 20px;   /* distancia ÚNICA entre el header y el contenido de TODAS las vistas */
   --ancho-sidebar: 60px;
   --sidebar-width: 62px;
   --header-height: 55px;
@@ -226,9 +227,15 @@ select {
 /* Ancho máximo centrado del contenido (una sola vez, aquí). Una vista que necesite todo el ancho
    incluye un elemento con la clase .ui-ancho-total (p. ej. Gestión de habilidades). */
 .contenido-ancho {
+  box-sizing: border-box;
   width: 100%;
-  max-width: var(--ancho-contenido);
+  max-width: var(--ancho-contenido-max);
   margin-inline: auto;
+  padding-inline: var(--espacio-lateral);
+}
+
+@media (max-width: 600px) {
+  :root { --espacio-lateral: 16px; }
 }
 
 .contenido-ancho:has(.ui-ancho-total) {
@@ -247,6 +254,18 @@ select {
 .panel .contenido-ancho .ui-contenido {
   padding-top: 0 !important;
   margin-top: 0 !important;
+}
+
+/* Raíces de módulo (hasta 3 niveles bajo .contenido-ancho): NO aportan ancho máximo, márgenes ni padding propios.
+   El ancho, el margen lateral y la distancia al header los da .contenido-ancho una sola vez. */
+.panel .contenido-ancho > * > :is(.contenedor, .p-4, .py-4, .container-fluid, .conteni, .perfil-main, .perfil-contenedor, .pagina-implementos, .de-pagina, .ui-contenido, .adm-pagos, .atl-pagos, .rend-atleta),
+.panel .contenido-ancho > * > * > :is(.contenedor, .p-4, .py-4, .container-fluid, .conteni, .perfil-main, .perfil-contenedor, .pagina-implementos, .de-pagina, .ui-contenido, .adm-pagos, .atl-pagos, .rend-atleta),
+.panel .contenido-ancho > * > * > * > :is(.perfil-contenedor) {
+  padding-inline: 0 !important;
+  margin-inline: 0 !important;
+  padding-top: 0 !important;
+  margin-top: 0 !important;
+  max-width: none !important;
 }
 
 /* El primer título de la vista tampoco suma margen superior */
@@ -835,6 +854,56 @@ dialog:modal:not(.dialog-carrito)::backdrop {
   .ui-confirmar__btn { width: 100%; }
 }
 
+/* ───────────────────── 11b. AVISO DE RESULTADO (.ui-aviso) ──────────────────── */
+/* components/Compartidos/ModalAviso.jsx: éxito / error / advertencia / info. Siempre compacto: 420px como máximo. */
+.ui-aviso {
+  width: min(420px, 92vw);
+  max-width: 92vw;
+  padding: 24px;
+  border: 0;
+  border-radius: 14px;
+  background: var(--blanco);
+  color: var(--color-texto);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+  text-align: center;
+}
+.ui-aviso[open] { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.ui-aviso::backdrop { background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(2px); }
+
+.ui-aviso__icono {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.ui-aviso__icono--ok { background: var(--verde-light); color: var(--verde); }
+.ui-aviso__icono--error { background: var(--rojo-light); color: var(--rojo); }
+.ui-aviso__icono--advertencia { background: #fff4d6; color: #b7791f; }
+.ui-aviso__icono--info { background: #e7f0ff; color: #2563eb; }
+
+.ui-aviso__titulo { margin: 0; font-size: 18px; font-weight: 700; line-height: 1.25; }
+.ui-aviso__mensaje { margin: 0; font-size: 14px; line-height: 1.45; color: var(--gris-texto, #555); max-width: 34ch; }
+
+.ui-aviso__btn {
+  margin-top: 6px;
+  min-width: 120px;
+  padding: 9px 22px;
+  border: 0;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--blanco);
+  cursor: pointer;
+  transition: filter 0.15s;
+}
+.ui-aviso__btn:hover { filter: brightness(0.92); }
+.ui-aviso__btn--ok { background: var(--verde); }
+.ui-aviso__btn--error,
+.ui-aviso__btn--advertencia,
+.ui-aviso__btn--info { background: var(--rojo); }
+
 /* ───────────────────── 12. SALUDO DE DASHBOARD (.ui-saludo) ───────────────── */
 /* components/Compartidos/SaludoDashboard.jsx — igual en admin, entrenador y atleta */
 .ui-saludo {
@@ -987,4 +1056,78 @@ dialog:modal:not(.dialog-carrito)::backdrop {
   dialog:modal:not(.dialog-carrito)::backdrop {
     animation: none !important;
   }
+}
+
+/* ───────────────────── Textarea con contador (.ui-textarea-contador) ───────── */
+.ui-textarea-contador { position: relative; width: 100%; max-width: 600px; }
+.ui-textarea-contador textarea {
+  display: block;
+  width: 100%;
+  height: 84px !important;
+  min-height: 0;
+  resize: none !important;
+  overflow-y: auto;
+  padding: 10px 12px 22px;
+  line-height: 20px;
+  box-sizing: border-box;
+}
+.ui-textarea-contador__cuenta {
+  position: absolute;
+  right: 12px;
+  bottom: 6px;
+  font-size: 11px;
+  color: var(--gris-texto, #777);
+  pointer-events: none;
+}
+
+/* Nota larga en tarjetas/listas: 2 líneas como máximo (el texto completo va en el title) */
+.ui-nota-recortada {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+}
+
+/* Código visible de un registro (IM001, PG001, NV001…): chip discreto junto al nombre */
+.ui-codigo {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: var(--gris-fondo, #f1f1f1);
+  color: var(--gris-texto, #666);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  vertical-align: middle;
+}
+.ui-codigo--claro { background: rgba(255, 255, 255, 0.25); color: inherit; }
+
+/* ───────────────────── Esqueleto y vacío de tarjetas (.ui-skeleton / .ui-vacio) ───────────────────── */
+.ui-skeleton-grupo { display: flex; flex-direction: column; gap: 10px; padding: 4px 0; }
+.ui-skeleton {
+  display: block;
+  height: 44px;
+  border-radius: 10px;
+  background: linear-gradient(90deg, #ececec 25%, #f6f6f6 50%, #ececec 75%);
+  background-size: 200% 100%;
+  animation: ui-skeleton-brillo 1.3s ease-in-out infinite;
+}
+@keyframes ui-skeleton-brillo { to { background-position: -200% 0; } }
+.ui-skeleton--bloque { height: 160px; }
+.ui-vacio { margin: 0; padding: 18px 8px; text-align: center; font-size: 14px; color: var(--gris-texto, #777); }
+@media (prefers-reduced-motion: reduce) { .ui-skeleton { animation: none; } }
+
+/* ── Móvil (≤ 600px): nada debe ensanchar la página. Las tablas y pestañas largas se desplazan dentro de su caja ── */
+@media (max-width: 600px) {
+  .contenido-ancho { overflow-x: clip; }
+  .contenido-ancho table { display: block; max-width: 100%; overflow-x: auto; }
+  .contenido-ancho .ui-tabs { overflow-x: auto; max-width: 100%; }
+  .panel .de-grid { grid-template-columns: minmax(0, 1fr) !important; }
+  .panel .de-grid > * { grid-column: 1 / -1 !important; min-width: 0; }
+  .contenido-ancho .barra-pestanias { flex-wrap: wrap; gap: 4px; }
+  .contenido-ancho .centro-semana { min-width: 0; max-width: 100%; }
+  .contenido-ancho .tira-dias { flex-wrap: wrap; justify-content: center; }
 }

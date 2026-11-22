@@ -3,6 +3,7 @@ import { crearImplemento } from "../../../services/ImplementosService";
 import EditorTallas from "./EditorTallas";
 import { totalStock } from "../../../data/tallas";
 
+import ImagenImplemento from "../../../components/Compartidos/ImagenImplemento";
 const vacio = {
   codigo: "",
   nombre: "",
@@ -54,7 +55,6 @@ const ModalAgregar = forwardRef(function ModalAgregar({ onGuardado }, ref) {
         ...form,
         cantidad: totalStock(form.tallas),
         precio: Number(form.precio) || 0,
-        codigo: form.codigo || `IM${Math.floor(Math.random() * 900 + 100)}`,
       });
       onGuardado();
       cerrar();
@@ -147,7 +147,7 @@ const ModalAgregar = forwardRef(function ModalAgregar({ onGuardado }, ref) {
                     Arrastra una imagen aquí o <strong>haga click para subir</strong>
                   </span>
                 </label>
-                {form.imagen && <img src={form.imagen} alt="Vista previa" className="img-modal mt-2" />}
+                {form.imagen && <ImagenImplemento src={form.imagen} alt="Vista previa" className="img-modal mt-2" />}
               </div>
             </div>
           </div>

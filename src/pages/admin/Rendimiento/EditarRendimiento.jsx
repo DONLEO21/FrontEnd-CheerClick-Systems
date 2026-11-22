@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { listarHabilidades, listarProgresoAtleta, guardarProgresoAtleta } from "../../../services/rendimientoAdminService";
+import TextareaContador from "../../../components/Compartidos/TextareaContador";
 import imgusuario from "../../../assets/icons/usuarios.png";
 import { obtenerEstiloNivel } from "../../../components/utils/nivelEstilos";
 import "./EditarRendimiento.css";
@@ -144,23 +145,23 @@ function EditarRendimiento({ atleta, onVolver, onAviso }) {
             <label className="adm-rendimiento-titu-input" htmlFor="nota-sesion">
               Notas de la sesión
             </label>
-            <textarea
+            <TextareaContador
               id="nota-sesion"
               className="input-con adm-rendimiento-nota-sesion"
               value={notaSesion}
-              onChange={(e) => setNotaSesion(e.target.value)}
+              onChange={setNotaSesion}
               placeholder="Escribe aquí observaciones sobre la sesión..."
             />
           </div>
           <div className="conte-ob">
-            <label className="adm-rendimiento-titu-input" htmlFor="nota-sesion">
+            <label className="adm-rendimiento-titu-input" htmlFor="descripcion-habilidades">
               Descripción de habilidades
             </label>
-            <textarea
-              id="nota-sesion"
+            <TextareaContador
+              id="descripcion-habilidades"
               className="input-con adm-rendimiento-nota-sesion"
               value={descripcionHabilidades}
-              onChange={(e) => setDescripcionHabilidades(e.target.value)}
+              onChange={setDescripcionHabilidades}
               placeholder="Describe el trabajo realizado en habilidades..."
             />
           </div>

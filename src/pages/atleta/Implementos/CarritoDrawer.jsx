@@ -3,13 +3,12 @@ import { useCarrito } from "../../../context/CarritoContext";
 import { getImplementos } from "../../../services/ImplementosService";
 import { getMetodosPago } from "../../../services/MetodosPagoService";
 import { crearPedido } from "../../../services/PedidosService";
-import { ATLETA_ACTUAL } from "../../../services/AtletaActual";
 import { etiquetaTalla } from "../../../data/tallas";
-import { formatoCOP, hoyISO, METODO_EFECTIVO } from "../../../data/pedidos";
-import { esMetodoDigital } from "../../../utils/metodosPago";
+import { formatoCOP } from "../../../data/pedidos";
 import { prepararComprobante } from "../../../utils/archivos";
 import IconoMetodoPago from "../../../components/Pagos/IconoMetodoPago";
 
+import ImagenImplemento from "../../../components/Compartidos/ImagenImplemento";
 const IconoBolsa = ({ size = 18 }) => (
   <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none"
     stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -23,8 +22,8 @@ const CarritoDrawer = forwardRef(function CarritoDrawer({ onPedidoCreado }, ref)
   const { items, unidades, total, cambiarCantidad, quitar, vaciar } = useCarrito();
 
   const [paso, setPaso] = useState("carrito"); // "carrito" | "pago"
-  const [metodosDigitales, setMetodosDigitales] = useState([]);
-  const [metodoId, setMetodoId] = useState(METODO_EFECTIVO.id);
+  const [metodos, setMetodos] = useState([]); // métodos activos que devuelve la API (incluye Efectivo)
+  const [metodoId, setMetodoId] = useState("");
   const [comprobante, setComprobante] = useState("");
   const [nombreArchivo, setNombreArchivo] = useState("");
   const [validando, setValidando] = useState(false);
@@ -32,12 +31,14 @@ const CarritoDrawer = forwardRef(function CarritoDrawer({ onPedidoCreado }, ref)
   const [copiado, setCopiado] = useState(false);
   const [error, setError] = useState("");
 
-  const metodoDigital = metodosDigitales.find((m) => m.id === metodoId) ?? null;
-  const esDigital = !!metodoDigital;
+  const metodo = metodos.find((m) => m.id === metodoId) ?? null;
+  // Los DATOS mandan: el método dice si exige comprobante (Efectivo: no)
+  const exigeComprobante = !!metodo?.requiereComprobante;
+  const esEfectivo = !!metodo && !exigeComprobante;
 
   const reiniciar = () => {
     setPaso("carrito");
-    setMetodoId(METODO_EFECTIVO.id);
+    setMetodoId("");
     setComprobante("");
     setNombreArchivo("");
     setCopiado(false);
@@ -73,14 +74,21 @@ const CarritoDrawer = forwardRef(function CarritoDrawer({ onPedidoCreado }, ref)
     try {
       const [problemas, metodos] = await Promise.all([
         verificarDisponibilidad(),
-        getMetodosPago().catch(() => []), // si falla, queda al menos el pago en efectivo
+        getMetodosPago(),
       ]);
       if (problemas.length > 0) {
         setError(problemas.join(" "));
         return;
       }
-      setMetodosDigitales(metodos.filter((m) => m.activo && esMetodoDigital(m.nombre))); // Efectivo ya es una opción fija
-      setMetodoId(METODO_EFECTIVO.id);
+      const activos = metodos.filter((m) => m.activo);
+      if (activos.length === 0) {
+        setError("No hay métodos de pago disponibles por ahora. Intenta de nuevo más tarde.");
+        return;
+      }
+      setMetodos(activos);
+      // Efectivo primero (queda preseleccionado) y sin comprobante; los digitales después
+      const preferido = activos.find((m) => !m.requiereComprobante) ?? activos[0];
+      setMetodoId(preferido.id);
       setPaso("pago");
     } catch (err) {
       setError(err.message);
@@ -114,7 +122,7 @@ const CarritoDrawer = forwardRef(function CarritoDrawer({ onPedidoCreado }, ref)
 
   const copiarLlave = async () => {
     try {
-      await navigator.clipboard.writeText(metodoDigital.llave);
+      await navigator.clipboard.writeText(metodo.llave);
       setCopiado(true);
       setTimeout(() => setCopiado(false), 2000);
     } catch {
@@ -123,7 +131,11 @@ const CarritoDrawer = forwardRef(function CarritoDrawer({ onPedidoCreado }, ref)
   };
 
   const confirmar = async () => {
-    if (esDigital && !comprobante) {
+    if (!metodo) {
+      setError("Selecciona un método de pago.");
+      return;
+    }
+    if (exigeComprobante && !comprobante) {
       setError("Adjunta el comprobante de pago para continuar.");
       return;
     }
@@ -131,9 +143,6 @@ const CarritoDrawer = forwardRef(function CarritoDrawer({ onPedidoCreado }, ref)
     setError("");
     try {
       const pedido = await crearPedido({
-        atleta: ATLETA_ACTUAL.nombre,
-        categoria: ATLETA_ACTUAL.categoria,
-        fecha: hoyISO(),
         items: items.map((i) => ({
           implementoId: i.implementoId,
           implementoNombre: i.implementoNombre,
@@ -144,11 +153,8 @@ const CarritoDrawer = forwardRef(function CarritoDrawer({ onPedidoCreado }, ref)
           precioUnitario: i.precioUnitario,
           resenaEnviada: false,
         })),
-        total,
-        metodoPagoId: esDigital ? metodoDigital.id : METODO_EFECTIVO.id,
-        metodoPago: esDigital ? metodoDigital.nombre : METODO_EFECTIVO.nombre,
-        llavePago: esDigital ? metodoDigital.llave : "",
-        comprobante: esDigital ? comprobante : "",
+        metodoPagoId: metodo.id,
+        comprobante: exigeComprobante ? comprobante : "",
       });
       vaciar();
       onPedidoCreado(pedido);
@@ -212,7 +218,7 @@ const CarritoDrawer = forwardRef(function CarritoDrawer({ onPedidoCreado }, ref)
             <ul className="carrito-lista">
               {items.map((i) => (
                 <li className="carrito-item" key={i.clave}>
-                  <img src={i.implementoImagen } alt={i.implementoNombre} className="carrito-item-img" />
+                  <ImagenImplemento src={i.implementoImagen } alt={i.implementoNombre} className="carrito-item-img" />
                   <div className="carrito-item-info">
                     <p className="carrito-item-nombre">{i.implementoNombre}</p>
                     <p className="carrito-item-detalle">
@@ -268,50 +274,48 @@ const CarritoDrawer = forwardRef(function CarritoDrawer({ onPedidoCreado }, ref)
               </p>
 
               <div className="opciones-pago-tarjetas opciones-pago-tarjetas--auto" role="radiogroup" aria-label="Método de pago">
-                <input type="radio" name="metodo-pago" id="pago-efectivo"
-                  checked={metodoId === METODO_EFECTIVO.id} onChange={() => elegirMetodo(METODO_EFECTIVO.id)} />
-                <label htmlFor="pago-efectivo" className="tarjeta-pago-label">
-                  <div className="pago-icono"><IconoMetodoPago id="efectivo" /></div>
-                  <span className="pago-titulo">Efectivo</span>
-                  <span className="pago-subtitulo">Al recoger en el club</span>
-                </label>
-
-                {metodosDigitales.map((m) => (
+                {metodos.map((m) => (
                   <Fragment key={m.id}>
                     <input type="radio" name="metodo-pago" id={`pago-${m.id}`}
                       checked={metodoId === m.id} onChange={() => elegirMetodo(m.id)} />
                     <label htmlFor={`pago-${m.id}`} className="tarjeta-pago-label">
-                      <div className="pago-icono"><IconoMetodoPago id={m.id} /></div>
+                      <div className="pago-icono"><IconoMetodoPago nombre={m.nombre} /></div>
                       <span className="pago-titulo">{m.nombre}</span>
-                      <span className="pago-subtitulo">Pago digital</span>
+                      <span className="pago-subtitulo">{m.requiereComprobante ? "Pago digital" : "Al recoger en el club"}</span>
                     </label>
                   </Fragment>
                 ))}
               </div>
             </div>
 
-            {esDigital && (
+            {esEfectivo && (
+              <p className="pago-ayuda-efectivo" role="note">
+                Pagarás en efectivo al recoger tu pedido en el club. Tu pedido quedará pendiente hasta la entrega.
+              </p>
+            )}
+
+            {exigeComprobante && (
               <>
                 <div className="pago-digital">
-                  <p className="pago-digital-titulo">Escanea para pagar con {metodoDigital.nombre}</p>
+                  <p className="pago-digital-titulo">Escanea para pagar con {metodo.nombre}</p>
                   <div className="pago-qr-marco">
-                    {metodoDigital.qr ? (
-                      <img src={metodoDigital.qr} alt={`Código QR de ${metodoDigital.nombre}`} />
+                    {metodo.qr ? (
+                      <img src={metodo.qr} alt={`Código QR de ${metodo.nombre}`} />
                     ) : (
                       <div className="pago-qr-vacio">QR no disponible</div>
                     )}
                   </div>
-                  {metodoDigital.llave && (
+                  {metodo.llave && (
                     <div className="pago-llave">
                       <span className="pago-llave-label">Llave</span>
-                      <strong className="pago-llave-valor">{metodoDigital.llave}</strong>
+                      <strong className="pago-llave-valor">{metodo.llave}</strong>
                       <button type="button" className="btn-copiar-llave" onClick={copiarLlave}>
                         {copiado ? "¡Copiada!" : "Copiar llave"}
                       </button>
                     </div>
                   )}
-                  {metodoDigital.titular && (
-                    <p className="pago-titular">A nombre de <strong>{metodoDigital.titular}</strong></p>
+                  {metodo.titular && (
+                    <p className="pago-titular">A nombre de <strong>{metodo.titular}</strong></p>
                   )}
                   <p className="pago-valor">Valor a pagar: <strong>{formatoCOP(total)}</strong></p>
                 </div>

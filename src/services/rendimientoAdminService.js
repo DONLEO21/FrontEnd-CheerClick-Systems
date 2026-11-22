@@ -1,6 +1,7 @@
 import { tiposHabilidadApi } from '../api/tipos_habilidad.api'
 import { habilidadesApi } from '../api/habilidades.api'
 import { rendimientoApi } from '../api/rendimiento.api'
+import { horariosApi } from '../api/horarios.api'
 // Rendimiento deportivo (vista del administrador / entrenador).
 // Backend: /api/habilidad, /api/tipo-habilidad, /api/rendimiento (…/atleta/:id), /api/usuarios
 
@@ -72,6 +73,7 @@ export async function listarAtletas() {
     // La edad la calcula el backend (/rendimiento/resumen) desde la fecha de nacimiento del perfil; null = sin fecha
     edad: a.edad ?? '',
     nivel: a.nivel?.nombre ?? '',
+    nivelId: idDe(a.nivel) ?? '',
     codigo: a.codigo ?? '',
     rendimiento: a.rendimiento ? a.rendimiento.porcentaje : null,
   }))
@@ -98,4 +100,29 @@ export async function guardarProgresoAtleta(atletaId, { fecha, cambios = [], not
     habilidades: cambios.map((c) => ({ habilidad: c.habilidadId, calificacion: !!c.completado })),
     nota: nota || undefined,
   })
+}
+
+/* ───────── sesiones (días válidos para registrar rendimiento) ───────── */
+const etiquetaHora = (hhmm) => {
+  const [h, m] = String(hhmm ?? '').split(':').map(Number)
+  if (Number.isNaN(h)) return ''
+  return `${h % 12 || 12}:${String(m).padStart(2, '0')} ${h < 12 ? 'am' : 'pm'}`
+}
+
+const etiquetaSesion = (fecha, horaInicio) => {
+  const texto = new Intl.DateTimeFormat('es-CO', { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' })
+    .format(new Date(`${fecha}T12:00:00`))
+    .replace(/\./g, '').replace(/,/g, '').replace(/ de /g, ' ')
+  return horaInicio ? `${texto} · ${etiquetaHora(horaInicio)}` : texto
+}
+
+// Sesiones recientes del nivel (GET /horarios/sesiones): solo días de entrenamiento y nunca futuros.
+// sinHorario = el nivel aún no tiene horario cargado (entonces solo se exige que la fecha no sea futura).
+export async function listarSesionesRecientes(nivelId, limite = 12) {
+  const cuerpo = await horariosApi.sesiones({ nivelId, hasta: 'hoy', limite })
+  return {
+    hoy: cuerpo.hoy ?? hoyISO(),
+    sinHorario: !!cuerpo.sinHorario,
+    sesiones: (cuerpo.sesiones ?? []).map((s) => ({ fecha: s.fecha, etiqueta: etiquetaSesion(s.fecha, s.horaInicio) })),
+  }
 }

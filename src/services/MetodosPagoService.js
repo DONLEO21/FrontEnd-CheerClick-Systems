@@ -6,6 +6,7 @@ import { esMetodoEfectivo, esMetodoPresencial } from '../utils/metodosPago'
 // TODO(backend): titular y llave/cuenta del método aún no existen en el modelo.
 const aMetodo = (m) => ({
   id: m._id,
+  codigo: m.codigo ?? '', // MP001 (backend)
   nombre: m.nombre,
   activo: true,
   titular: '',

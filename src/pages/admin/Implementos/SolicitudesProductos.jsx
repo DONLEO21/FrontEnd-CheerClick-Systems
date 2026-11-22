@@ -218,7 +218,7 @@ export default function SolicitudesProductos({ onAviso }) {
             {!cargando &&
               solicitudesFiltradas.map((s) => (
                 <tr key={s.id}>
-                  <td>{s.id}</td>
+                  <td>{s.codigo || "—"}</td>
                   <td>
                     <div className="d-flex align-items-center gap-2">
                       <img

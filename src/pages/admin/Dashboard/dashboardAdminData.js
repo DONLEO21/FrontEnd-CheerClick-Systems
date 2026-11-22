@@ -1,89 +1,21 @@
-import {
-  PersonStanding,
-  Trophy,
-  Footprints,
-  Shirt,
-  MessageSquareDot,
-} from "lucide-react";
+// Constantes de INTERFAZ del dashboard del administrador (rutas, colores y límites). Los datos salen de la API
+// (services/dashboardAdminService.js).
 
 // Ruta real de la pantalla de cuentas (App.jsx)
 export const RUTA_CUENTAS = "/admin/usuarios";
 
 // Rutas de las pantallas (App.jsx)
 export const RUTA_HORARIOS = "/admin/horarios";
-// Supuesto: "Novedades" (PQRS, pedidos, clases) lleva a PQRS, que es su primera fuente.
+// Supuesto: "Novedades" (PQRS, pedidos, pagos en efectivo) lleva a PQRS, que es su primera fuente.
 export const RUTA_NOVEDADES = "/admin/pqrs";
 export const RUTA_PAGOS = "/admin/pagos";
 
 // Máximo de elementos visibles por tarjeta en el dashboard
 export const MAX_ITEMS = 3;
 
-/* ───────── datos de ejemplo (pagos, actividades y novedades) ───────── */
-
-// "cantidad" = número de cuentas en cada estado; los porcentajes se calculan solos
-export const PAGOS_STATS = [
-  { id: "pagado", nombre: "Pagado", cantidad: 13, color: "#d71920" },
-  { id: "pendiente", nombre: "Pendiente", cantidad: 5, color: "#c9c9c9" },
-  { id: "vencido", nombre: "Vencido", cantidad: 3, color: "#4d4d4d" },
+// Estados de pago y su color en la torta (la cantidad viene de la API)
+export const ESTADOS_PAGO = [
+  { id: "pagado", nombre: "Pagado", color: "#d71920" },
+  { id: "pendiente", nombre: "Pendiente", color: "#c9c9c9" },
+  { id: "vencido", nombre: "Vencido", color: "#4d4d4d" },
 ];
-
-const ACTIVIDADES = [
-  {
-    id: 1,
-    icono: PersonStanding,
-    variante: "amarillo",
-    titulo: "Competencia regional - UNIVERSAL",
-    fecha: "25 de julio del 2026",
-    fechaOrden: "2026-07-25", // AAAA-MM-DD (fecha de inicio)
-  },
-  {
-    id: 2,
-    icono: Trophy,
-    variante: null,
-    titulo: "Competencia regional - INFINITY LEAGUE",
-    fecha: "20 de septiembre del 2026",
-    fechaOrden: "2026-09-20",
-  },
-  {
-    id: 3,
-    icono: Trophy,
-    variante: "alerta",
-    titulo: "Competencia nacional - CONTINENTAL",
-    fecha: "25 - 27 de septiembre del 2026",
-    fechaOrden: "2026-09-25",
-  },
-];
-
-const NOVEDADES = [
-  {
-    id: 1,
-    icono: Footprints,
-    titulo: "Clases de entrenamiento programadas",
-    detalle: "27 de marzo del 2026 · 6:00 PM",
-    fechaOrden: "2026-03-27",
-  },
-  {
-    id: 2,
-    icono: Shirt,
-    titulo: "Nuevo implemento deportivo solicitado",
-    detalle: "16 de mayo del 2026 · Camiseta deportiva",
-    fechaOrden: "2026-05-16",
-  },
-  {
-    id: 3,
-    icono: MessageSquareDot,
-    titulo: "Nueva PQRS registrada",
-    detalle: "Leonardo Jara · Atleta",
-    fechaOrden: "2026-09-19",
-  },
-];
-
-// Campeonatos: el más cercano primero. Al conectar con Horarios, filtra también fechaOrden >= hoy.
-export const ACTIVIDADES_ORDENADAS = [...ACTIVIDADES].sort((a, b) =>
-  a.fechaOrden.localeCompare(b.fechaOrden),
-);
-
-// Novedades: la más reciente primero.
-export const NOVEDADES_ORDENADAS = [...NOVEDADES].sort((a, b) =>
-  b.fechaOrden.localeCompare(a.fechaOrden),
-);

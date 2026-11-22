@@ -5,6 +5,7 @@ import FiltroSelect from "../../../components/Compartidos/FiltroSelect";
 import ModalVerPedido from "./ModalVerPedido";
 import ModalRechazarPedido from "./ModalRechazarPedido";
 
+import ImagenImplemento from "../../../components/Compartidos/ImagenImplemento";
 const badgePorEstado = {
   Pendiente: "badge-amarilla",
   Aprobado: "badge-verde",
@@ -162,7 +163,7 @@ export default function PedidosImplementos({ onAviso }) {
                     <td>{p.codigo || "—"}</td>
                     <td>
                       <div className="celda-productos">
-                        <img
+                        <ImagenImplemento
                           src={primero?.implementoImagen}
                           alt={primero?.implementoNombre ?? "Producto"}
                           className="img-producto"

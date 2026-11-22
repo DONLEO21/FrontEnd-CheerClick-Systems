@@ -3,6 +3,7 @@ import { useCarrito } from "../../../context/CarritoContext";
 import { formatoCOP  } from "../../../data/pedidos";
 import SelectorTalla from "./SelectorTallas";
 
+import ImagenImplemento from "../../../components/Compartidos/ImagenImplemento";
 const ModalAgregarCarrito = forwardRef(function ModalAgregarCarrito({ implemento, onAgregado }, ref) {
   const { agregar, cantidadEnCarrito } = useCarrito();
   const [cantidad, setCantidad] = useState(1);
@@ -85,7 +86,7 @@ const ModalAgregarCarrito = forwardRef(function ModalAgregarCarrito({ implemento
 
       <div className="modal-body">
         <div className="modal-tarjeta-producto">
-          <img className="modal-tarjeta-img" src={implemento.imagen  } alt={implemento.nombre} />
+          <ImagenImplemento className="modal-tarjeta-img" src={implemento.imagen  } alt={implemento.nombre} />
           <div className="modal-tarjeta-info">
             <span className="modal-tarjeta-badge">Implemento Deportivo</span>
             <p className="modal-tarjeta-nombre">{implemento.nombre}</p>

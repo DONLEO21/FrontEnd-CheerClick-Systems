@@ -4,6 +4,7 @@ import { getImplementos } from "../../../services/ImplementosService";
 import { fechaCorta, parsearFecha } from "../../../data/pedidos";
 import FiltroSelect from "../../../components/Compartidos/FiltroSelect";
 
+import ImagenImplemento from "../../../components/Compartidos/ImagenImplemento";
 function Estrellas({ valor }) {
   return (
     <span className="estrellas-tabla" aria-label={`${valor} de 5 estrellas`}>
@@ -210,7 +211,7 @@ export default function ResenasImplementos() {
                 <tr key={r.id}>
                   <td>
                     <div className="celda-productos">
-                      <img
+                      <ImagenImplemento
                         src={imagenes[r.implementoId] || "/img/placeholder.svg"}
                         alt={r.implementoNombre}
                         className="img-producto"

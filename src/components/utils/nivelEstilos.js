@@ -1,3 +1,6 @@
+import { estiloPorPaleta } from "./paletaNiveles";
+
+// Colores históricos de los niveles conocidos; cualquier otro (p. ej. uno nuevo) usa la paleta determinista.
 export function obtenerEstiloNivel(nivel) {
   switch (nivel?.toLowerCase().trim()) {
     case "nivel formativo king":
@@ -11,6 +14,6 @@ export function obtenerEstiloNivel(nivel) {
     case "nivel 1 queen":
       return { backgroundColor: "#faa9b1", color: "#ff1414" };
     default:
-      return { backgroundColor: "#495057", color: "#ffffff" };
+      return estiloPorPaleta(nivel);
   }
 }

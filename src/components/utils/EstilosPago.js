@@ -1,3 +1,6 @@
+import { estiloPorPaleta } from "./paletaNiveles";
+
+// Colores históricos de los planes conocidos; cualquier otro plan (nuevo) usa la paleta determinista.
 export function obtenerEstiloPlan(plan) {
   switch (plan?.toLowerCase().trim()) {
     case "básico":
@@ -7,7 +10,7 @@ export function obtenerEstiloPlan(plan) {
     case "black":
       return { backgroundColor: "#fdeaea", color: "#d71920" };
     default:
-      return { backgroundColor: "#dce5f8", color: "#6b7280" };
+      return plan ? estiloPorPaleta(plan) : { backgroundColor: "#dce5f8", color: "#6b7280" };
   }
 }
 

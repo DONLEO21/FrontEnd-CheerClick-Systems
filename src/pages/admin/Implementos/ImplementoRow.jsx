@@ -1,5 +1,6 @@
 import TallasChips from "../../../components/Tallas/TallasChips";
 
+import ImagenImplemento from "../../../components/Compartidos/ImagenImplemento";
 function IconoEditar() {
   return (
     <svg width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
@@ -33,7 +34,7 @@ export default function ImplementoRow({ implemento, onEditar, onPedirCambioEstad
       <td>{implemento.codigo || "—"}</td>
       <td>
         <div className="d-flex align-items-center gap-2">
-          <img
+          <ImagenImplemento
             src={implemento.imagen || "/img/placeholder.svg"}
             alt={implemento.nombre}
             className="img-producto"

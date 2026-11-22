@@ -17,7 +17,7 @@ import SaludoDashboard from "../../../components/Compartidos/SaludoDashboard";
 
 // nombreAdmin queda solo como respaldo si la cuenta no tiene nombre guardado
 function DashboardAdmin({
-  nombreAdmin = "Ronald Linares",
+  nombreAdmin = "Administrador",
   onNavigate: onNavigateProp,
 }) {
   const navegar = useNavigate();

@@ -8,6 +8,7 @@ import IconoMetodoPago from "../../../components/Pagos/IconoMetodoPago";
 import ModalCancelarPedido from "./ModalCancelarPedido";
 import FormularioResena from "./FormularioResena";
 
+import ImagenImplemento from "../../../components/Compartidos/ImagenImplemento";
 const claseEstado = {
   Pendiente: "estado-pendiente",
   Aprobado: "estado-listo",
@@ -145,7 +146,7 @@ export default function MisPedidos({ onAviso }) {
                 {(p.items ?? []).map((item) => (
                   <li className="pedido-item" key={`${item.implementoId}-${item.grupoTalla ?? ""}-${item.talla}`}>
                     <div className="pedido-item-fila">
-                      <img src={item.implementoImagen } alt={item.implementoNombre} className="img-pedido" />
+                      <ImagenImplemento src={item.implementoImagen } alt={item.implementoNombre} className="img-pedido" />
                       <div className="pedido-item-info">
                         <h4>{item.implementoNombre}</h4>
                         <p className="pedido-item-detalle">
@@ -176,7 +177,7 @@ export default function MisPedidos({ onAviso }) {
               <footer className="pedido-pie">
                 <div className="pedido-pie-info">
                   <p className="pago-metodo">
-                    <IconoMetodoPago id={p.metodoPagoId} size={14} />
+                    <IconoMetodoPago nombre={p.metodoPago} size={14} />
                     {p.metodoPago}
                   </p>
                   {p.estado === "Rechazado" && p.motivoRechazo && (

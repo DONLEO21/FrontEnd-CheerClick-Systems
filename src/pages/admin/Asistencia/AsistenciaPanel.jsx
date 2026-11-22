@@ -1,11 +1,9 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import FilaAtleta from "./FilaAtleta";
 import ResumenCards from "./ResumenCards";
-import ModalGuardado from "./ModalGuardado";
+import ModalAviso from "../../../components/Compartidos/ModalAviso";
 import ModalConsultar from "./ModalConsultar";
-import AvisoToast from "../../../components/Compartidos/AvisoToast";
 import EstadoError from "../../../components/Compartidos/EstadoError";
-import useAviso from "../../../hooks/useAviso";
 import {
   obtenerAtletasPorNivel,
   obtenerRegistrosDia,
@@ -26,9 +24,8 @@ export default function AsistenciaPanel({ niveles = [], subtitulo }) {
   const [busqueda, setBusqueda] = useState("");
   const [guardando, setGuardando] = useState(false);
   const [recarga, setRecarga] = useState(0); // al aumentar, vuelve a cargar los atletas (botón Reintentar)
- const { aviso, mostrarAviso } = useAviso();
 
-  const modalGuardadoRef = useRef(null);
+  const [resultado, setResultado] = useState(null); // aviso compacto: { tipo, titulo, mensaje }
   const [consultarAbierto, setConsultarAbierto] = useState(false);
 
   const fechaHoy = fechaHoyISO();
@@ -131,28 +128,33 @@ export default function AsistenciaPanel({ niveles = [], subtitulo }) {
       motivo: estados[a.id]?.motivo ?? "",
     }));
     // 1) Guardar: solo esta llamada decide si el toast es de éxito o de error
-    let resultado;
+    let respuesta;
     try {
-      resultado = await guardarAsistenciaDia(nivelActivoIdEfectivo, fechaHoy, registros);
+      respuesta = await guardarAsistenciaDia(nivelActivoIdEfectivo, fechaHoy, registros);
     } catch (error) {
       // Se muestra el mensaje real del backend (p. ej. "No se puede registrar asistencia de una fecha futura")
-      mostrarAviso(error?.message || "No se pudo guardar la asistencia. Intenta de nuevo.", "error");
+      setResultado({
+        tipo: "error",
+        titulo: "No se pudo guardar la asistencia",
+        mensaje: error?.message || "Intenta de nuevo en unos segundos.",
+      });
       return;
     }
 
     // 2) Ya quedó guardada: lo que siga (avisos, estado visual) no puede convertirse en un error de guardado
     setGuardada(true);
-    modalGuardadoRef.current?.showModal();
-    const { advertencias } = resultado;
+    const { advertencias } = respuesta;
+    const lista = `La lista de ${nivel.categoria} del ${formatearFechaLarga(fechaHoy)} quedó guardada.`;
     if (advertencias.length > 0) {
-      mostrarAviso(`Asistencia guardada, con observaciones: ${advertencias[0]}`, "advertencia");
+      setResultado({ tipo: "advertencia", titulo: "Asistencia guardada con observaciones", mensaje: `${lista} ${advertencias[0]}` });
     } else if (sinMarcar > 0) {
-      mostrarAviso(
-        `Guardado. ${sinMarcar} sin marcar ${sinMarcar === 1 ? "quedó" : "quedaron"} como falta.`,
-        "advertencia"
-      );
+      setResultado({
+        tipo: "advertencia",
+        titulo: "Asistencia registrada",
+        mensaje: `${lista} ${sinMarcar} sin marcar ${sinMarcar === 1 ? "quedó" : "quedaron"} como falta.`,
+      });
     } else {
-      mostrarAviso("Asistencia guardada correctamente.", "ok");
+      setResultado({ tipo: "ok", titulo: "Asistencia registrada correctamente", mensaje: lista });
     }
   };
 
@@ -314,18 +316,22 @@ export default function AsistenciaPanel({ niveles = [], subtitulo }) {
         </div>
       </div>
 
-      <ModalGuardado
-        ref={modalGuardadoRef}
-        categoriaLabel={nivel.categoria}
-        fecha={formatearFechaLarga(fechaHoy)}
+      <ModalAviso
+        abierto={!!resultado}
+        tipo={resultado?.tipo}
+        titulo={resultado?.titulo}
+        mensaje={resultado?.mensaje}
+        onCerrar={() => setResultado(null)}
       />
-      <ModalConsultar
-        abierto={consultarAbierto}
-        onCerrar={() => setConsultarAbierto(false)}
-        nivel={nivel}
-        atletas={atletas}
-      />
-      <AvisoToast aviso={aviso} />
+      {/* Se monta al abrir: cada vez arranca en el mes actual, sin arrastrar el mes de la consulta anterior */}
+      {consultarAbierto && (
+        <ModalConsultar
+          abierto
+          onCerrar={() => setConsultarAbierto(false)}
+          nivel={nivel}
+          atletas={atletas}
+        />
+      )}
     </div>
   );
 }

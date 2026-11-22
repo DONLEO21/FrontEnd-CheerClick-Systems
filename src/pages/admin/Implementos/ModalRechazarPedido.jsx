@@ -35,7 +35,7 @@ const ModalRechazarPedido = forwardRef(function ModalRechazarPedido({ pedido, on
         <div className="modal-header bg-danger text-white">
           <div>
             <h5 className="modal-title mb-0">Rechazar Pedido</h5>
-            <small>{pedido ? `Pedido ${pedido.id}` : "Pedido de implementos"}</small>
+            <small>{pedido ? `Pedido ${pedido.codigo || ""}`.trim() : "Pedido de implementos"}</small>
           </div>
           <button type="button" className="btn-close btn-close-white" onClick={cerrar}></button>
         </div>

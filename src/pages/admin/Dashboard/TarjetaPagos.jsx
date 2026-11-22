@@ -1,10 +1,15 @@
 import { useState } from "react";
 import { PieChart, Pie, Cell } from "recharts";
-import { PAGOS_STATS, RUTA_PAGOS } from "./dashboardAdminData.js";
+import { ESTADOS_PAGO, RUTA_PAGOS } from "./dashboardAdminData.js";
+import useFuente from "../../../hooks/useFuente";
+import EstadoTarjeta from "../../../components/Compartidos/EstadoTarjeta";
+import { cargarResumenPagos } from "../../../services/dashboardAdminService";
 
 export default function TarjetaPagos({ onNavigate }) {
   const [pagoActivo, setPagoActivo] = useState(null); // estado resaltado en la torta
 
+  const { datos, cargando, error, recargar } = useFuente(cargarResumenPagos);
+  const PAGOS_STATS = ESTADOS_PAGO.map((e) => ({ ...e, cantidad: datos?.[e.id] ?? 0 }));
   const totalPagos = PAGOS_STATS.reduce((suma, p) => suma + p.cantidad, 0);
   const porcentaje = (n) => (totalPagos ? Math.round((n * 100) / totalPagos) : 0);
   const pagoResaltado = PAGOS_STATS.find((p) => p.id === pagoActivo);
@@ -16,6 +21,8 @@ export default function TarjetaPagos({ onNavigate }) {
       </header>
 
       <div className="tarjeta-dashboard__contenido contenido-estadisticas">
+       <EstadoTarjeta cargando={cargando} error={error} onReintentar={recargar} vacio={totalPagos === 0}
+         textoVacio="Aún no hay mensualidades generadas este mes." lineas={4}>
         <ul className="leyenda-estados" aria-label="leyenda del estado de cuentas">
           {PAGOS_STATS.map((p) => (
             <li
@@ -70,6 +77,7 @@ export default function TarjetaPagos({ onNavigate }) {
             <span>{pagoResaltado ? pagoResaltado.nombre : "Cuentas"}</span>
           </div>
         </div>
+       </EstadoTarjeta>
       </div>
 
       <a

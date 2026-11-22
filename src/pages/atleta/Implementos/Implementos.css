@@ -1685,6 +1685,16 @@
     color: var(--rojo);
 }
 
+:where(.atl-implementos) .pago-ayuda-efectivo {
+    margin: 0 0 12px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: #f5f6f8;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    font-size: 0.85rem;
+    color: var(--gris-texto);
+}
+
 /* ============================================================
    MIS PEDIDOS (cada pedido agrupa varios productos)
    ============================================================ */

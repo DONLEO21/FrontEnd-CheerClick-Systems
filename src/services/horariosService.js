@@ -30,6 +30,7 @@ function bloquesDe(plantillas) {
 
 const nivelDesdeApi = (n, plantillas = []) => ({
   id: n._id,
+  codigo: n.codigo ?? '', // NV001 (backend)
   categoria: n.nombre,
   entrenador: nombreCompleto(n.usuario),
   entrenadorId: idDe(n.usuario) ?? null,

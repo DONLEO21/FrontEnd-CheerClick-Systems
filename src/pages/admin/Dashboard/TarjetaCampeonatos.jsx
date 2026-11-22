@@ -1,8 +1,14 @@
-import { CalendarClock, ChevronRight } from "lucide-react";
-import { ACTIVIDADES_ORDENADAS, MAX_ITEMS, RUTA_HORARIOS } from "./dashboardAdminData.js";
+import { CalendarClock, ChevronRight, Trophy } from "lucide-react";
+import { MAX_ITEMS, RUTA_HORARIOS } from "./dashboardAdminData.js";
+import useFuente from "../../../hooks/useFuente";
+import EstadoTarjeta from "../../../components/Compartidos/EstadoTarjeta";
+import { cargarProximosCampeonatos } from "../../../services/dashboardAdminService";
+import { formatearFechaLarga } from "../../../services/data";
 
 export default function TarjetaCampeonatos({ onNavigate }) {
-  const total = ACTIVIDADES_ORDENADAS.length;
+  const { datos, cargando, error, recargar } = useFuente(cargarProximosCampeonatos);
+  const lista = datos ?? [];
+  const total = lista.length;
 
   return (
     <article className="tarjeta-dashboard">
@@ -14,9 +20,9 @@ export default function TarjetaCampeonatos({ onNavigate }) {
       </header>
 
       <div className="tarjeta-dashboard__contenido">
-        <ul className="lista-actividades">
-          {ACTIVIDADES_ORDENADAS.slice(0, MAX_ITEMS).map(
-            ({ id, icono: Icono, variante, titulo, fecha }) => (
+        <EstadoTarjeta cargando={cargando} error={error} onReintentar={recargar} vacio={total === 0} textoVacio="Aún no hay campeonatos programados.">
+          <ul className="lista-actividades">
+            {lista.slice(0, MAX_ITEMS).map(({ id, nombre, fecha, ciudad }) => (
               <li className="lista-actividades__item" key={id}>
                 <a
                   href={RUTA_HORARIOS}
@@ -25,23 +31,18 @@ export default function TarjetaCampeonatos({ onNavigate }) {
                     onNavigate(RUTA_HORARIOS);
                   }}
                 >
-                  <div
-                    className={
-                      "lista-actividades__icono" +
-                      (variante ? ` lista-actividades__icono--${variante}` : "")
-                    }
-                  >
-                    <Icono size={24} strokeWidth={2} />
+                  <div className="lista-actividades__icono">
+                    <Trophy size={24} strokeWidth={2} />
                   </div>
                   <div className="lista-actividades__texto">
-                    <h3>{titulo}</h3>
-                    <p>{fecha}</p>
+                    <h3>{nombre}</h3>
+                    <p>{formatearFechaLarga(fecha)}{ciudad ? ` · ${ciudad}` : ""}</p>
                   </div>
                 </a>
               </li>
-            ),
-          )}
-        </ul>
+            ))}
+          </ul>
+        </EstadoTarjeta>
       </div>
 
       {/* siempre visible; el contador aparece solo si hay más de MAX_ITEMS */}

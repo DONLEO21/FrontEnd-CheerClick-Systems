@@ -9,7 +9,7 @@ function NotasEntrenador({ notas }) {
             <div className="nota-card__fecha">
               {nota.fecha} · {nota.autor}
             </div>
-            <p className="nota-card__texto">{nota.texto}</p>
+            <p className="nota-card__texto ui-nota-recortada" title={nota.texto}>{nota.texto}</p>
           </div>
         ))
       ) : (

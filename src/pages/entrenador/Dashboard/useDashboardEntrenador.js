@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
-  USAR_DATOS_DEMO, DEMO_SI_NO_HAY_NIVEL, DEMO_BASE, BASE_VACIA,
+  BASE_VACIA,
   iso, dia10, cargarBase, obtenerEntrenos, calcularMetricas,
 } from './dashboardEntrenadorData.js'
 
@@ -10,36 +10,30 @@ export default function useDashboardEntrenador(mostrarAviso) {
   /* ── datos base ── */
   const [base, setBase] = useState(BASE_VACIA)
   const [cargando, setCargando] = useState(true)
-  const [demo, setDemo] = useState(USAR_DATOS_DEMO)
+  const [error, setError] = useState('')
+  const [intento, setIntento] = useState(0)
 
   useEffect(() => {
     let vivo = true
-    const usarDemo = () => { setBase(DEMO_BASE); setDemo(true) }
 
-    const cargar = async () => {
-      if (USAR_DATOS_DEMO) return DEMO_BASE
-      return cargarBase()
-    }
-
-    cargar()
+    cargarBase()
       .then((b) => {
         if (!vivo) return
-        if (DEMO_SI_NO_HAY_NIVEL && b.niveles.length === 0) {
-          if (b.errores.length) console.warn('Dashboard entrenador (usando datos de ejemplo):', b.errores)
-          return usarDemo()
-        }
         setBase(b)
-        if (b.errores.length) mostrarAviso(`No se pudo leer: ${b.errores[0]}`, 'error')
+        // Sin ningún nivel y con errores: no hay nada que mostrar -> error con "Reintentar".
+        // Un entrenador sin nivel asignado (sin errores) ve sus estados vacíos, no un error.
+        if (b.errores.length) {
+          if (b.niveles.length === 0) setError(b.errores[0])
+          else mostrarAviso(`No se pudo leer: ${b.errores[0]}`, 'error')
+        }
       })
-      .catch((e) => {
-        if (!vivo) return
-        mostrarAviso(e.message, 'error')
-        if (DEMO_SI_NO_HAY_NIVEL) usarDemo()
-      })
+      .catch((e) => { if (vivo) setError(e.message || 'No se pudo cargar tu información.') })
       .finally(() => vivo && setCargando(false))
 
     return () => { vivo = false }
-  }, [])
+  }, [intento])
+
+  const recargar = useCallback(() => { setError(''); setCargando(true); setIntento((n) => n + 1) }, [])
 
   const clavesNivel = base.niveles.map((n) => n.id).join(',')
   const nombreNivel = useMemo(
@@ -60,7 +54,7 @@ export default function useDashboardEntrenador(mostrarAviso) {
     let vivo = true
     setCargandoCal(true)
     obtenerEntrenos({
-      demo, niveles: base.niveles,
+      niveles: base.niveles,
       desde: iso(mes),
       hasta: iso(new Date(mes.getFullYear(), mes.getMonth() + 1, 0)),
     })
@@ -68,7 +62,7 @@ export default function useDashboardEntrenador(mostrarAviso) {
       .catch((e) => { if (vivo) { setEntrenos([]); mostrarAviso(e.message, 'error') } })
       .finally(() => vivo && setCargandoCal(false))
     return () => { vivo = false }
-  }, [mesClave, cargando, clavesNivel, demo])
+  }, [mesClave, cargando, clavesNivel])
 
   const porDia = useMemo(() => {
     const m = {}
@@ -88,18 +82,18 @@ export default function useDashboardEntrenador(mostrarAviso) {
   useEffect(() => {
     if (cargando) return
     let vivo = true
-    obtenerEntrenos({ demo, niveles: base.niveles, desde: hoy, hasta: hoy })
+    obtenerEntrenos({ niveles: base.niveles, desde: hoy, hasta: hoy })
       .then((r) => vivo && setEntrenosHoy(r.length))
       .catch(() => vivo && setEntrenosHoy(null))
     return () => { vivo = false }
-  }, [cargando, clavesNivel, demo])
+  }, [cargando, clavesNivel])
 
   /* ── métricas ── */
-  const metricas = useMemo(() => calcularMetricas(base.evals, base.asist, demo), [base.evals, base.asist, demo])
+  const metricas = useMemo(() => calcularMetricas(base.evals, base.asist), [base.evals, base.asist])
   const atletasActivos = base.atletas.filter((a) => a.activo).length
 
   return {
-    base, cargando, hoy, nombreNivel, tieneNivel, metricas, atletasActivos, entrenosHoy,
+    base, cargando, error, recargar, hoy, nombreNivel, tieneNivel, metricas, atletasActivos, entrenosHoy,
     calendario: { mes, cambiarMes, porDia, cargando: cargandoCal, diaSel, setDiaSel },
   }
 }

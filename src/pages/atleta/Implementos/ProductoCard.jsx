@@ -1,5 +1,6 @@
 import TallasChips from "../../../components/Tallas/TallasChips";
 
+import ImagenImplemento from "../../../components/Compartidos/ImagenImplemento";
 export default function ProductoCard({ implemento, onAgregar }) {
   const estrellas = Math.round(implemento.calificacion || 0);
 
@@ -7,7 +8,7 @@ export default function ProductoCard({ implemento, onAgregar }) {
     <article className="tarjeta-producto">
       <div className="producto-imagen">
         {implemento.imagen ? (
-          <img src={implemento.imagen} alt={implemento.nombre} />
+          <ImagenImplemento src={implemento.imagen} alt={implemento.nombre} />
         ) : (
           <span className="producto-sin-imagen">Sin imagen</span>
         )}

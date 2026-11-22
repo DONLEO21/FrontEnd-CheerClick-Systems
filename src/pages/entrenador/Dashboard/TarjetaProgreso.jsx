@@ -2,7 +2,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { TrendingUp, LineChart as IconoGrafico } from 'lucide-react'
 
 export default function TarjetaProgreso({ metricas, cargando }) {
-  const { variacion, serie, esDemo } = metricas
+  const { variacion, serie } = metricas
   // Sin ninguna evaluación en las últimas 4 semanas: se muestra un mensaje en vez de una gráfica vacía
   const sinDatos = !cargando && serie.every((p) => p.valor === null)
 
@@ -41,9 +41,6 @@ export default function TarjetaProgreso({ metricas, cargando }) {
               dot={{ r: 5, fill: '#d71920', stroke: '#d71920' }} activeDot={{ r: 6 }} connectNulls />
           </LineChart>
         </ResponsiveContainer>
-        {!cargando && esDemo && (
-          <p className="de-grafico__vacio">Datos de ejemplo — se reemplazarán cuando haya evaluaciones registradas.</p>
-        )}
       </div>
       </>
       )}

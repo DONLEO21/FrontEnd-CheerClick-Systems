@@ -1933,3 +1933,10 @@
     .adm-asist-consultar-overlay { padding: 0; }
 }
 .adm-asist-consultar .modal-consultar-header { gap: 12px; }
+
+/* Días de sesión futuros en "Consultar asistencia": neutros y atenuados (sin icono ni color) */
+:where(.adm-asistencia) .consultar-tabla-mes th.dia-futuro,
+:where(.adm-asistencia) .consultar-tabla-mes td.dia-futuro {
+    opacity: 0.55;
+    background-image: repeating-linear-gradient(135deg, transparent 0 6px, rgba(0, 0, 0, 0.03) 6px 12px);
+}

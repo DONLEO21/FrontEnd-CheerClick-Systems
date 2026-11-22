@@ -64,3 +64,27 @@ pagos en efectivo, códigos consecutivos con 10 altas en paralelo, filtro de hab
 1. `node --env-file .env scripts/migrar-asistencia.js` (o simplemente arrancar el servidor: lo hace solo).
 2. `node --env-file .env scripts/migrar-codigos.js` (asigna IM/PG/HA/SL a lo existente).
 3. Revisar el resultado de `node --env-file .env scripts/auditar-niveles.js`.
+
+
+## Ronda 2026-11-20 (cuarta parte)
+
+Verificado contra la MongoDB **local y desechable** (nunca contra Atlas). IDs ya personalizados **sin cambios**: usuarios (AT/EN/AD),
+PQRS (PQ0001), implementos (IM), pagos (PG), habilidades (HA) y pedidos (SL).
+
+| Punto | Archivo(s) | Cambio |
+|---|---|---|
+| **Causa raíz: «El pago es obligatorio»** | `services/solicitud.services.js`, `controllers/solicitud.controllers.js`, `models/solicitud.model.js` | El modelo exigía `pago` pero `POST /solicitud` nunca lo creaba (comentario `PENDIENTE(pagos)`): fallaba **cualquier** método. Ahora recibe `{ items, metodoPago, comprobante? }`, crea el `Pago` con la regla compartida (`dbCrearPagoPedido`) y lo enlaza. También estaba mal el `ref: "pagos"` (el modelo se llama `Pagos`). |
+| Pedido en efectivo | `services/solicitudPago.services.js` | Efectivo: sin comprobante, pago «Pendiente de confirmación», aviso a los administradores. Digital: comprobante obligatorio. Al marcar el pedido `Entregado`, un pago en efectivo pendiente pasa a `Pagado`. Si algo falla se libera el stock y se borra el pago. El listado devuelve `pago` poblado (método, estado, comprobante, código PG). |
+| Método «Efectivo» garantizado | `helpers/migraciones.helpers.js` (`asegurarMetodosPago`), `index.js` | Idempotente, al arrancar: crea «Efectivo» si no existe y completa `requiereComprobante` (digitales = true). |
+| **Sesiones válidas** | `helpers/sesiones.helpers.js`, `controllers/horarios.controllers.js`, `routes/horarios.routes.js` | `GET /api/horarios/sesiones?nivelId=&hasta=hoy&limite=` (admin y entrenador; entrenador solo sus niveles): días de entrenamiento del nivel (plantilla semanal), nunca futuros. |
+| Validación en rendimiento | `services/rendimiento.services.js` | `PUT /rendimiento/atleta/:id`: la fecha debe ser un día de sesión del nivel del atleta y no futura (400 con mensaje). Si ya existe un rendimiento en esa fecha (registro antiguo) no se bloquea. Nota máx. 250. Sin horario cargado solo se exige que no sea futura (**supuesto**). |
+| **Códigos nuevos** | modelos `nivel`, `planAsociado`, `metodoPago`, `horario`, `justificacion`, `resena`, `rendimiento`, `notificacion`, `competencia`, `inscripcion_competencia` | NV, PL, MP, HR, JU, RS, RD, NT, CP, IC + 3 dígitos (plugin `pluginCodigo`, contador atómico, inmutable, sin huecos por altas inválidas). `insertMany` y el upsert masivo de rendimiento reservan códigos con `reservarCodigos` (un solo `$inc` por lote). |
+| Migración y verificación | `scripts/migrar-codigos.js`, `scripts/verificar-codigos.js`, `helpers/entidadesConCodigo.js` | `npm run migrar:codigos` y `npm run verificar:codigos` (0 sin código, 0 duplicados, 0 formato inválido; sale con código 1 si hay problemas). |
+| Landing pública | `services/niveles.services.js` | `GET /niveles/publico` ahora devuelve también `entrenador` (solo nombre) y `horarios` de los niveles **Activos**. |
+| Fecha de nacimiento | `helpers/fecha.helpers.js`, `controllers/perfilUsuario.controllers.js`, `scripts/auditar-fechas-nacimiento.js` | No futura; administrador y entrenador ≥ 18; atleta ≥ 5. Se valida al crear y editar el perfil. `npm run auditar:fechas` lista (sin modificar) los perfiles existentes que incumplen. |
+| Auditorías de solo lectura | `scripts/auditar-niveles.js`, `scripts/auditar-imagenes.js` | `npm run auditar:niveles` («Nivel 3»), `npm run auditar:imagenes` (imágenes repetidas / rutas no públicas). |
+
+### Orden recomendado
+1. Arrancar el servidor (índices de asistencia y método «Efectivo» se arreglan solos).
+2. `npm run migrar:codigos` y luego `npm run verificar:codigos`.
+3. Revisar `npm run auditar:niveles`, `npm run auditar:fechas` y `npm run auditar:imagenes`.
