@@ -1,5 +1,5 @@
 // Saludo ÚNICO de los tres dashboards (admin, entrenador y atleta). Estilos: .ui-saludo en global.css
-import { saludoPorHora, emojiPorHora, fechaLargaEs } from "../../utils/saludo";
+import { saludoPorHora, fechaLargaEs } from "../../utils/saludo";
 
 /**
  * <SaludoDashboard nombre="Ana" className="clase-opcional">
@@ -11,7 +11,7 @@ export default function SaludoDashboard({ nombre, className = "", children }) {
   return (
     <section className={`ui-saludo ${className}`.trim()} aria-labelledby="ui-saludo-titulo">
       <div className="ui-saludo__texto">
-        <h1 id="ui-saludo-titulo" className="ui-saludo__titulo">{saludoPorHora(ahora)} <span aria-hidden="true">{emojiPorHora(ahora)}</span>, {nombre}</h1>
+        <h1 id="ui-saludo-titulo" className="ui-saludo__titulo">{saludoPorHora(ahora)}, {nombre} <span aria-hidden="true">👋</span></h1>
         <p className="ui-saludo__fecha">{fechaLargaEs(ahora)}</p>
       </div>
       {children}

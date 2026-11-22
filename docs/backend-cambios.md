@@ -88,3 +88,10 @@ PQRS (PQ0001), implementos (IM), pagos (PG), habilidades (HA) y pedidos (SL).
 1. Arrancar el servidor (índices de asistencia y método «Efectivo» se arreglan solos).
 2. `npm run migrar:codigos` y luego `npm run verificar:codigos`.
 3. Revisar `npm run auditar:niveles`, `npm run auditar:fechas` y `npm run auditar:imagenes`.
+
+
+## Ronda 2026-11-22 (doble pago)
+
+| Punto | Archivo(s) | Cambio |
+|---|---|---|
+| Un pago ya enviado no se vuelve a pagar | `services/solicitudPago.services.js` (`dbAtletaActualizaPago`) | `PATCH /pagos/:id` del atleta responde **409** si el pago está `Pagado` («Esta mensualidad ya fue pagada») o ya enviado/en efectivo pendiente («Ya hay un pago en verificación»). La escritura es una actualización condicional **atómica** (solo si sigue sin enviar o `Rechazado`): dos envíos simultáneos → uno pasa y el otro 409. Un pago `Rechazado` sí se puede reintentar. |

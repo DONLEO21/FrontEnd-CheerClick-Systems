@@ -1,6 +1,6 @@
 import { pesos } from "../../../components/utils/PagosAtleta";
 
-function PlanMembresia({ plan, valor }) {
+function PlanMembresia({ plan, valor, vencimiento }) {
   return (
     <section className="atl-pagos-infor-plan-atl">
       <h3 className="atl-titu-final">Mi plan de membresía</h3>
@@ -15,7 +15,7 @@ function PlanMembresia({ plan, valor }) {
       </div>
       <div className="atl-con-infor">
         <span className="atl-plan-sub">Día de corte</span>
-        <span className="atl-plan-valor">Día 30 de cada mes</span>
+        <span className="atl-plan-valor">{vencimiento ? `Día ${Number(vencimiento.slice(8, 10))} de cada mes` : "—"}</span>
       </div>
     </section>
   );

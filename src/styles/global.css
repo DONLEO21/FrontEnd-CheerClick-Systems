@@ -936,6 +936,8 @@ dialog:modal:not(.dialog-carrito)::backdrop {
 .ui-saludo__fecha {
   margin: 6px 0 0;
   font-size: 0.95rem;
+  font-weight: 400;
+  text-transform: none; /* nunca capitalizar cada palabra: "sábado, 21 de noviembre de 2026" */
   color: var(--texto-muted);
 }
 

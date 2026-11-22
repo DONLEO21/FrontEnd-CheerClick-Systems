@@ -6,15 +6,7 @@ export function saludoPorHora(fecha = new Date()) {
   return "Buenas noches";
 }
 
-/** Emoji del saludo según la hora local: ☀️ (5:00–11:59), 🌤️ (12:00–18:59) y 🌙 (19:00–4:59). */
-export function emojiPorHora(fecha = new Date()) {
-  const h = fecha.getHours();
-  if (h >= 5 && h < 12) return "☀️";
-  if (h >= 12 && h < 19) return "🌤️";
-  return "🌙";
-}
-
-/** Fecha en español, p. ej. "viernes, 20 de noviembre de 2026". */
+/** Fecha en español en minúsculas, p. ej. "sábado, 21 de noviembre de 2026" (sin capitalizar cada palabra). */
 export function fechaLargaEs(fecha = new Date()) {
   return new Intl.DateTimeFormat("es-CO", { weekday: "long", day: "numeric", month: "long", year: "numeric" }).format(fecha);
 }

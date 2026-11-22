@@ -60,6 +60,9 @@ export function mensualidadDesdeApi(m, metodos = []) {
     plan: m.planAsociado?.nombre ?? '',
     estado: estadoDe(pago.estado),
     efectivoSolicitado: esConfirmacionEfectivo(pago.estado),
+    // Ya envió método o comprobante (o pidió pagar en efectivo) y el administrador aún no lo revisa
+    enVerificacion: esConfirmacionEfectivo(pago.estado) || (['pendiente', 'vencido'].includes(estadoDe(pago.estado)) && !!(pago.metodoPago || pago.comprobante)),
+    vencimiento: fechaISO(m.fechaVencimiento),
     registrado: pago.estado === 'Pagado',
     valor: m.valor,
     generacion: fechaLarga(m.fechaGeneracion),

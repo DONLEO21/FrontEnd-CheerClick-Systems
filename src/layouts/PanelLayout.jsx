@@ -4,6 +4,7 @@ import Sidebar from '../components/Sidebar/Sidebar';
 import Header from '../components/Header/Header';
 import ModalBienvenidaPerfil from '../components/Compartidos/ModalBienvenidaPerfil';
 import { cerrarSesion } from '../services/sesion';
+import useTituloPagina from '../hooks/useTituloPagina';
 
 /**
  * Layout compartido entre Admin, Atleta y Entrenador.
@@ -15,6 +16,7 @@ import { cerrarSesion } from '../services/sesion';
 function PanelLayout({ items, rol, inicioHref = '/' }) {
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  useTituloPagina(); // título de la pestaña según el módulo (una sola vez para los tres paneles)
   // El estado del menú vive aquí para que el header y el contenido se desplacen con él (ver global.css, sección 3)
   const [menuAbierto, setMenuAbierto] = useState(false);
 

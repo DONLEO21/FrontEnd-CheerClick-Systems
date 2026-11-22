@@ -1,7 +1,8 @@
 import { cargarPagosAtleta, enviarComprobanteMensualidad } from "../../../services/pagosService";
 import { useSesion } from "../../../context/SesionContext";
 import { useState, useEffect, useMemo } from "react";
-import { ordenarPorMes, calcularResumen, construirNotificaciones } from "../../../components/utils/PagosAtleta";
+import { ordenarPorMes, calcularResumen, construirNotificaciones, puedePagar, motivoNoPuedePagar } from "../../../components/utils/PagosAtleta";
+import ModalAviso from "../../../components/Compartidos/ModalAviso";
 
 import InfoUsuario from "./InfoUsuario";
 import ResumenPagos from "./ResumenPagos";
@@ -22,6 +23,7 @@ function PagosAtleta() {
   const [filtro, setFiltro] = useState("recientes");
   const [mes, setMes] = useState("");
   const [aSubir, setASubir] = useState(null);
+  const [aviso2, setAviso2] = useState(null); // aviso compacto { tipo, titulo, mensaje }
   const [aVer, setAVer] = useState(null);
   const [guardando, setGuardando] = useState(false);
   const { aviso, mostrarAviso } = useAviso();
@@ -51,10 +53,24 @@ function PagosAtleta() {
     if (mes) lista = lista.filter((m) => m.mes === mes);
     if (filtro === "recientes") return lista.slice(0, 3);
     // El efectivo solicitado ya llega como "pendiente" desde el servicio
-    return lista.filter((m) => m.estado === filtro);
+    // Un pago rechazado vuelve a estar por pagar: se cuenta con los pendientes
+    return lista.filter((m) => m.estado === filtro || (filtro === "pendiente" && m.estado === "rechazado"));
   }, [ordenadas, filtro, mes]);
 
+  // ÚNICA puerta de entrada al pago: si no se puede pagar, no abre el modal y avisa
+  const abrirPago = (m) => {
+    if (!puedePagar(m)) {
+      setAviso2({ tipo: "info", titulo: "No se puede pagar", mensaje: motivoNoPuedePagar(m) });
+      return;
+    }
+    setASubir(m);
+  };
+
+  const recargarMensualidades = () =>
+    cargarPagosAtleta(sesion.usuario).then(({ mensualidades: m }) => setMensualidades(m)).catch(console.error);
+
   const guardarComprobante = async (datos) => {
+    if (!puedePagar(aSubir)) throw new Error(motivoNoPuedePagar(aSubir));
     setGuardando(true);
     try {
       const actualizada = await enviarComprobanteMensualidad(aSubir, datos);
@@ -70,7 +86,9 @@ function PagosAtleta() {
       );
     } catch (e) {
       console.error(e);
-      throw e; // el modal muestra el mensaje y se queda abierto
+      // 409: otro envío (otra pestaña, doble clic) se adelantó -> se refresca la lista para que la tarjeta muestre su estado real
+      if (e?.status === 409) recargarMensualidades();
+      throw e; // el modal muestra el mensaje real del servidor y se queda abierto
     } finally {
       setGuardando(false);
     }
@@ -96,7 +114,7 @@ function PagosAtleta() {
         <section className="atl-pagos-targetas-atl">
           {visibles.length ? (
             visibles.map((m) => (
-              <TarjetaMensualidad key={m.id} mensualidad={m} onSubir={setASubir} onVer={setAVer} />
+              <TarjetaMensualidad key={m.id} mensualidad={m} onSubir={abrirPago} onVer={setAVer} />
             ))
           ) : (
             <p style={{ padding: 20 }}>No hay mensualidades para este filtro.</p>
@@ -105,7 +123,7 @@ function PagosAtleta() {
       </section>
 
       <footer className="atl-pagos-infor-final-atl">
-        <PlanMembresia plan={ultima?.plan} valor={ultima?.valor} />
+        <PlanMembresia plan={ultima?.plan} valor={ultima?.valor} vencimiento={ultima?.vencimiento} />
         <NotificacionesPagos notificaciones={notificaciones} />
       </footer>
 
@@ -117,6 +135,7 @@ function PagosAtleta() {
       />
       <ModalVerComprobante mensualidad={aVer} atleta={atleta} onCerrar={() => setAVer(null)} />
       <AvisoToast aviso={aviso} />
+      <ModalAviso abierto={!!aviso2} tipo={aviso2?.tipo} titulo={aviso2?.titulo} mensaje={aviso2?.mensaje} onCerrar={() => setAviso2(null)} />
     </main>
   );
 }

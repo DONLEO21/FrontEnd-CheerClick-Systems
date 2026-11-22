@@ -856,3 +856,18 @@
   font-size: 14px;
   line-height: 1.45;
 }
+
+/* Mensualidad ya pagada (sin botón de pago) y botón de pago en verificación */
+:where(.atl-pagos) .atl-pago-registrado {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 10px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #1eaf52;
+}
+:where(.atl-pagos) .atl-subir-compro:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}

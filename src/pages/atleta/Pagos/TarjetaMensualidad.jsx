@@ -1,53 +1,66 @@
-import { pesos, ESTADOS } from "../../../components/utils/PagosAtleta";
+import { pesos, ESTADOS, accionDePago } from "../../../components/utils/PagosAtleta";
 
 const CLASE_ESTADO = {
   pagado: "atl-esta-paga",
   pendiente: "atl-esta-pen",
   vencido: "atl-esta-ven",
+  rechazado: "atl-esta-ven",
 };
 
 function TarjetaMensualidad({ mensualidad, onSubir, onVer }) {
   const estado = ESTADOS[mensualidad.estado] ?? ESTADOS.pendiente;
   const claseEstado = CLASE_ESTADO[mensualidad.estado] ?? CLASE_ESTADO.pendiente;
-  // Hay comprobante cuando el atleta ya subió un archivo, o cuando el club ya validó el pago.
-  const enConfirmacion = !!mensualidad.efectivoSolicitado; // pago en efectivo ya solicitado (sigue siendo "Pendiente")
-  const tieneComprobante = mensualidad.comprobante.startsWith("data:") || (mensualidad.estado === "pagado" && !!mensualidad.comprobante);
-  const hayDetalle = tieneComprobante || enConfirmacion;
+  const accion = accionDePago(mensualidad); // registrado | verificando | reintentar | pagar (ver utils/PagosAtleta.js)
+  const efectivo = !!mensualidad.efectivo;
+
+  const textoFecha =
+    accion === "registrado"
+      ? `Pagado: ${mensualidad.fechaPago ?? "—"} · ${mensualidad.metodo ?? ""}`
+      : accion === "verificando"
+        ? mensualidad.efectivoSolicitado ? "Pago en efectivo · pendiente de confirmación" : "Comprobante enviado · en verificación"
+        : accion === "reintentar"
+          ? `Rechazado${mensualidad.observaciones ? `: ${mensualidad.observaciones}` : ""}`
+          : `Generado: ${mensualidad.generacion}`;
 
   return (
     <div className="atl-tar-infor">
       <h4 className="atl-tar-titulo">{mensualidad.mes}</h4>
       <button type="button" className={claseEstado}>{estado.texto}</button>
       <h3 className="atl-tar-precio">{pesos(mensualidad.valor)}</h3>
-      <p className="atl-tar-fecha">
-        {mensualidad.estado === "pagado"
-          ? `Pagado: ${mensualidad.fechaPago ?? "—"} · ${mensualidad.metodo ?? ""}`
-          : enConfirmacion
-            ? "Pago en efectivo · pendiente de confirmación"
-            : tieneComprobante
-            ? "Comprobante enviado · en revisión"
-            : `Generado: ${mensualidad.generacion}`}
-      </p>
+      <p className="atl-tar-fecha">{textoFecha}</p>
 
-      {hayDetalle ? (
-        <button type="button" className="atl-ver-compro" onClick={() => onVer(mensualidad)}>
-          <svg className="atl-sim-compro" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0" />
-            <circle cx="12" cy="12" r="3" />
-          </svg>
-          {enConfirmacion ? "Ver detalle" : "Ver comprobante"}
+      {accion === "registrado" && (
+        mensualidad.comprobante && !efectivo ? (
+          <button type="button" className="atl-ver-compro" onClick={() => onVer(mensualidad)}>
+            <IconoOjo /> Ver comprobante
+          </button>
+        ) : (
+          <span className="atl-pago-registrado" role="status">
+            <IconoCheck /> {efectivo ? "Pago en efectivo registrado" : "Pago registrado"}
+          </span>
+        )
+      )}
+
+      {accion === "verificando" && (
+        <button type="button" className="atl-subir-compro" disabled aria-disabled="true" title="Ya enviaste un pago: el club lo está verificando">
+          <IconoReloj /> Pago en verificación
         </button>
-      ) : (
+      )}
+
+      {(accion === "pagar" || accion === "reintentar") && (
         <button type="button" className="atl-subir-compro" onClick={() => onSubir(mensualidad)}>
-          <svg className="atl-sim-compro" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 15V3" />
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-            <path d="m7 10 5 5 5-5" />
-          </svg>
-          Pagar mensualidad
+          <IconoTarjeta /> {accion === "reintentar" ? "Volver a pagar" : "Pagar mensualidad"}
         </button>
       )}
     </div>
   );
 }
+
+const trazo = { viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 2, strokeLinecap: "round", strokeLinejoin: "round", className: "atl-sim-compro", "aria-hidden": true };
+const IconoTarjeta = () => (<svg {...trazo}><rect width="20" height="14" x="2" y="5" rx="2" /><line x1="2" x2="22" y1="10" y2="10" /></svg>);
+const IconoCheck = () => (<svg {...trazo}><path d="M20 6 9 17l-5-5" /></svg>);
+const IconoReloj = () => (<svg {...trazo}><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>);
+const IconoOjo = () => (
+  <svg {...trazo}><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0" /><circle cx="12" cy="12" r="3" /></svg>
+);
 export default TarjetaMensualidad;

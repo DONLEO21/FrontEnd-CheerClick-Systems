@@ -1,4 +1,4 @@
-import { forwardRef, Fragment, useState } from "react";
+import { forwardRef, Fragment, useRef, useState } from "react";
 import { useCarrito } from "../../../context/CarritoContext";
 import { getImplementos } from "../../../services/ImplementosService";
 import { getMetodosPago } from "../../../services/MetodosPagoService";
@@ -28,6 +28,7 @@ const CarritoDrawer = forwardRef(function CarritoDrawer({ onPedidoCreado }, ref)
   const [nombreArchivo, setNombreArchivo] = useState("");
   const [validando, setValidando] = useState(false);
   const [enviando, setEnviando] = useState(false);
+  const enviandoRef = useRef(false); // bloqueo inmediato: el estado de React llega tarde ante dos clics seguidos
   const [copiado, setCopiado] = useState(false);
   const [error, setError] = useState("");
 
@@ -131,6 +132,7 @@ const CarritoDrawer = forwardRef(function CarritoDrawer({ onPedidoCreado }, ref)
   };
 
   const confirmar = async () => {
+    if (enviandoRef.current) return; // sin dobles envíos (doble clic): el botón también se deshabilita
     if (!metodo) {
       setError("Selecciona un método de pago.");
       return;
@@ -139,6 +141,7 @@ const CarritoDrawer = forwardRef(function CarritoDrawer({ onPedidoCreado }, ref)
       setError("Adjunta el comprobante de pago para continuar.");
       return;
     }
+    enviandoRef.current = true; // desde aquí no hay validaciones que retornen: se libera en el finally
     setEnviando(true);
     setError("");
     try {
@@ -163,6 +166,7 @@ const CarritoDrawer = forwardRef(function CarritoDrawer({ onPedidoCreado }, ref)
       setError(err.message);
     } finally {
       setEnviando(false);
+      enviandoRef.current = false;
     }
   };
 

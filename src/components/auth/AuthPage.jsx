@@ -8,6 +8,8 @@ import RecuperarCorreo from "./RecuperarCorreo";
 import RecuperarCodigo from "./RecuperarCodigo";
 import RecuperarClave from "./RecuperarClave";
 import RecuperarExito from "./RecuperarExito";
+import useTituloPagina from "../../hooks/useTituloPagina";
+import { TITULOS_ACCESO } from "../../constants/titulosRutas";
 import "./auth.css";
 
 function AuthPage() {
@@ -24,6 +26,7 @@ function AuthPage() {
   );
   const [codigoRecuperacion, setCodigoRecuperacion] = useState("");
   const [nombreRegistrado, setNombreRegistrado] = useState("");
+  useTituloPagina(TITULOS_ACCESO[pantalla]);
 
   // Si ya hay una sesión iniciada, se va directo a su panel
   useEffect(() => {
