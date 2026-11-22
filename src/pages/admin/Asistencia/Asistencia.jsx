@@ -33,8 +33,10 @@ export default function Asistencia() {
 
   if (cargando) {
     return (
-      <div className="p-4">
-        <p>Cargando niveles…</p>
+      <div className="p-4" aria-busy="true" aria-label="Cargando niveles">
+        <div className="ui-skeleton-grupo">
+          {Array.from({ length: 3 }, (_, i) => <span key={i} className="ui-skeleton ui-skeleton--bloque" />)}
+        </div>
       </div>
     );
   }

@@ -1,128 +1,113 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import JustificacionCard from "./JustificacionCard";
-import ModalRevisionJustificacion from "./ModalRevisionJustificacion";
 import EstadoError from "../../../components/Compartidos/EstadoError";
-import AvisoToast from "../../../components/Compartidos/AvisoToast";
-import useAviso from "../../../hooks/useAviso";
+import ModalConfirmar from "../../../components/Compartidos/ModalConfirmar";
+import ModalAviso from "../../../components/Compartidos/ModalAviso";
+import TextareaContador from "../../../components/Compartidos/TextareaContador";
 import {
   obtenerJustificaciones,
   actualizarJustificacion,
   contarPorEstado,
 } from "../../../services/justificacionesService";
-import {
-  obtenerAtletasPorNivel,
-  marcarAsistenciaComoJustificada,
-} from "../../../services/asistenciaService";
-import { fechaHoyISO, nombreCortoNivel } from "../../../services/data";
+import { fechaHoyISO } from "../../../services/data";
 
+// Estados de la vista, MUTUAMENTE EXCLUYENTES: cargando (esqueleto) -> error (mensaje + Reintentar, sin pestañas ni
+// contadores) -> vacío -> lista. Los contadores solo existen cuando los datos cargaron bien.
 export default function JustificacionesPanel({ niveles = [], onCambio }) {
   const [justificaciones, setJustificaciones] = useState([]);
-  const [atletas, setAtletas] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
   const [filtroEstado, setFiltroEstado] = useState("pendiente");
-  const [filtroNivel, setFiltroNivel] = useState("todos");
+  const [nivelSel, setNivelSel] = useState(niveles[0] ? String(niveles[0].id) : "");
   const [accionActiva, setAccionActiva] = useState(null); // { justificacion, tipo: 'aprobar' | 'rechazar' }
-  const { aviso, mostrarAviso } = useAviso();
+  const [observacion, setObservacion] = useState("");
+  const [errorAccion, setErrorAccion] = useState("");
+  const [procesando, setProcesando] = useState(false);
+  const [resultado, setResultado] = useState(null); // aviso compacto { tipo, titulo, mensaje }
 
-  const modalRef = useRef(null);
-  const nivelIds = niveles.map((n) => String(n.id));
+  const nivelIds = useMemo(() => niveles.map((n) => String(n.id)), [niveles]);
+  const claveNiveles = nivelIds.join(",");
+  // Si el nivel elegido ya no existe (o aún no había ninguno), se toma el primero
+  const nivelActivo = nivelIds.includes(nivelSel) ? nivelSel : nivelIds[0] ?? "";
 
-  const cargarDatos = () => {
+  const cargarDatos = useCallback(() => {
     setCargando(true);
     setError("");
-    Promise.all([
-      obtenerJustificaciones(),
-      Promise.all(niveles.map((n) => obtenerAtletasPorNivel(n.id))),
-    ])
-      .then(([justs, listasAtletas]) => {
-        setJustificaciones(justs.filter((j) => nivelIds.includes(String(j.nivelId))));
-        setAtletas(listasAtletas.flat());
+    obtenerJustificaciones()
+      .then((lista) => setJustificaciones(lista.filter((j) => nivelIds.includes(String(j.nivelId)))))
+      .catch((e) => {
+        setJustificaciones([]);
+        setError(e?.message || "No se han podido cargar las justificaciones.");
       })
-      .catch((e) => setError(e?.message || "No se pudieron cargar las justificaciones."))
       .finally(() => setCargando(false));
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- nivelIds cambia solo cuando cambia claveNiveles
+  }, [claveNiveles]);
 
   useEffect(() => {
-    if (niveles.length === 0) {
+    if (nivelIds.length === 0) {
       setCargando(false);
       return;
     }
     cargarDatos();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [niveles.map((n) => n.id).join(",")]);
+  }, [cargarDatos, nivelIds.length]);
 
-  const atletaPorId = useMemo(() => {
-    const mapa = new Map();
-    atletas.forEach((a) => mapa.set(String(a.id), a));
-    return mapa;
-  }, [atletas]);
+  const nivelPorId = useMemo(() => new Map(niveles.map((n) => [String(n.id), n])), [niveles]);
 
-  const nivelPorId = useMemo(() => {
-    const mapa = new Map();
-    niveles.forEach((n) => mapa.set(String(n.id), n));
-    return mapa;
-  }, [niveles]);
-
-  // Justificaciones del nivel seleccionado (o todas si está en "todos")
-  const justificacionesDelNivel = useMemo(() => {
-    return filtroNivel === "todos"
-      ? justificaciones
-      : justificaciones.filter((j) => String(j.nivelId) === filtroNivel);
-  }, [justificaciones, filtroNivel]);
-
-  const conteos = useMemo(
-    () => contarPorEstado(justificacionesDelNivel),
-    [justificacionesDelNivel]
+  const delNivel = useMemo(
+    () => justificaciones.filter((j) => String(j.nivelId) === nivelActivo),
+    [justificaciones, nivelActivo]
   );
+  const conteos = useMemo(() => contarPorEstado(delNivel), [delNivel]);
+  const pendientesPorNivel = useMemo(() => {
+    const m = new Map();
+    for (const j of justificaciones) if (j.estado === "pendiente") m.set(String(j.nivelId), (m.get(String(j.nivelId)) ?? 0) + 1);
+    return m;
+  }, [justificaciones]);
 
-  // eslint-disable-next-line no-unused-vars
-  const conteoGlobal = useMemo(
-    () => contarPorEstado(justificaciones),
-    [justificaciones]
+  const filtradas = useMemo(
+    () =>
+      delNivel
+        .filter((j) => (filtroEstado === "todas" ? true : j.estado === filtroEstado))
+        .sort((a, b) => b.fecha.localeCompare(a.fecha)),
+    [delNivel, filtroEstado]
   );
-
-  const filtradas = useMemo(() => {
-    return justificacionesDelNivel
-      .filter((j) => (filtroEstado === "todas" ? true : j.estado === filtroEstado))
-      .sort((a, b) => b.fecha.localeCompare(a.fecha));
-  }, [justificacionesDelNivel, filtroEstado]);
 
   const abrirAccion = (justificacion, tipo) => {
+    setObservacion("");
+    setErrorAccion("");
     setAccionActiva({ justificacion, tipo });
-    modalRef.current?.showModal();
   };
 
-  const confirmarAccion = async (observacion) => {
+  const confirmarAccion = async () => {
     if (!accionActiva) return;
     const { justificacion, tipo } = accionActiva;
-    const nuevoEstado = tipo === "aprobar" ? "aprobada" : "rechazada";
+    const texto = observacion.trim();
+    // Rechazar exige un motivo (el atleta lo ve en su lista)
+    if (tipo === "rechazar" && texto.length < 3) {
+      setErrorAccion("Escribe el motivo del rechazo.");
+      return;
+    }
+    setProcesando(true);
+    setErrorAccion("");
     try {
       await actualizarJustificacion(justificacion.id, {
-        estado: nuevoEstado,
-        observacion,
+        estado: tipo === "aprobar" ? "aprobada" : "rechazada",
+        observacion: texto,
         fechaRevision: fechaHoyISO(),
       });
-      if (tipo === "aprobar") {
-        await marcarAsistenciaComoJustificada(
-          justificacion.nivelId,
-          justificacion.fecha,
-          justificacion.atletaId,
-          justificacion.motivo
-        );
-      }
-      cargarDatos();
-      onCambio?.();
-      mostrarAviso(
-        tipo === "aprobar"
-          ? "Justificación aprobada y asistencia justificada."
-          : "Justificación rechazada.",
-        "ok"
-      );
-    } catch {
-      mostrarAviso("No se pudo actualizar la justificación. Intenta de nuevo.", "error");
-    } finally {
       setAccionActiva(null);
+      cargarDatos();   // la lista y los contadores se actualizan sin recargar la página
+      onCambio?.();
+      setResultado(
+        tipo === "aprobar"
+          ? { tipo: "ok", titulo: "Justificación aprobada", mensaje: "La asistencia del atleta quedó como justificada." }
+          : { tipo: "ok", titulo: "Justificación rechazada", mensaje: "El atleta verá el motivo del rechazo." }
+      );
+    } catch (e) {
+      // Mensaje real del backend (p. ej. 409 "Esta justificación ya fue revisada")
+      setErrorAccion(e?.message || "No se pudo actualizar la justificación. Intenta de nuevo.");
+    } finally {
+      setProcesando(false);
     }
   };
 
@@ -130,6 +115,8 @@ export default function JustificacionesPanel({ niveles = [], onCambio }) {
     niveles.length > 1
       ? "Revisa, aprueba o rechaza las justificaciones enviadas por los atletas de tus niveles."
       : "Revisa, aprueba o rechaza las justificaciones enviadas por los atletas de tu nivel.";
+
+  const esAprobar = accionActiva?.tipo === "aprobar";
 
   return (
     <div>
@@ -139,91 +126,116 @@ export default function JustificacionesPanel({ niveles = [], onCambio }) {
           <p>{subtitulo}</p>
         </div>
 
-        <div className="asist-header__tabs-bloque">
-          <div className="ui-tabs" role="tablist">
-            {niveles.map((n) => (
-              <button
-                key={n.id}
-                type="button"
-                role="tab"
-                aria-selected={filtroNivel === String(n.id)}
-                className={`ui-tab${filtroNivel === String(n.id) ? " ui-tab--activa" : ""}`}
-                onClick={() => setFiltroNivel(String(n.id))}
-                title={`Ver solo justificaciones de ${nombreCortoNivel(n.categoria)}`}
-              >
-                {n.categoria}
-              </button>
-            ))}
-            <button
-              type="button"
-              role="tab"
-              aria-selected={filtroNivel === "todos"}
-              className={`ui-tab${filtroNivel === "todos" ? " ui-tab--activa" : ""}`}
-              onClick={() => setFiltroNivel("todos")}
-            >
-              Justificaciones {conteos.pendientes > 0 && <span className="ui-tab__conteo">{conteos.pendientes}</span>}
-            </button>
+        {/* Pestañas de nivel: solo los niveles que devuelve la API (el entrenador, solo los suyos) */}
+        {!error && niveles.length > 0 && (
+          <div className="asist-header__tabs-bloque">
+            <div className="ui-tabs" role="tablist">
+              {niveles.map((n) => {
+                const pendientes = pendientesPorNivel.get(String(n.id)) ?? 0;
+                return (
+                  <button
+                    key={n.id}
+                    type="button"
+                    role="tab"
+                    aria-selected={nivelActivo === String(n.id)}
+                    className={`ui-tab${nivelActivo === String(n.id) ? " ui-tab--activa" : ""}`}
+                    onClick={() => setNivelSel(String(n.id))}
+                  >
+                    {n.categoria} {!cargando && pendientes > 0 && <span className="ui-tab__conteo">{pendientes}</span>}
+                  </button>
+                );
+              })}
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       <div className="panel-categoria">
-        {error && <EstadoError mensaje={error} onReintentar={cargarDatos} />}
-
-        <div className="just-filtros">
-          <div className="ui-tabs" role="tablist">
-            {[
-              ["pendiente", "Pendientes", conteos.pendientes],
-              ["aprobada", "Aprobadas", conteos.aprobadas],
-              ["rechazada", "Rechazadas", conteos.rechazadas],
-              ["todas", "Todas", justificacionesDelNivel.length],
-            ].map(([valor, texto, num]) => (
-              <button
-                key={valor}
-                type="button"
-                role="tab"
-                aria-selected={filtroEstado === valor}
-                className={`ui-tab${filtroEstado === valor ? " ui-tab--activa" : ""}`}
-                onClick={() => setFiltroEstado(valor)}
-              >
-                {texto} <span className="ui-tab__conteo">{num}</span>
-              </button>
-            ))}
+        {niveles.length === 0 ? (
+          <p className="asist-cargando">No tienes ningún nivel asignado todavía.</p>
+        ) : cargando ? (
+          <div className="ui-skeleton-grupo" aria-busy="true" aria-label="Cargando justificaciones">
+            {Array.from({ length: 3 }, (_, i) => <span key={i} className="ui-skeleton ui-skeleton--bloque" />)}
           </div>
-        </div>
-
-        <div className="just-grid-wrapper">
-          {cargando ? (
-            <p className="asist-cargando">Cargando justificaciones…</p>
-          ) : filtradas.length === 0 ? (
-            <p className="asist-cargando">No hay justificaciones que coincidan con este filtro.</p>
-          ) : (
-            <div className="just-grid">
-              {filtradas.map((j) => (
-                <JustificacionCard
-                  key={j.id}
-                  justificacion={j}
-                  atleta={atletaPorId.get(String(j.atletaId))}
-                  nivel={nivelPorId.get(String(j.nivelId))}
-                  onAprobar={() => abrirAccion(j, "aprobar")}
-                  onRechazar={() => abrirAccion(j, "rechazar")}
-                />
-              ))}
+        ) : error ? (
+          <EstadoError mensaje={error} onReintentar={cargarDatos} />
+        ) : (
+          <>
+            <div className="just-filtros">
+              <div className="ui-tabs" role="tablist">
+                {[
+                  ["pendiente", "Pendientes", conteos.pendientes],
+                  ["aprobada", "Aprobadas", conteos.aprobadas],
+                  ["rechazada", "Rechazadas", conteos.rechazadas],
+                  ["todas", "Todas", delNivel.length],
+                ].map(([valor, texto, num]) => (
+                  <button
+                    key={valor}
+                    type="button"
+                    role="tab"
+                    aria-selected={filtroEstado === valor}
+                    className={`ui-tab${filtroEstado === valor ? " ui-tab--activa" : ""}`}
+                    onClick={() => setFiltroEstado(valor)}
+                  >
+                    {texto} <span className="ui-tab__conteo">{num}</span>
+                  </button>
+                ))}
+              </div>
             </div>
-          )}
-        </div>
+
+            <div className="just-grid-wrapper">
+              {filtradas.length === 0 ? (
+                <p className="asist-cargando">No hay justificaciones en este filtro.</p>
+              ) : (
+                <div className="just-grid">
+                  {filtradas.map((j) => (
+                    <JustificacionCard
+                      key={j.id}
+                      justificacion={j}
+                      nivel={nivelPorId.get(String(j.nivelId))}
+                      onAprobar={() => abrirAccion(j, "aprobar")}
+                      onRechazar={() => abrirAccion(j, "rechazar")}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          </>
+        )}
       </div>
 
-      <ModalRevisionJustificacion
-        ref={modalRef}
-        accion={accionActiva?.tipo}
-        justificacion={accionActiva?.justificacion}
-        atleta={accionActiva ? atletaPorId.get(String(accionActiva.justificacion.atletaId)) : null}
-        nivel={accionActiva ? nivelPorId.get(String(accionActiva.justificacion.nivelId)) : null}
+      <ModalConfirmar
+        abierto={!!accionActiva}
+        tipo={esAprobar ? "ok" : "peligro"}
+        titulo={esAprobar ? "Aprobar justificación" : "Rechazar justificación"}
+        mensaje={
+          accionActiva
+            ? `${accionActiva.justificacion.atletaNombre || "El atleta"} · ${accionActiva.justificacion.fecha.split("-").reverse().join("/")}. ${
+                esAprobar ? "La asistencia quedará como justificada." : "Indica el motivo del rechazo."
+              }`
+            : ""
+        }
+        textoConfirmar={esAprobar ? "Aprobar" : "Rechazar"}
+        cargando={procesando}
+        error={errorAccion}
         onConfirmar={confirmarAccion}
-      />
+        onCancelar={() => !procesando && setAccionActiva(null)}
+      >
+        <TextareaContador
+          id="observacion-revision"
+          value={observacion}
+          onChange={setObservacion}
+          placeholder={esAprobar ? "Observación (opcional). Ej: Certificado médico verificado." : "Motivo del rechazo (obligatorio)"}
+        />
+      </ModalConfirmar>
 
-      <AvisoToast aviso={aviso} />
+      <ModalAviso
+        abierto={!!resultado}
+        tipo={resultado?.tipo}
+        titulo={resultado?.titulo}
+        mensaje={resultado?.mensaje}
+        onCerrar={() => setResultado(null)}
+      />
     </div>
   );
 }

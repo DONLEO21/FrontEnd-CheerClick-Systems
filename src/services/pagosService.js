@@ -37,10 +37,14 @@ async function idMetodo(nombre) {
 }
 
 /* ───────── mensualidades ───────── */
-// pagado | pendiente | vencido | confirmando ("Pendiente de confirmación": pago en efectivo ya solicitado)
+// pagado | pendiente | vencido. El backend envía además "Pendiente de confirmación" (pago en efectivo ya solicitado):
+// para la interfaz ES "Pendiente" (mismo filtro, contador y badge). Que sea efectivo ya solicitado se conserva aparte
+// en `efectivoSolicitado` (ver mensualidadDesdeApi) para el botón "Confirmar pago" y el texto de ayuda.
+// TODO(backend): valor exacto que llega hoy: "Pendiente de confirmación".
+const esConfirmacionEfectivo = (e) => String(e ?? '').toLowerCase().startsWith('pendiente de')
 const estadoDe = (e) => {
   const v = (e ?? 'Pendiente').toLowerCase()
-  return v.startsWith('pendiente de') ? 'confirmando' : v
+  return esConfirmacionEfectivo(v) ? 'pendiente' : v
 }
 
 export function mensualidadDesdeApi(m, metodos = []) {
@@ -55,6 +59,7 @@ export function mensualidadDesdeApi(m, metodos = []) {
     mes: mesDe(m.fechaGeneracion),
     plan: m.planAsociado?.nombre ?? '',
     estado: estadoDe(pago.estado),
+    efectivoSolicitado: esConfirmacionEfectivo(pago.estado),
     registrado: pago.estado === 'Pagado',
     valor: m.valor,
     generacion: fechaLarga(m.fechaGeneracion),

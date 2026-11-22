@@ -12,7 +12,6 @@ export const ESTADOS = {
   pagado:    { clase: "esta-paga", texto: "Pagado" },
   pendiente: { clase: "esta-pen",  texto: "Pendiente" },
   vencido:   { clase: "esta-ven",  texto: "Vencido" },
-  confirmando: { clase: "esta-pen", texto: "Por confirmar" },
 };
 
 export function calcularResumen(mensualidades) {
@@ -33,7 +32,7 @@ export function construirNotificaciones(mensualidades) {
   return ordenarPorMes(mensualidades).slice(0, 4).map((m) => {
     if (m.estado === "pagado")
       return { id: m.id, tipo: "ok", texto: `${m.mes} pago registrado exitosamente`, fecha: m.fechaPago ?? "" };
-    if (m.estado === "confirmando")
+    if (m.efectivoSolicitado)
       return { id: m.id, tipo: "aviso", texto: `${m.mes}: pago en efectivo pendiente de confirmación.`, fecha: m.fechaPago ?? m.generacion };
     if (m.estado === "vencido")
       return { id: m.id, tipo: "alerta", texto: `${m.mes} se encuentra vencido.`, fecha: m.generacion };

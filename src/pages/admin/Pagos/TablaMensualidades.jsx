@@ -61,7 +61,7 @@ function TablaMensualidades({ pagos, onRegistrar, onVerComprobante }) {
                           className="btn-registrar"
                           onClick={() => onRegistrar(pago)}
                         >
-                          {pago.estado === "confirmando" ? "Confirmar pago" : "Registrar pago"}
+                          {pago.efectivoSolicitado ? "Confirmar pago" : "Registrar pago"}
                         </button>
                       )}
                       <button

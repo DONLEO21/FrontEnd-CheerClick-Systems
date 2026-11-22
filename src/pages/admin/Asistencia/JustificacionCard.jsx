@@ -1,4 +1,5 @@
 import { iniciales, nombreCortoNivel } from "../../../services/data";
+import { getImageUrl } from "../../../api/client";
 
 const ETIQUETA_ESTADO = {
   pendiente: "Pendiente",
@@ -6,16 +7,18 @@ const ETIQUETA_ESTADO = {
   rechazada: "Rechazada",
 };
 
-export default function JustificacionCard({ justificacion, atleta, nivel, onAprobar, onRechazar }) {
-  const nombreAtleta = atleta ? `${atleta.nombre} ${atleta.apellido}` : "Atleta desconocido";
-  const nivelLabel = nivel ? nombreCortoNivel(nivel.categoria) : "";
+export default function JustificacionCard({ justificacion, nivel, onAprobar, onRechazar }) {
+  // El nombre del atleta y el nivel ya vienen en la propia justificación (el backend los pobla)
+  const nombreAtleta = justificacion.atletaNombre || "Atleta";
+  const [nombrePila, ...resto] = nombreAtleta.split(" ");
+  const nivelLabel = nivel ? nombreCortoNivel(nivel.categoria) : nombreCortoNivel(justificacion.nivelNombre);
   const [anio, mes, dia] = justificacion.fecha.split("-");
   const fechaCorta = `${dia} ${MES_ABREV[Number(mes) - 1]} ${anio}`;
 
   return (
     <div className={`just-card just-card-${justificacion.estado}`}>
       <div className="just-card-header">
-        <span className="just-avatar">{iniciales(atleta?.nombre, atleta?.apellido)}</span>
+        <span className="just-avatar">{iniciales(nombrePila, resto.join(" "))}</span>
         <div className="just-card-nombre-bloque">
           <span className="just-card-nombre">{nombreAtleta}</span>
           <span className="just-card-nivel">{nivelLabel}</span>
@@ -52,7 +55,9 @@ export default function JustificacionCard({ justificacion, atleta, nivel, onApro
           </svg>
           <span className="just-card-archivo-nombre">{justificacion.archivoNombre}</span>
           <span className="just-card-archivo-tamano">· {justificacion.archivoTamano}</span>
-          <span className="just-card-archivo-link">Ver archivo</span>
+          {justificacion.archivoRuta && (
+            <a className="just-card-archivo-link" href={getImageUrl(justificacion.archivoRuta)} target="_blank" rel="noreferrer">Ver archivo</a>
+          )}
         </div>
       ) : (
         <div className="just-card-archivo just-card-archivo-vacio">

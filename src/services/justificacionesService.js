@@ -11,7 +11,12 @@ export const aJustificacion = (j) => ({
   fecha: j.fechaAusencia ?? j.asistencia?.fecha ?? '',
   horaInicio: j.horaInicio ?? '',
   horaFin: j.horaFin ?? '',
+  // El backend ya pobla el atleta y el nivel (asistencia.usuario / asistencia.nivel): no hace falta otra petición
+  atletaNombre: [j.atleta?.nombre ?? j.asistencia?.usuario?.nombre, j.atleta?.apellido ?? j.asistencia?.usuario?.apellido].filter(Boolean).join(' '),
+  nivelNombre: (j.nivel ?? j.asistencia?.nivel)?.nombre ?? '',
+  codigo: j.codigo ?? '',
   motivo: j.motivo,
+  archivoRuta: j.archivo ?? '',
   archivoNombre: j.archivoNombre ?? '',
   archivoTamano: j.archivoTamano ?? '',
   estado: (j.estado ?? 'Pendiente').toLowerCase(), // pendiente | aprobada | rechazada
@@ -23,6 +28,21 @@ export const aJustificacion = (j) => ({
 export async function obtenerJustificaciones() {
   const { data } = await justificacionesApi.list()
   return (data ?? []).map(aJustificacion)
+}
+
+// Soporte adjunto: JSON { archivo: { nombre, contenido: data-URL } } (así lo recibe POST /justificacion).
+const EXTENSIONES_SOPORTE = ['pdf', 'jpg', 'jpeg', 'png', 'doc', 'docx']
+export const TAMANO_MAX_SOPORTE = 5 * 1024 * 1024
+export const ACEPTA_SOPORTE = EXTENSIONES_SOPORTE.map((e) => `.${e}`).join(',')
+
+/** Devuelve el mensaje de error si el archivo no sirve como soporte, o '' si es válido. */
+export function validarSoporte(archivo) {
+  if (!archivo) return ''
+  const ext = archivo.name.split('.').pop().toLowerCase()
+  if (!EXTENSIONES_SOPORTE.includes(ext)) return 'Formato no permitido. Usa PDF, JPG, PNG, DOC o DOCX.'
+  if (archivo.size > TAMANO_MAX_SOPORTE) return 'El archivo no puede superar los 5 MB.'
+  if (archivo.size === 0) return 'El archivo está vacío.'
+  return ''
 }
 
 // cambios: { estado: 'aprobada' | 'rechazada', observacion }

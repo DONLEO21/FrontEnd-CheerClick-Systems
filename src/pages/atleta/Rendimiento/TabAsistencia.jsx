@@ -3,6 +3,7 @@ import TarjetaResumen from "./TarjetaResumen";
 import CalendarioAsistencia from "./CalendarioAsistencia";
 import PanelJustificaciones from "./PanelJustificaciones";
 import HistorialSesiones from "./HistorialSesiones";
+import EstadoError from "../../../components/Compartidos/EstadoError";
 import { nombreMes } from "../../../services/data";
 import {
   construirCalendario,
@@ -11,7 +12,7 @@ import {
   resumenAsistencia,
 } from "../../../services/rendimientoCalculos";
 
-function TabAsistencia({ historial, justificaciones, nivel, hoyISO, onJustificar }) {
+function TabAsistencia({ historial, justificaciones, errores = {}, onReintentar, nivel, hoyISO, onJustificar }) {
   // El calendario, las tarjetas y la tabla siguen el mes elegido (por defecto, el mes actual).
   const [{ anio, mesIndex }, setMes] = useState(() => {
     const [a, m] = hoyISO.split("-").map(Number);
@@ -31,6 +32,11 @@ function TabAsistencia({ historial, justificaciones, nivel, hoyISO, onJustificar
       const f = new Date(a, m + delta, 1);
       return { anio: f.getFullYear(), mesIndex: f.getMonth() };
     });
+
+  // Si la asistencia no se pudo cargar, esta pestaña lo dice (con su propio Reintentar): sin números en 0 ni tablas vacías
+  if (errores.asistencia) {
+    return <EstadoError mensaje={`No se ha podido cargar tu asistencia. ${errores.asistencia}`} onReintentar={onReintentar} />;
+  }
 
   const sinDatos = resumen.total === 0;
   const notaPct = (pct) => (sinDatos ? "Sin sesiones registradas" : `${pct}% del total`);
@@ -81,6 +87,8 @@ function TabAsistencia({ historial, justificaciones, nivel, hoyISO, onJustificar
         <PanelJustificaciones
           faltas={faltas}
           justificaciones={justificaciones}
+          error={errores.justificaciones}
+          onReintentar={onReintentar}
           nivel={nivel}
           hoyISO={hoyISO}
           onJustificar={onJustificar}

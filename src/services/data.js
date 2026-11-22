@@ -37,6 +37,19 @@ export function nombreMes(mesIndex) {
   return NOMBRES_MES[mesIndex];
 }
 
+/** Letra del día (L, M, X, J, V, S, D) de una fecha 'AAAA-MM-DD'. */
+export function letraDeFecha(fechaISO) {
+  const [anio, mes, dia] = fechaISO.split("-").map(Number);
+  return LETRA_POR_DIA[new Date(anio, mes - 1, dia).getDay()];
+}
+
+/** Primer y último día de un mes como 'AAAA-MM-DD' (mesIndex 0-11). */
+export function limitesDelMes(anio, mesIndex) {
+  const total = new Date(anio, mesIndex + 1, 0).getDate();
+  const mm = String(mesIndex + 1).padStart(2, "0");
+  return { desde: `${anio}-${mm}-01`, hasta: `${anio}-${mm}-${String(total).padStart(2, "0")}` };
+}
+
 export function diasEnMes(anio, mesIndex) {
   return new Date(anio, mesIndex + 1, 0).getDate();
 }

@@ -217,10 +217,10 @@ function HorariosContenido() {
   }
 
   return (
-    <main className="ui-contenido container-fluid py-4 px-3 px-md-4">
-      <div className="encabezado-pagina mb-3">
-        <h1 className="h3 fw-bold mb-1">Panel de Gestión</h1>
-        <p className="text-secondary mb-0">Niveles, horarios y competencias del club</p>
+    <main className="ui-contenido">
+      <div className="encabezado-pagina">
+        <h1 className="h3 fw-bold">Panel de Gestión</h1>
+        <p className="text-secondary">Niveles, horarios y competencias del club</p>
       </div>
 
       <nav className="barra-pestanias d-flex mb-4">

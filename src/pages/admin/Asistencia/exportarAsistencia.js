@@ -2,46 +2,42 @@
 // o guardar como PDF desde el navegador). Incluye logo del club, título, fecha de generación, resumen,
 // tabla ordenada alfabéticamente por apellido y leyenda.
 
-import { porcentajeAsistencia } from "../../../services/asistenciaService";
-import { fechaHoyISO } from "../../../services/data";
+import { ESTADOS_ASISTENCIA, ORDEN_ESTADOS } from "../../../utils/estadoAsistencia";
 
 const esc = (v) =>
   String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
-const SIMBOLO = {
-  presente: { letra: "P", clase: "p", texto: "Presente" },
-  inpuntual: { letra: "I", clase: "i", texto: "Inpuntual" },
-  falta: { letra: "F", clase: "f", texto: "Falta" },
-  justificado: { letra: "J", clase: "j", texto: "Justificado" },
-};
+// Mismas etiquetas, letras y clases que el modal (utils/estadoAsistencia.js): la leyenda y las celdas no pueden divergir
+const SIMBOLO = Object.fromEntries(ORDEN_ESTADOS.map((e) => [e, { ...ESTADOS_ASISTENCIA[e], texto: ESTADOS_ASISTENCIA[e].etiqueta }]));
 
 const fechaHoraActual = () =>
   new Date().toLocaleString("es-CO", { dateStyle: "long", timeStyle: "short" });
 
-function porcentajeDe(dias, historialAtleta, historialNivel) {
-  return porcentajeAsistencia(dias, historialAtleta, fechaHoyISO(), historialNivel);
-}
+const pct = (v) => (v === null || v === undefined ? "—" : `${v}%`);
 
-export function construirReporteAsistencia({ nivel, mesLabel, dias, atletas, historial, resumen, logoUrl }) {
+// mapa: atletaId -> { 'AAAA-MM-DD': { estado } } (el mismo del modal); porcentajes: atletaId -> número | null
+export function construirReporteAsistencia({ nivel, mesLabel, dias, atletas, mapa, porcentajes, resumen, hoyStr, logoUrl }) {
   const ordenados = [...atletas].sort((a, b) =>
     `${a.apellido ?? ""} ${a.nombre ?? ""}`.localeCompare(`${b.apellido ?? ""} ${b.nombre ?? ""}`, "es", { sensitivity: "base" })
   );
 
   const encabezadoDias = dias
-    .map(({ dia, letra }) => `<th class="dia"><span>${esc(dia)}</span><small>${esc(letra)}</small></th>`)
+    .map(({ dia, letra, extra }) => `<th class="dia${extra ? " extra" : ""}"${extra ? ' title="Día extra: sin sesión programada, con registros"' : ""}><span>${esc(dia)}${extra ? "*" : ""}</span><small>${esc(letra)}</small></th>`)
     .join("");
 
   const filas = ordenados
     .map((a, i) => {
-      const h = historial[a.id] ?? {};
+      const h = mapa[String(a.id)] ?? {};
       const celdas = dias
-        .map(({ dia }) => {
-          const reg = h[dia];
+        .map(({ fechaISO }) => {
+          const reg = h[fechaISO];
           const s = reg && SIMBOLO[reg.estado];
-          return `<td class="dia">${s ? `<span class="m ${s.clase}" title="${esc(s.texto)}">${s.letra}</span>` : ""}</td>`;
+          // Con registro: letra + título con el estado; día pasado sin registro: "—"; día futuro: vacío
+          const contenido = s ? `<span class="m ${s.clase}" title="${esc(s.texto)}">${s.letra}</span>` : fechaISO <= hoyStr ? '<span class="sin">—</span>' : "";
+          return `<td class="dia">${contenido}</td>`;
         })
         .join("");
-      return `<tr><td class="n">${i + 1}</td><td class="nom">${esc(a.apellido)} ${esc(a.nombre)}</td>${celdas}<td class="pct">${porcentajeDe(dias, h, historial)}%</td></tr>`;
+      return `<tr><td class="n">${i + 1}</td><td class="nom">${esc(a.apellido)} ${esc(a.nombre)}</td>${celdas}<td class="pct">${pct(porcentajes[String(a.id)])}</td></tr>`;
     })
     .join("");
 
@@ -75,6 +71,8 @@ export function construirReporteAsistencia({ nivel, mesLabel, dias, atletas, his
   tbody tr:nth-child(even) { background: #f6f7f9; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   th.dia span { display: block; font-size: 12px; }
   th.dia small { font-weight: 400; opacity: .85; }
+  th.dia.extra { background: #8c0000; }
+  .sin { color: #b3b8c4; }
   td.n { width: 28px; color: #7a8294; }
   td.nom { text-align: left; padding-left: 10px; white-space: nowrap; font-weight: 600; }
   td.pct { font-weight: 700; width: 48px; }
@@ -101,17 +99,18 @@ export function construirReporteAsistencia({ nivel, mesLabel, dias, atletas, his
     <div class="meta">Generado el<br><strong>${esc(fechaHoraActual())}</strong></div>
   </header>
   <section class="resumen">
-    <div><strong>${resumen.porcentaje}%</strong>Asistencia del mes</div>
+    <div><strong>${pct(resumen.porcentaje)}</strong>Asistencia del mes</div>
     <div><strong>${resumen.presentes}</strong>Presentes</div>
-    <div><strong>${resumen.inpuntuales}</strong>Inpuntuales</div>
+    <div><strong>${resumen.inpuntuales}</strong>Impuntuales</div>
     <div><strong>${resumen.faltas}</strong>Faltas</div>
+    ${resumen.justificadas > 0 ? `<div><strong>${resumen.justificadas}</strong>Justificadas</div>` : ""}
     <div><strong>${ordenados.length}</strong>Atletas</div>
   </section>
   <table>
     <thead><tr><th>#</th><th style="text-align:left;padding-left:10px">Atleta</th>${encabezadoDias}<th>%</th></tr></thead>
     <tbody>${filas || `<tr><td colspan="${dias.length + 3}">No hay atletas para mostrar.</td></tr>`}</tbody>
   </table>
-  <div class="leyenda">${leyenda}</div>
+  <div class="leyenda">${leyenda}<span>* Día extra (sin sesión programada, con registros)</span></div>
   <footer>Blood Tigers Cheer · Documento generado por CheerClick</footer>
 </body>
 </html>`;

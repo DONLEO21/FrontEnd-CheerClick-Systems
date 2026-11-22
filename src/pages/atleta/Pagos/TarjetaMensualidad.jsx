@@ -4,14 +4,13 @@ const CLASE_ESTADO = {
   pagado: "atl-esta-paga",
   pendiente: "atl-esta-pen",
   vencido: "atl-esta-ven",
-  confirmando: "atl-esta-pen",
 };
 
 function TarjetaMensualidad({ mensualidad, onSubir, onVer }) {
   const estado = ESTADOS[mensualidad.estado] ?? ESTADOS.pendiente;
   const claseEstado = CLASE_ESTADO[mensualidad.estado] ?? CLASE_ESTADO.pendiente;
   // Hay comprobante cuando el atleta ya subió un archivo, o cuando el club ya validó el pago.
-  const enConfirmacion = mensualidad.estado === "confirmando"; // pago en efectivo ya solicitado
+  const enConfirmacion = !!mensualidad.efectivoSolicitado; // pago en efectivo ya solicitado (sigue siendo "Pendiente")
   const tieneComprobante = mensualidad.comprobante.startsWith("data:") || (mensualidad.estado === "pagado" && !!mensualidad.comprobante);
   const hayDetalle = tieneComprobante || enConfirmacion;
 

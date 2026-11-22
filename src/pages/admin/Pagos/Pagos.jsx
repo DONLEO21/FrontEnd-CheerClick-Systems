@@ -143,7 +143,7 @@ function PagosContenido() {
       etiquetas: [{ texto: pago.mes }, { texto: pago.plan }],
       generacion: pago.generacion,
       valor: pago.valor,
-      estadoTexto: pago.estado === "vencido" ? "Vencido" : pago.estado === "confirmando" ? "Pago en efectivo por confirmar" : "Pendiente",
+      estadoTexto: pago.estado === "vencido" ? "Vencido" : "Pendiente",
     });
   }
 

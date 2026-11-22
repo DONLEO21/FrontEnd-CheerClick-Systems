@@ -448,3 +448,6 @@
 @media (max-width: 600px) {
     .rend-atleta { padding: 20px 16px 40px; }
 }
+/* Botón "Nueva justificación" del panel de justificaciones: compacto, a la izquierda, sin ocupar toda la fila */
+.rend-atleta .rend-just__nueva { align-self: flex-start; width: auto; margin: 0 0 12px; display: inline-flex; align-items: center; gap: 6px; }
+.rend-atleta .rend-just__nueva:disabled { opacity: 0.5; cursor: not-allowed; }

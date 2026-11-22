@@ -19,9 +19,9 @@ function ImplementosContenido() {
   const [pestana, setPestana] = useState("deportivos");
 
   return (
-    <div className="container-fluid py-4">
-      <h1 className="h3 mb-1">Implementos Deportivos</h1>
-      <p className="text-muted mb-3">
+    <div className="container-fluid">
+      <h1 className="h3">Implementos Deportivos</h1>
+      <p className="text-muted">
         Controle los implementos, los pedidos de los atletas y sus reseñas aquí.
       </p>
 

@@ -1,19 +1,30 @@
 // Asistencia. Backend: /api/asistencia (planilla, dia, listado) y /api/niveles
 import { listarNiveles } from './horariosService'
 import { asistenciaApi } from '../api/asistencia.api'
+import { normalizarEstado } from '../utils/estadoAsistencia'
+import { limitesDelMes } from './data'
 
-const ESTADO_APP = { Presente: 'presente', Tarde: 'inpuntual', Inasistencia: 'falta', Justificado: 'justificado' }
-const ESTADO_API = Object.fromEntries(Object.entries(ESTADO_APP).map(([k, v]) => [v, k]))
+const ESTADO_API_BASE = { Presente: 'presente', Tarde: 'inpuntual', Inasistencia: 'falta', Justificado: 'justificado' }
+const ESTADO_API = Object.fromEntries(Object.entries(ESTADO_API_BASE).map(([k, v]) => [v, k]))
 const idDe = (x) => (x && typeof x === 'object' ? x._id : x)
 // Misma zona que el backend (America/Bogota); toISOString() usaría UTC y desde las 7 p. m. daría el día siguiente
 const hoyISO = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Bogota' }).format(new Date())
 
+// La fecha de un registro se compara SIEMPRE como texto 'AAAA-MM-DD' (nunca con toISOString(), que en UTC puede
+// mover el día). Si el backend enviara una fecha con hora, se formatea en America/Bogota.
+export const fechaLocalISO = (valor) => {
+  if (!valor) return ''
+  if (typeof valor === 'string' && /^\d{4}-\d{2}-\d{2}/.test(valor)) return valor.slice(0, 10)
+  const d = new Date(valor)
+  return Number.isNaN(d.getTime()) ? '' : new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Bogota' }).format(d)
+}
+
 const aRegistro = (a) => ({
   id: a._id,
-  atletaId: idDe(a.usuario),
-  nivelId: idDe(a.nivel),
-  fecha: a.fecha,
-  estado: ESTADO_APP[a.tipoNovedad] ?? 'falta',
+  atletaId: String(idDe(a.usuario) ?? ''),
+  nivelId: String(idDe(a.nivel) ?? ''),
+  fecha: fechaLocalISO(a.fecha),
+  estado: normalizarEstado(a.tipoNovedad) ?? 'falta',
   motivo: a.justificacion?.motivo ?? '',
 })
 
@@ -33,6 +44,13 @@ export async function obtenerRegistrosDia(nivelId, fechaISO) {
 export async function obtenerRegistrosRango(nivelId, fechaInicioISO, fechaFinISO) {
   const { data } = await asistenciaApi.list({ nivel: nivelId, desde: fechaInicioISO, hasta: fechaFinISO })
   return (data ?? []).map(aRegistro)
+}
+
+// Registros de TODO el mes (primer a último día), no solo de los días de sesión: el backend no tiene un parámetro
+// `mes`, se pide con desde/hasta (GET /asistencia?nivel=&desde=AAAA-MM-01&hasta=AAAA-MM-31).
+export function obtenerRegistrosMes(nivelId, anio, mesIndex) {
+  const { desde, hasta } = limitesDelMes(anio, mesIndex)
+  return obtenerRegistrosRango(nivelId, desde, hasta)
 }
 
 // registros: [{ atletaId, estado, motivo }]
@@ -59,27 +77,62 @@ export async function marcarAsistenciaComoJustificada() {
   return null
 }
 
-export function calcularResumen(registros) {
-  return {
-    presentes: registros.filter((r) => r.estado === 'presente').length,
-    inpuntuales: registros.filter((r) => r.estado === 'inpuntual').length,
-    faltas: registros.filter((r) => r.estado === 'falta').length,
-    justificadas: registros.filter((r) => r.estado === 'justificado').length,
+/**
+ * ÚNICA fuente del modal "Consultar asistencia": atletaId -> { 'AAAA-MM-DD': { estado, motivo } }.
+ * Las celdas, el % por atleta, el % general y la barra de resumen se derivan SOLO de este mapa.
+ */
+export function construirMapaAsistencia(registros) {
+  const mapa = {}
+  for (const r of registros) {
+    if (!r.atletaId || !r.fecha) continue
+    ;(mapa[r.atletaId] ??= {})[r.fecha] = { estado: r.estado, motivo: r.motivo }
   }
+  return mapa
 }
 
 /**
- * % de asistencia de un atleta en un mes: (presentes + impuntuales) / sesiones con asistencia tomada, hasta hoy inclusive.
- * Cuentan solo los días de sesión que ya ocurrieron Y en los que se registró asistencia a alguien del nivel (un día
- * sin lista tomada no es una falta de todos). Las sesiones futuras son neutras.
- * `dias`: [{ dia, fechaISO }], `historialAtleta`: { [dia]: { estado } }, `historialNivel`: { [atletaId]: { [dia]: ... } }.
+ * Días CONTABLES: fechas de hasta hoy (inclusive) en las que se tomó asistencia a alguien de la lista. Un día de sesión
+ * sin ninguna lista tomada no cuenta (no es una falta de todos); los días futuros son neutros.
  */
-export function porcentajeAsistencia(dias, historialAtleta = {}, hoyISO, historialNivel = null) {
-  const hayLista = (dia) => !historialNivel || Object.values(historialNivel).some((h) => h?.[dia])
-  const transcurridas = dias.filter((d) => d.fechaISO <= hoyISO && hayLista(d.dia))
-  if (transcurridas.length === 0) return 0
-  const asistio = transcurridas.filter(({ dia }) => ['presente', 'inpuntual'].includes(historialAtleta[dia]?.estado)).length
-  return Math.round((asistio / transcurridas.length) * 100)
+export function diasContables(mapa, atletaIds, hoyISO) {
+  const fechas = new Set()
+  for (const id of atletaIds) for (const f of Object.keys(mapa[String(id)] ?? {})) if (f <= hoyISO) fechas.add(f)
+  return fechas
+}
+
+/**
+ * % de asistencia de un atleta = (presentes + impuntuales) / sus registros en los días contables.
+ * Justificado y falta cuentan como no asistencia. Sin registros contables devuelve null (se muestra "—", no 0 %).
+ */
+export function porcentajeDeAtleta(mapaAtleta = {}, contables) {
+  let total = 0
+  let asistio = 0
+  for (const f of contables) {
+    const r = mapaAtleta[f]
+    if (!r) continue
+    total += 1
+    if (r.estado === 'presente' || r.estado === 'inpuntual') asistio += 1
+  }
+  return total ? Math.round((asistio * 100) / total) : null
+}
+
+/** Resumen del mes con la MISMA fórmula (todos los atletas de la lista, solo días contables). */
+export function resumirMes(mapa, atletaIds, hoyISO) {
+  const contables = diasContables(mapa, atletaIds, hoyISO)
+  const r = { presentes: 0, inpuntuales: 0, faltas: 0, justificadas: 0, total: 0, porcentaje: null }
+  for (const id of atletaIds) {
+    for (const f of contables) {
+      const reg = mapa[String(id)]?.[f]
+      if (!reg) continue
+      r.total += 1
+      if (reg.estado === 'presente') r.presentes += 1
+      else if (reg.estado === 'inpuntual') r.inpuntuales += 1
+      else if (reg.estado === 'justificado') r.justificadas += 1
+      else r.faltas += 1
+    }
+  }
+  r.porcentaje = r.total ? Math.round(((r.presentes + r.inpuntuales) * 100) / r.total) : null
+  return r
 }
 
 export { aRegistro }

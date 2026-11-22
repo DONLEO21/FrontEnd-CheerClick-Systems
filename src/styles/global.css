@@ -109,9 +109,14 @@
   --ancho-barra: 56px;
   --alto-encabezado: 55px;
   --ancho-menu-abierto: 250px;   /* sidebar desplegado */
-  --ancho-contenido-max: 1400px; /* ancho máximo (centrado) del contenido de las vistas */
-  --espacio-lateral: 24px;       /* margen lateral ÚNICO del contenido (16px en móvil) */
-  --espacio-header-contenido: 20px;   /* distancia ÚNICA entre el header y el contenido de TODAS las vistas */
+  /* ── Espaciado ÚNICO de todas las vistas (valores medidos en Gestión de habilidades, la referencia) ── */
+  --espacio-header-contenido: 20px;   /* header → primer elemento */
+  --espacio-lateral-contenido: 52px;  /* borde del sidebar → contenido, y contenido → borde de la ventana (16px en móvil) */
+  --ancho-contenido-max: none;        /* sin tope ni centrado: el contenido ocupa todo el ancho útil */
+  --gap-bloques: 20px;                /* separación vertical entre bloques (título, tarjetas, filtros, tabla) */
+  --padding-tarjeta: 16px 18px;       /* padding de una tarjeta */
+  --titulo-pagina-margen-inf: 6px;    /* margen inferior del título de página */
+  --subtitulo-pagina-margen-inf: 0px; /* margen inferior del subtítulo (el bloque de título deja luego --gap-bloques) */
   --ancho-sidebar: 60px;
   --sidebar-width: 62px;
   --header-height: 55px;
@@ -231,11 +236,11 @@ select {
   width: 100%;
   max-width: var(--ancho-contenido-max);
   margin-inline: auto;
-  padding-inline: var(--espacio-lateral);
+  padding-inline: var(--espacio-lateral-contenido);
 }
 
 @media (max-width: 600px) {
-  :root { --espacio-lateral: 16px; }
+  :root { --espacio-lateral-contenido: 16px; }
 }
 
 .contenido-ancho:has(.ui-ancho-total) {
@@ -260,7 +265,8 @@ select {
    El ancho, el margen lateral y la distancia al header los da .contenido-ancho una sola vez. */
 .panel .contenido-ancho > * > :is(.contenedor, .p-4, .py-4, .container-fluid, .conteni, .perfil-main, .perfil-contenedor, .pagina-implementos, .de-pagina, .ui-contenido, .adm-pagos, .atl-pagos, .rend-atleta),
 .panel .contenido-ancho > * > * > :is(.contenedor, .p-4, .py-4, .container-fluid, .conteni, .perfil-main, .perfil-contenedor, .pagina-implementos, .de-pagina, .ui-contenido, .adm-pagos, .atl-pagos, .rend-atleta),
-.panel .contenido-ancho > * > * > * > :is(.perfil-contenedor) {
+.panel .contenido-ancho > * > * > * > :is(.perfil-contenedor),
+.panel .contenido-ancho .ui-contenido {
   padding-inline: 0 !important;
   margin-inline: 0 !important;
   padding-top: 0 !important;
@@ -1130,4 +1136,14 @@ dialog:modal:not(.dialog-carrito)::backdrop {
   .contenido-ancho .barra-pestanias { flex-wrap: wrap; gap: 4px; }
   .contenido-ancho .centro-semana { min-width: 0; max-width: 100%; }
   .contenido-ancho .tira-dias { flex-wrap: wrap; justify-content: center; }
+}
+
+/* ── Título y subtítulo de página: mismos márgenes en todas las vistas (valores de Gestión de habilidades) ── */
+.panel .contenido-ancho :is(h1, h2, h3):first-child:not([class*="__nombre"]) {
+  margin-top: 0;
+  margin-bottom: var(--titulo-pagina-margen-inf);
+}
+.panel .contenido-ancho :is(h1, h2, h3):first-child + p {
+  margin-top: 0;
+  margin-bottom: var(--gap-bloques);
 }

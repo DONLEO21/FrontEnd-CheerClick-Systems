@@ -1,3 +1,4 @@
+import EstadoError from "../../../components/Compartidos/EstadoError";
 import {
   agruparJustificaciones,
   diaYMes,
@@ -66,7 +67,7 @@ function ItemEnviada({ j, entrenador, historica }) {
   );
 }
 
-function PanelJustificaciones({ faltas, justificaciones, nivel, hoyISO, onJustificar }) {
+function PanelJustificaciones({ faltas, justificaciones, error, onReintentar, nivel, hoyISO, onJustificar }) {
   const { recientes, anteriores } = agruparJustificaciones(justificaciones, hoyISO);
   const hayContenido = faltas.length + recientes.length + anteriores.length > 0;
 
@@ -86,8 +87,21 @@ function PanelJustificaciones({ faltas, justificaciones, nivel, hoyISO, onJustif
         )}
       </div>
 
-      {!hayContenido && <p className="rend-vacio">No tienes faltas por justificar ni justificaciones enviadas.</p>}
+      <button
+        type="button"
+        className="rend-btn-justificar rend-just__nueva"
+        disabled={faltas.length === 0}
+        title={faltas.length === 0 ? "No tienes faltas por justificar" : "Justificar una falta"}
+        onClick={() => onJustificar(faltas[0].fecha)}
+      >
+        <i className="bi bi-plus-lg" aria-hidden="true"></i> Nueva justificación
+      </button>
 
+      {error && <EstadoError mensaje={`No se han podido cargar tus justificaciones. ${error}`} onReintentar={onReintentar} />}
+
+      {!error && !hayContenido && <p className="rend-vacio">No tienes faltas por justificar ni justificaciones enviadas.</p>}
+
+      {!error && (
       <ul className="rend-just-lista">
         {faltas.map((f) => {
           const horario = textoHorario(horarioDelDia(nivel.horarios, f.fecha));
@@ -118,6 +132,7 @@ function PanelJustificaciones({ faltas, justificaciones, nivel, hoyISO, onJustif
           <ItemEnviada key={j.id} j={j} entrenador={nivel.entrenador} historica />
         ))}
       </ul>
+      )}
     </section>
   );
 }

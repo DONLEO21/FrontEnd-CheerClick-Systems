@@ -50,8 +50,8 @@ function PagosAtleta() {
     let lista = ordenadas;
     if (mes) lista = lista.filter((m) => m.mes === mes);
     if (filtro === "recientes") return lista.slice(0, 3);
-    // "Por confirmar" (efectivo solicitado) cuenta como pendiente
-    return lista.filter((m) => m.estado === filtro || (filtro === "pendiente" && m.estado === "confirmando"));
+    // El efectivo solicitado ya llega como "pendiente" desde el servicio
+    return lista.filter((m) => m.estado === filtro);
   }, [ordenadas, filtro, mes]);
 
   const guardarComprobante = async (datos) => {
