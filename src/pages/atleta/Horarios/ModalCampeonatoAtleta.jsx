@@ -2,7 +2,7 @@
 import { useEffect } from "react";
 import { formatearMoneda } from "./horariosAtletaData";
 
-export default function ModalCampeonatoAtleta({ torneo, nivelEtiqueta, onCerrar, onPagar }) {
+export default function ModalCampeonatoAtleta({ torneo, nivelEtiqueta, inscripcion, onCerrar, onPagar }) {
   useEffect(() => {
     const alEscape = (e) => e.key === "Escape" && onCerrar();
     document.addEventListener("keydown", alEscape);
@@ -73,9 +73,15 @@ export default function ModalCampeonatoAtleta({ torneo, nivelEtiqueta, onCerrar,
         </div>
 
         <div className="acciones-modal-campeonato">
-          <button className="btn-pagar-desde-modal" type="button" onClick={() => onPagar(torneo)}>
-            <i className="bi bi-credit-card" /> Pagar inscripción
-          </button>
+          {inscripcion?.estado === "pendiente" || inscripcion?.estado === "pagado" ? (
+            <span className={`estado-inscripcion estado-inscripcion--${inscripcion.estado}`} role="status">
+              {inscripcion.estado === "pagado" ? "Inscripción pagada" : "Pago pendiente de verificación"}
+            </span>
+          ) : (
+            <button className="btn-pagar-desde-modal" type="button" onClick={() => onPagar(torneo)}>
+              <i className="bi bi-credit-card" /> {inscripcion?.estado === "rechazado" ? "Reenviar comprobante" : "Pagar inscripción"}
+            </button>
+          )}
         </div>
       </div>
     </div>

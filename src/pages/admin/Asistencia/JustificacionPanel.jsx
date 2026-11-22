@@ -7,6 +7,7 @@ import TextareaContador from "../../../components/Compartidos/TextareaContador";
 import {
   obtenerJustificaciones,
   actualizarJustificacion,
+  abrirSoporte,
   contarPorEstado,
 } from "../../../services/justificacionesService";
 import { fechaHoyISO } from "../../../services/data";
@@ -111,6 +112,12 @@ export default function JustificacionesPanel({ niveles = [], onCambio }) {
     }
   };
 
+  // Ver/descargar el soporte adjunto (si falla, mensaje real del backend en un aviso compacto)
+  const verArchivo = (j) =>
+    abrirSoporte(j.id, j.archivoNombre || "soporte").catch((e) =>
+      setResultado({ tipo: "error", titulo: "No se pudo abrir el archivo", mensaje: e?.message || "Intenta de nuevo." })
+    );
+
   const subtitulo =
     niveles.length > 1
       ? "Revisa, aprueba o rechaza las justificaciones enviadas por los atletas de tus niveles."
@@ -195,6 +202,7 @@ export default function JustificacionesPanel({ niveles = [], onCambio }) {
                       nivel={nivelPorId.get(String(j.nivelId))}
                       onAprobar={() => abrirAccion(j, "aprobar")}
                       onRechazar={() => abrirAccion(j, "rechazar")}
+                      onVerArchivo={verArchivo}
                     />
                   ))}
                 </div>

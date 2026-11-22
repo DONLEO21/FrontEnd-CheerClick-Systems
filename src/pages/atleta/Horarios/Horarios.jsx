@@ -15,7 +15,10 @@ import useAviso from "../../../hooks/useAviso";
 import { fechaAISO, obtenerLunesDeSemana, formatearRangoSemana, obtenerIniciales } from "./horariosAtletaData";
 import { useSesion } from "../../../context/SesionContext";
 import { obtenerNivel, listarCompetencias, listarSesionesAtleta } from "../../../services/horariosService";
-import { enviarPagoCompetencia } from "../../../services/pagosService";
+import { enviarPagoCompetencia, listarMisInscripciones, reenviarPagoRechazado } from "../../../services/pagosService";
+import ModalAviso from "../../../components/Compartidos/ModalAviso";
+import { formatearDias } from "../../admin/Horarios/horariosData";
+import { rangoHoras } from "../../../services/landing";
 
 function HorariosAtletaContenido() {
   const { sesion } = useSesion();
@@ -23,6 +26,10 @@ function HorariosAtletaContenido() {
   const nivelId = sesion.usuario?.nivel ?? null;
   const [sesiones, setSesiones] = useState([]);
   const [torneos, setTorneos] = useState([]);
+  const [nivelNombre, setNivelNombre] = useState("");
+  const [bloquesHorario, setBloquesHorario] = useState([]); // plantilla semanal del nivel: [{ dias, inicio, fin }]
+  const [inscripciones, setInscripciones] = useState({}); // competenciaId -> { estado, pagoId, ... }
+  const [resultado, setResultado] = useState(null); // aviso compacto tras enviar el comprobante
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
 
@@ -38,8 +45,9 @@ function HorariosAtletaContenido() {
     Promise.all([
       obtenerNivel(nivelId),
       listarCompetencias(nivelId),
+      listarMisInscripciones().catch(() => ({})),
     ])
-      .then(async ([nivel, t]) => {
+      .then(async ([nivel, t, mis]) => {
         const s = await listarSesionesAtleta(nivelId, nivel.entrenador);
         if (!activo) return;
         setSesiones(
@@ -48,7 +56,10 @@ function HorariosAtletaContenido() {
             iniciales: obtenerIniciales(nivel.entrenador),
           }))
         );
+        setNivelNombre(nivel.categoria ?? "");
+        setBloquesHorario(nivel.horarios ?? []);
         setTorneos(t.filter((x) => !x.inhabilitada));
+        setInscripciones(mis);
       })
       .catch((err) => activo && setError(err))
       .finally(() => activo && setCargando(false));
@@ -105,18 +116,14 @@ function HorariosAtletaContenido() {
   };
 
   // CREATE (POST) enviar comprobante de pago
-  const enviarPago = (datosPago) => {
-    return enviarPagoCompetencia(sesion.atletaId, {
-      torneoId: datosPago.torneoId,
-      metodo: datosPago.metodo,
-      monto: datosPago.monto,
-      fechaPago: datosPago.fecha,
-      referencia: datosPago.referencia,
-      comprobante: datosPago.archivo,
-    }).then((creado) => {
-      mostrarAviso("Comprobante enviado correctamente.", "ok");
-      return creado;
-    });
+  // Errores del backend (403 otro nivel, 409 ya inscrito, 400 fecha límite / comprobante…) llegan al modal con su mensaje real.
+  const enviarPago = async (datosPago) => {
+    const previa = inscripciones[String(datosPago.torneoId)];
+    if (previa?.estado === "rechazado") await reenviarPagoRechazado(previa.pagoId, datosPago);
+    else await enviarPagoCompetencia(datosPago);
+    setInscripciones(await listarMisInscripciones().catch(() => inscripciones));
+    setPagoModal(null);
+    setResultado({ tipo: "ok", titulo: "Comprobante enviado", mensaje: "Tu pago quedó pendiente de verificación. Te avisaremos cuando el club lo revise." });
   };
 
 
@@ -146,12 +153,16 @@ function HorariosAtletaContenido() {
         <header className="encabezado-horario">
           <div className="bloque-titulo-horario">
             <h1 id="titulo-entrenamientos">Próximos Entrenamientos</h1>
-            <p className="subtitulo-horario-atleta">Lunes 6–8 PM · Miércoles 6–8 PM · Sábados 4–6 PM</p>
+            <p className="subtitulo-horario-atleta">
+              {bloquesHorario.length > 0
+                ? bloquesHorario.map((b) => `${formatearDias(b.dias)} ${rangoHoras(b.inicio, b.fin)}`).join(" · ")
+                : "Tu nivel aún no tiene horario semanal asignado"}
+            </p>
           </div>
           <div className="chips-horario" aria-label="Estadísticas de la semana">
             <span className="chip-estadistica">
               <i className="bi bi-calendar3" />
-              {totales.sesiones} sesión{totales.sesiones !== 1 ? "es" : ""}
+              {totales.sesiones} {totales.sesiones !== 1 ? "sesiones" : "sesión"}
             </span>
             <span className="chip-estadistica">
               <i className="bi bi-clock" />
@@ -200,8 +211,8 @@ function HorariosAtletaContenido() {
       <section className="seccion-campeonatos" aria-labelledby="titulo-campeonatos">
         <header className="encabezado-seccion-campeonatos">
           <div className="bloque-titulo-seccion">
-            <h2 id="titulo-campeonatos">Campeonatos Nivel 3</h2>
-            <p className="subtitulo-seccion">Blood Tiger Magic — Temporada 2026</p>
+            <h2 id="titulo-campeonatos">Campeonatos {nivelNombre}</h2>
+            <p className="subtitulo-seccion">Competencias de tu nivel</p>
           </div>
         </header>
 
@@ -211,6 +222,7 @@ function HorariosAtletaContenido() {
               key={t.id}
               torneo={t}
               onVerDetalles={setCampeonatoModal}
+              inscripcion={inscripciones[String(t.id)]}
               onPagar={(torneo) => setPagoModal(torneo)}
             />
           ))}
@@ -221,14 +233,17 @@ function HorariosAtletaContenido() {
 
       <ModalCampeonatoAtleta
         torneo={campeonatoModal}
-        nivelEtiqueta="Nivel 3 Magic"
+        nivelEtiqueta={nivelNombre}
+        inscripcion={campeonatoModal ? inscripciones[String(campeonatoModal.id)] : undefined}
         onCerrar={() => setCampeonatoModal(null)}
         onPagar={abrirPagoDesdeTorneo}
       />
 
       {pagoModal && (
-        <ModalPago torneo={pagoModal} onCerrar={() => setPagoModal(null)} onEnviar={enviarPago} onAviso={mostrarAviso} />
+        <ModalPago torneo={pagoModal} inscripcion={inscripciones[String(pagoModal.id)]} onCerrar={() => setPagoModal(null)} onEnviar={enviarPago} onAviso={mostrarAviso} />
       )}
+
+      <ModalAviso abierto={!!resultado} tipo={resultado?.tipo} titulo={resultado?.titulo} mensaje={resultado?.mensaje} onCerrar={() => setResultado(null)} />
 
       <AvisoToast aviso={aviso} />
     </main>

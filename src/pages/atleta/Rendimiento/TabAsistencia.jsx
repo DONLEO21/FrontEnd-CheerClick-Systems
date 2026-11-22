@@ -12,7 +12,7 @@ import {
   resumenAsistencia,
 } from "../../../services/rendimientoCalculos";
 
-function TabAsistencia({ historial, justificaciones, errores = {}, onReintentar, nivel, hoyISO, onJustificar }) {
+function TabAsistencia({ historial, justificaciones, errores = {}, onReintentar, onVerArchivo, nivel, hoyISO, onJustificar }) {
   // El calendario, las tarjetas y la tabla siguen el mes elegido (por defecto, el mes actual).
   const [{ anio, mesIndex }, setMes] = useState(() => {
     const [a, m] = hoyISO.split("-").map(Number);
@@ -89,6 +89,7 @@ function TabAsistencia({ historial, justificaciones, errores = {}, onReintentar,
           justificaciones={justificaciones}
           error={errores.justificaciones}
           onReintentar={onReintentar}
+          onVerArchivo={onVerArchivo}
           nivel={nivel}
           hoyISO={hoyISO}
           onJustificar={onJustificar}

@@ -1147,3 +1147,6 @@ dialog:modal:not(.dialog-carrito)::backdrop {
   margin-top: 0;
   margin-bottom: var(--gap-bloques);
 }
+
+/* Anclas y foco: ningún título queda tapado por el header fijo al hacer scroll hasta él */
+html { scroll-padding-top: calc(var(--alto-encabezado) + 16px); }

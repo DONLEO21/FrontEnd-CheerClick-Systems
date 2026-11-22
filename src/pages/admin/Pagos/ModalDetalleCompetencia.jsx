@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Modal from "./Modal";
 
-function ModalDetalleCompetencia({ competencia, pagos, onCerrar, onValidar, onVerComprobante }) {
+function ModalDetalleCompetencia({ competencia, pagos, onCerrar, onValidar, onRechazar, onVerComprobante }) {
   const [filtro, setFiltro] = useState("todos");
 
   const visibles = pagos.filter((p) => {
@@ -69,8 +69,13 @@ function ModalDetalleCompetencia({ competencia, pagos, onCerrar, onValidar, onVe
                 <div className="adm-pagos-acci-a">
                   {p.estado === "validado" ? (
                     <span className="pill-registrado">Validado</span>
+                  ) : p.estado === "rechazado" ? (
+                    <span className="pill-registrado" style={{ background: "#fdeaea", color: "#cc0000" }}>Rechazado</span>
                   ) : (
-                    <button className="regi" onClick={() => onValidar(p)}>Validar</button>
+                    <>
+                      <button className="regi" onClick={() => onValidar(p)}>Validar</button>
+                      <button className="regi" style={{ background: "#fff", color: "#cc0000", border: "1px solid #cc0000" }} onClick={() => onRechazar?.(p)}>Rechazar</button>
+                    </>
                   )}
                   <button className="btn-ojo btn-sm btn-light" onClick={() => onVerComprobante(p)}>
                     <i class="svg-de bi bi-eye"></i>

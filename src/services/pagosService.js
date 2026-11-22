@@ -96,7 +96,7 @@ export async function cargarPagosAdmin() {
       competenciaId: idDe(i.competencia),
       atletaId: idDe(i.usuario),
       valor: p.valorTotal ?? 0,
-      estado: p.estado === 'Pagado' ? 'validado' : 'por validar',
+      estado: p.estado === 'Pagado' ? 'validado' : p.estado === 'Rechazado' ? 'rechazado' : 'por validar',
       generacion: fechaLarga(p.fechaGenera),
       fechaPago: fechaISO(p.fechaPago),
       comprobante: p.comprobante ?? '',
@@ -139,6 +139,11 @@ export async function registrarPago(pagoId, datos) {
   })
 }
 
+// El administrador RECHAZA un pago (con motivo, máx. 100 caracteres): el atleta lo ve y recibe una notificación
+export async function rechazarPago(pagoId, motivo) {
+  await pagosApi.update(pagoId, { estado: 'Rechazado', observaciones: String(motivo ?? '').trim().slice(0, 100) })
+}
+
 export async function obtenerMensualidad(id) {
   const [{ data }, metodos] = await Promise.all([mensualidadesApi.getById(id), listarMetodosPago()])
   return mensualidadDesdeApi(data, metodos)
@@ -176,20 +181,44 @@ export async function enviarComprobanteMensualidad(m, datos) {
   return obtenerMensualidad(m.id)
 }
 
-// Pago de inscripción a una competencia (desde Horarios del atleta)
-// datos: { torneoId, metodo, monto, fechaPago, referencia, comprobante }
-export async function enviarPagoCompetencia(usuarioId, datos) {
-  const { data: pago } = await pagosApi.create({
-    estado: 'Pendiente',
-    valorTotal: Number(String(datos.monto ?? '').replace(/[^\d.]/g, '')) || 0,
-    fechaGenera: new Date().toISOString(),
-    fechaPago: datos.fechaPago,
-    // En efectivo no se envía archivo (el backend deja el pago pendiente de confirmación)
-    ...(datos.comprobante ? { comprobante: datos.comprobante } : {}),
+// Pago de inscripción a una competencia (desde Horarios del atleta).
+// POST /inscripciones_competencias { competencia, metodoPago, comprobante?, fechaPago?, observaciones? }:
+// el backend crea el pago (con el VALOR de la competencia, que el cliente no decide) y la inscripción juntos.
+// datos: { torneoId, metodoPagoId, fechaPago, referencia, comprobante (data-URL; no se envía si el método no lo requiere) }
+export async function enviarPagoCompetencia(datos) {
+  const { data } = await inscripcionesCompetenciasApi.create({
+    competencia: datos.torneoId,
+    metodoPago: datos.metodoPagoId,
+    fechaPago: datos.fechaPago || undefined,
     observaciones: datos.referencia ? `Ref: ${datos.referencia}` : undefined,
-    metodoPago: await idMetodo(datos.metodo),
-    usuario: usuarioId,
+    ...(datos.comprobante ? { comprobante: datos.comprobante } : {}),
   })
-  await inscripcionesCompetenciasApi.create({ competencia: datos.torneoId, usuario: usuarioId, pago: pago._id })
-  return pago
+  return data
 }
+
+// Estado de MIS inscripciones por competencia: { [competenciaId]: 'pendiente' | 'pagado' | 'rechazado', ... } (+ pagoId)
+export async function listarMisInscripciones() {
+  const { data } = await inscripcionesCompetenciasApi.list()
+  const mapa = {}
+  for (const i of data ?? []) {
+    const est = String(i.pago?.estado ?? 'Pendiente').toLowerCase()
+    mapa[String(idDe(i.competencia))] = {
+      estado: est === 'pagado' ? 'pagado' : est === 'rechazado' ? 'rechazado' : 'pendiente',
+      pagoId: idDe(i.pago),
+      codigo: i.pago?.codigo ?? '',
+      observaciones: i.pago?.observaciones ?? '',
+    }
+  }
+  return mapa
+}
+
+// Reenvía el comprobante de un pago RECHAZADO (vuelve a quedar pendiente de verificación)
+export async function reenviarPagoRechazado(pagoId, { metodoPagoId, comprobante, fechaPago, referencia }) {
+  await pagosApi.update(pagoId, {
+    metodoPago: metodoPagoId,
+    fechaPago: fechaPago || undefined,
+    observaciones: referencia ? `Ref: ${referencia}` : undefined,
+    ...(comprobante ? { comprobante } : {}),
+  })
+}
+

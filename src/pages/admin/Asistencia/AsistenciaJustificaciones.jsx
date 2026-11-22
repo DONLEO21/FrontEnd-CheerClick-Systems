@@ -2,9 +2,10 @@ import { useCallback, useEffect, useState } from "react";
 import AsistenciaPanel from "./AsistenciaPanel";
 import JustificacionesPanel from "./JustificacionPanel";
 import { obtenerJustificaciones } from "../../../services/justificacionesService";
+import EstadoError from "../../../components/Compartidos/EstadoError";
 import "./Asistencia.css";
 
-function AsistenciaJustificacionesContenido({ niveles = [], subtitulo }) {
+function AsistenciaJustificacionesContenido({ niveles = [], subtitulo, cargandoNiveles = false, errorNiveles = "", onReintentarNiveles }) {
   const [vista, setVista] = useState("asistencia"); // "asistencia" | "justificaciones"
   // TODO: el contador de pendientes aún no se muestra en la UI
   // eslint-disable-next-line no-unused-vars
@@ -62,7 +63,13 @@ function AsistenciaJustificacionesContenido({ niveles = [], subtitulo }) {
         </button>
       </div>
 
-      {vista === "asistencia" ? (
+      {cargandoNiveles ? (
+        <div className="ui-skeleton-grupo" aria-busy="true" aria-label="Cargando niveles">
+          {Array.from({ length: 3 }, (_, i) => <span key={i} className="ui-skeleton ui-skeleton--bloque" />)}
+        </div>
+      ) : errorNiveles ? (
+        <EstadoError mensaje={errorNiveles} onReintentar={onReintentarNiveles} />
+      ) : vista === "asistencia" ? (
         <AsistenciaPanel niveles={niveles} subtitulo={subtitulo} />
       ) : (
         <JustificacionesPanel

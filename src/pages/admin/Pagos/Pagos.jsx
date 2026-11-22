@@ -1,6 +1,8 @@
 import "./Pagos.css";
 import { useEffect, useMemo, useState } from "react";
-import { cargarPagosAdmin, registrarPago, obtenerMensualidad } from "../../../services/pagosService";
+import { cargarPagosAdmin, registrarPago, obtenerMensualidad, rechazarPago } from "../../../services/pagosService";
+import ModalConfirmar from "../../../components/Compartidos/ModalConfirmar";
+import TextareaContador from "../../../components/Compartidos/TextareaContador";
 import AvisoToast from "../../../components/Compartidos/AvisoToast";
 import useAviso from "../../../hooks/useAviso";
 import Targetaestado from "./TargetaEstado";
@@ -44,6 +46,10 @@ function PagosContenido() {
   const [pagoAEditar, setPagoAEditar] = useState(null); 
   const [comprobante, setComprobante] = useState(null); 
   const [detalleCompetencia, setDetalleCompetencia] = useState(null); 
+  const [pagoARechazar, setPagoARechazar] = useState(null); // pago de competencia que se va a rechazar
+  const [motivoRechazo, setMotivoRechazo] = useState("");
+  const [errorRechazo, setErrorRechazo] = useState("");
+  const [rechazando, setRechazando] = useState(false);
   const [guardando, setGuardando] = useState(false);
 
   const { aviso, mostrarAviso } = useAviso({ tipoPorDefecto: "ok" });
@@ -199,6 +205,25 @@ function PagosContenido() {
     });
   }
 
+  async function confirmarRechazo() {
+    if (motivoRechazo.trim().length < 3) {
+      setErrorRechazo("Escribe el motivo del rechazo.");
+      return;
+    }
+    setRechazando(true);
+    setErrorRechazo("");
+    try {
+      await rechazarPago(pagoARechazar.pagoId, motivoRechazo);
+      setPagosCompetencia((prev) => prev.map((p) => (p.id === pagoARechazar.id ? { ...p, estado: "rechazado" } : p)));
+      mostrarAviso("Pago rechazado. El atleta fue notificado.");
+      setPagoARechazar(null);
+    } catch (e) {
+      setErrorRechazo(e.message || "No se pudo rechazar el pago.");
+    } finally {
+      setRechazando(false);
+    }
+  }
+
   function verComprobanteCompetencia(pago) {
     setComprobante({
       tipo: "competencia",
@@ -346,8 +371,23 @@ function PagosContenido() {
         pagos={pagosDeLaCompetenciaAbierta}
         onCerrar={() => setDetalleCompetencia(null)}
         onValidar={abrirValidacionCompetencia}
+        onRechazar={(p) => { setMotivoRechazo(""); setErrorRechazo(""); setPagoARechazar(p); }}
         onVerComprobante={verComprobanteCompetencia}
       />
+
+      <ModalConfirmar
+        abierto={!!pagoARechazar}
+        tipo="peligro"
+        titulo="Rechazar pago"
+        mensaje={pagoARechazar ? `${pagoARechazar.atleta?.nombre ?? "El atleta"} · ${pagoARechazar.codigo || ""}. Indica el motivo: lo verá el atleta.` : ""}
+        textoConfirmar="Rechazar"
+        cargando={rechazando}
+        error={errorRechazo}
+        onConfirmar={confirmarRechazo}
+        onCancelar={() => !rechazando && setPagoARechazar(null)}
+      >
+        <TextareaContador id="motivo-rechazo-pago" value={motivoRechazo} onChange={setMotivoRechazo} max={100} placeholder="Motivo del rechazo (obligatorio)" />
+      </ModalConfirmar>
 
       <AvisoToast aviso={aviso} />
     </div>

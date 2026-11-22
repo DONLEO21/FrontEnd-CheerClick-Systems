@@ -1,5 +1,4 @@
 import { iniciales, nombreCortoNivel } from "../../../services/data";
-import { getImageUrl } from "../../../api/client";
 
 const ETIQUETA_ESTADO = {
   pendiente: "Pendiente",
@@ -7,7 +6,7 @@ const ETIQUETA_ESTADO = {
   rechazada: "Rechazada",
 };
 
-export default function JustificacionCard({ justificacion, nivel, onAprobar, onRechazar }) {
+export default function JustificacionCard({ justificacion, nivel, onAprobar, onRechazar, onVerArchivo }) {
   // El nombre del atleta y el nivel ya vienen en la propia justificación (el backend los pobla)
   const nombreAtleta = justificacion.atletaNombre || "Atleta";
   const [nombrePila, ...resto] = nombreAtleta.split(" ");
@@ -56,7 +55,7 @@ export default function JustificacionCard({ justificacion, nivel, onAprobar, onR
           <span className="just-card-archivo-nombre">{justificacion.archivoNombre}</span>
           <span className="just-card-archivo-tamano">· {justificacion.archivoTamano}</span>
           {justificacion.archivoRuta && (
-            <a className="just-card-archivo-link" href={getImageUrl(justificacion.archivoRuta)} target="_blank" rel="noreferrer">Ver archivo</a>
+            <button type="button" className="just-card-archivo-link" onClick={() => onVerArchivo?.(justificacion)}>Ver archivo</button>
           )}
         </div>
       ) : (

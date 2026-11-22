@@ -29,7 +29,7 @@ function LineaHora({ texto }) {
 const CLASE_ESTADO = { pendiente: "revision", aprobada: "aprobada", rechazada: "rechazada" };
 const ICONO_ESTADO = { pendiente: "bi-hourglass-split", aprobada: "bi-check-lg", rechazada: "bi-x-lg" };
 
-function ItemEnviada({ j, entrenador, historica }) {
+function ItemEnviada({ j, entrenador, historica, onVerArchivo }) {
   const horas = j.horaInicio || j.horaFin ? `${j.horaInicio} – ${j.horaFin}` : "";
   const rechazada = j.estado === "rechazada";
   const claseEstado = CLASE_ESTADO[j.estado] ?? "revision";
@@ -54,6 +54,9 @@ function ItemEnviada({ j, entrenador, historica }) {
           <i className="bi bi-paperclip" aria-hidden="true"></i>
           <span>{j.archivoNombre}</span>
           {j.archivoTamano && <span className="rend-just__archivo-size">· {j.archivoTamano}</span>}
+          {j.archivoRuta && onVerArchivo && (
+            <button type="button" className="rend-btn-justificar" onClick={() => onVerArchivo(j)}>Ver archivo</button>
+          )}
         </div>
       )}
 
@@ -67,7 +70,7 @@ function ItemEnviada({ j, entrenador, historica }) {
   );
 }
 
-function PanelJustificaciones({ faltas, justificaciones, error, onReintentar, nivel, hoyISO, onJustificar }) {
+function PanelJustificaciones({ faltas, justificaciones, error, onReintentar, onVerArchivo, nivel, hoyISO, onJustificar }) {
   const { recientes, anteriores } = agruparJustificaciones(justificaciones, hoyISO);
   const hayContenido = faltas.length + recientes.length + anteriores.length > 0;
 
@@ -122,14 +125,14 @@ function PanelJustificaciones({ faltas, justificaciones, error, onReintentar, ni
         })}
 
         {recientes.map((j) => (
-          <ItemEnviada key={j.id} j={j} entrenador={nivel.entrenador} />
+          <ItemEnviada key={j.id} j={j} entrenador={nivel.entrenador} onVerArchivo={onVerArchivo} />
         ))}
 
         {anteriores.length > 0 && faltas.length + recientes.length > 0 && (
           <li className="rend-just-separador" aria-hidden="true">Anteriores</li>
         )}
         {anteriores.map((j) => (
-          <ItemEnviada key={j.id} j={j} entrenador={nivel.entrenador} historica />
+          <ItemEnviada key={j.id} j={j} entrenador={nivel.entrenador} historica onVerArchivo={onVerArchivo} />
         ))}
       </ul>
       )}

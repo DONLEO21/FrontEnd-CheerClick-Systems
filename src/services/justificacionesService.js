@@ -30,6 +30,31 @@ export async function obtenerJustificaciones() {
   return (data ?? []).map(aJustificacion)
 }
 
+// Abre el soporte adjunto en una pestaña nueva (PDF/imagen) o lo descarga (DOC/DOCX). El archivo es privado: se pide con la
+// sesión y se muestra desde una URL temporal del navegador. La pestaña se abre al instante (antes de la respuesta) para que
+// el navegador no la bloquee como ventana emergente.
+export async function abrirSoporte(id, nombre = 'soporte') {
+  const pestana = window.open('', '_blank')
+  try {
+    const blob = await justificacionesApi.archivo(id)
+    const url = URL.createObjectURL(blob)
+    const verEnNavegador = /pdf|image\//.test(blob.type)
+    if (verEnNavegador && pestana) {
+      pestana.location.href = url
+    } else {
+      pestana?.close()
+      const a = document.createElement('a')
+      a.href = url
+      a.download = nombre
+      a.click()
+    }
+    setTimeout(() => URL.revokeObjectURL(url), 120_000)
+  } catch (e) {
+    pestana?.close()
+    throw e
+  }
+}
+
 // Soporte adjunto: JSON { archivo: { nombre, contenido: data-URL } } (así lo recibe POST /justificacion).
 const EXTENSIONES_SOPORTE = ['pdf', 'jpg', 'jpeg', 'png', 'doc', 'docx']
 export const TAMANO_MAX_SOPORTE = 5 * 1024 * 1024

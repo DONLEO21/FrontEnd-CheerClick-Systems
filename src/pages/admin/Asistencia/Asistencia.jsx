@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import AsistenciaJustificaciones from "./AsistenciaJustificaciones";
 import { obtenerNiveles } from "../../../services/asistenciaService";
-import EstadoError from "../../../components/Compartidos/EstadoError";
 
 export default function Asistencia() {
   const [niveles, setNiveles] = useState([]);
@@ -22,24 +21,7 @@ export default function Asistencia() {
     cargar();
   }, []);
 
-  if (error) {
-    return (
-      <div className="p-4">
-        <h1>Asistencia</h1>
-        <EstadoError mensaje={error} onReintentar={cargar} />
-      </div>
-    );
-  }
-
-  if (cargando) {
-    return (
-      <div className="p-4" aria-busy="true" aria-label="Cargando niveles">
-        <div className="ui-skeleton-grupo">
-          {Array.from({ length: 3 }, (_, i) => <span key={i} className="ui-skeleton ui-skeleton--bloque" />)}
-        </div>
-      </div>
-    );
-  }
-
-  return <AsistenciaJustificaciones niveles={niveles} />;
+  // Las pestañas "Tomar asistencia" / "Justificaciones" SIEMPRE se ven: si los niveles cargan, fallan o no existen,
+  // lo dice el contenido de la pestaña (con Reintentar), no desaparece el módulo.
+  return <AsistenciaJustificaciones niveles={niveles} cargandoNiveles={cargando} errorNiveles={error} onReintentarNiveles={cargar} />;
 }

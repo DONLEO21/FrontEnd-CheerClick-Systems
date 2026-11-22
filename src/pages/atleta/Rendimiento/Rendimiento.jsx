@@ -4,6 +4,7 @@ import useRendimientoAtleta from "../../../hooks/useRendimientoAtleta";
 import ModalAviso from "../../../components/Compartidos/ModalAviso";
 import EstadoError from "../../../components/Compartidos/EstadoError";
 import { enviarJustificacion } from "../../../services/rendimientoAtletaService";
+import { abrirSoporte } from "../../../services/justificacionesService";
 import { fechaHoyISO } from "../../../services/data";
 import {
   combinarHabilidades,
@@ -148,6 +149,11 @@ function Rendimiento() {
             justificaciones={datos.justificaciones}
             errores={datos.errores}
             onReintentar={recargar}
+            onVerArchivo={(j) =>
+              abrirSoporte(j.id, j.archivoNombre || "soporte").catch((e) =>
+                setResultado({ tipo: "error", titulo: "No se pudo abrir el archivo", mensaje: e?.message || "Intenta de nuevo." })
+              )
+            }
             nivel={datos.nivel}
             hoyISO={hoyISO}
             onJustificar={setFechaJustificando}

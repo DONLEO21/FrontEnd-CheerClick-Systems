@@ -203,9 +203,36 @@ const duracionDe = (ini, fin) => {
 }
 
 // TODO(backend): no existen cupos (cuposUsados / cuposTotal) por sesión.
+const INDICE_DIA = { Domingo: 0, Lunes: 1, Martes: 2, Miércoles: 3, Jueves: 4, Viernes: 5, Sábado: 6 }
+const isoLocal = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+
+// Sesiones del atleta = las sesiones concretas (/horarios) + las que salen de la PLANTILLA semanal del nivel
+// (/plantilla_horario) en los días que no tienen una sesión concreta. Así el calendario no queda vacío solo porque
+// nadie creó las sesiones una por una. Ventana: 30 días atrás y 120 adelante.
+function sesionesDePlantilla(plantillas, concretas, nivelId, entrenador) {
+  const ocupados = new Set(concretas.map((s) => s.fecha))
+  const hoy = new Date()
+  const salida = []
+  for (let i = -30; i <= 120; i += 1) {
+    const d = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate() + i)
+    const fecha = isoLocal(d)
+    if (ocupados.has(fecha)) continue
+    for (const p of plantillas.filter((x) => INDICE_DIA[x.dia] === d.getDay())) {
+      salida.push({
+        id: `plantilla-${fecha}-${p.horaInicio}`, fecha, nivelId, cat: 'entrenamiento', horaInicio: p.horaInicio, horaFin: p.horaFin,
+        duracion: duracionDe(p.horaInicio, p.horaFin), entrenador, enfoque: 'Entrenamiento', indicaciones: [], torneoId: null,
+      })
+    }
+  }
+  return salida
+}
+
 export async function listarSesionesAtleta(nivelId, entrenador) {
-  const { data } = await horariosApi.list({ nivel: nivelId })
-  return (data ?? []).filter((h) => h.estado === 'Activa').map((h) => ({
+  const [{ data }, { data: plantillas }] = await Promise.all([
+    horariosApi.list({ nivel: nivelId }),
+    plantillaHorarioApi.list({ nivel: nivelId }).catch(() => ({ data: [] })),
+  ])
+  const concretas = (data ?? []).filter((h) => h.estado === 'Activa').map((h) => ({
     id: h._id,
     fecha: fechaISO(h.fecha),
     nivelId: idDe(h.nivel),
@@ -218,4 +245,5 @@ export async function listarSesionesAtleta(nivelId, entrenador) {
     indicaciones: (h.notasIndicaciones ?? '').split('\n').map((x) => x.trim()).filter(Boolean),
     torneoId: null,
   }))
+  return [...concretas, ...sesionesDePlantilla(plantillas ?? [], concretas, nivelId, entrenador)]
 }

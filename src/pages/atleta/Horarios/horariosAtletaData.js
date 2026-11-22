@@ -11,6 +11,8 @@ export const CATEGORIAS = {
   gimnasia: { nombre: "Gimnasia", icono: "bi-person-arms-up", clase: "cat-gimnasia" },
   baile: { nombre: "Baile", icono: "bi-music-note-beamed", clase: "cat-baile" },
   campeonato: { nombre: "Campeonato", icono: "bi-trophy", clase: "cat-campeonato" },
+  // Sesión que sale de la plantilla semanal del nivel (sin disciplina asignada): solo aparece en "Todos"
+  entrenamiento: { nombre: "Entrenamiento", icono: "bi-calendar-check", clase: "cat-gimnasia" },
 };
 
 export const FILTROS_LISTA = ["todos", "partner", "gimnasia", "baile", "campeonato"];

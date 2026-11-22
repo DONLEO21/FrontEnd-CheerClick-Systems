@@ -1183,3 +1183,14 @@
     margin: 28px 0 16px;
     padding-left: 12px;
     border-left: 3px solid var(--rojo);}
+:where(.atl-horarios) .estado-inscripcion {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+:where(.atl-horarios) .estado-inscripcion--pendiente { background: #fff3c4; color: #92400e; }
+:where(.atl-horarios) .estado-inscripcion--pagado { background: #e6f9ee; color: #1eaf52; }

@@ -79,12 +79,14 @@ export class ApiError extends Error {
 // El backend responde { msg } o { errors: { campo: 'mensaje' } } (o una lista de ellos)
 function mensajeDe(cuerpo, status) {
   if (cuerpo?.msg) return cuerpo.msg;
+  if (cuerpo?.message) return cuerpo.message;
   const errs = cuerpo?.errors;
   if (errs) {
     const lista = Array.isArray(errs) ? errs.flatMap((e) => Object.values(e ?? {})) : Object.values(errs);
     if (lista.length) return lista.join('. ');
   }
-  if (status === 0) return 'No se pudo conectar con el servidor. Revisa tu conexión.';
+  if (status === 0) return 'Sin conexión con el servidor. Revisa tu conexión e inténtalo de nuevo.';
+  if (status === 413) return 'El archivo o los datos enviados son demasiado grandes (máximo 5 MB por archivo).';
   if (status === 403) return 'No tienes permiso para realizar esta acción.';
   if (status === 404) return 'No se encontró lo que buscabas.';
   if (status >= 500) return 'Error del servidor. Inténtalo de nuevo en unos minutos.';
@@ -111,6 +113,11 @@ apiClient.interceptors.request.use((config) => {
     const token = almacenSesion.token();
     if (token) config.headers['X-Token'] = token;
   }
+  // FormData: el Content-Type (con su boundary) lo calcula el navegador; fijarlo a mano rompe la subida
+  if (typeof FormData !== 'undefined' && config.data instanceof FormData) {
+    config.headers.delete?.('Content-Type');
+    delete config.headers['Content-Type'];
+  }
   // No se envían parámetros vacíos (?estado=&nivel=)
   if (config.params) {
     config.params = Object.fromEntries(
@@ -125,25 +132,37 @@ apiClient.interceptors.response.use(
   (respuesta) => respuesta.data,
   async (error) => {
     const { response, config } = error;
-    if (!response) throw new ApiError(mensajeDe(null, 0), 0);
+    if (!response) {
+      if (import.meta.env.DEV) console.error('[api] sin respuesta', config?.method?.toUpperCase(), config?.url, error.message);
+      throw new ApiError(mensajeDe(null, 0), 0);
+    }
 
     let cuerpo = response.data;
     // En descargas (responseType blob) un error llega como Blob con el JSON dentro
     if (cuerpo instanceof Blob) {
       try { cuerpo = JSON.parse(await cuerpo.text()); } catch { cuerpo = null; }
     }
+    // Solo en desarrollo: método, URL, status y cuerpo de la respuesta de cada error (sin el cuerpo enviado: puede llevar archivos)
+    if (import.meta.env.DEV) console.error('[api]', config?.method?.toUpperCase(), config?.url, response.status, cuerpo);
     if (response.status === 401 && !esRutaPublica(config)) sesionExpirada();
     throw new ApiError(mensajeDe(cuerpo, response.status), response.status, cuerpo);
   },
 );
 
-/** Cabeceras para subir archivos (FormData). axios agrega el boundary solo. */
-export const MULTIPART = { headers: { 'Content-Type': 'multipart/form-data' } };
+/**
+ * Configuración para subir archivos (FormData). NO fija Content-Type: el navegador lo calcula con su boundary
+ * (el interceptor de petición también lo elimina si alguien lo pone a mano).
+ */
+export const MULTIPART = {};
 
-/** Arma un FormData a partir de { campo: valor }. */
+/** Arma un FormData a partir de { campo: valor }. Omite valores vacíos y archivos de 0 bytes (nunca se envían campos vacíos). */
 export function aFormData(campos) {
   const fd = new FormData();
-  for (const [k, v] of Object.entries(campos)) if (v !== undefined && v !== null) fd.append(k, v);
+  for (const [k, v] of Object.entries(campos)) {
+    if (v === undefined || v === null || v === '') continue;
+    if (typeof File !== 'undefined' && v instanceof File && v.size === 0) continue;
+    fd.append(k, v);
+  }
   return fd;
 }
 

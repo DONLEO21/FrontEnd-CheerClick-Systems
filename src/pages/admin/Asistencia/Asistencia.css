@@ -1958,3 +1958,4 @@
 :where(.adm-asistencia) .leyenda-extra { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #cc0000; }
 :where(.adm-asistencia) .leyenda-justificado { background-color: #2563eb; }
 :where(.adm-asistencia) .consultar-sin-registros { margin: 0 0 8px; font-size: 0.85rem; color: #6b7280; }
+:where(.adm-asistencia) button.just-card-archivo-link { background: none; border: 0; padding: 0; cursor: pointer; font: inherit; }
