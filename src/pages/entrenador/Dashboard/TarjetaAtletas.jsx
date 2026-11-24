@@ -1,3 +1,4 @@
+import Avatar from "../../../components/Compartidos/Avatar";
 import { useEffect, useState } from 'react'
 import { Search, Filter, ChevronLeft, ChevronRight } from 'lucide-react'
 import { MAX_ITEMS } from './dashboardEntrenadorData.js'
@@ -77,7 +78,7 @@ export default function TarjetaAtletas({ atletas, niveles, nombreNivel, tieneNiv
               <tr key={a.id}>
                 <td>
                   <div className="de-atleta">
-                    <span className="de-avatar">{a.nombre?.[0]?.toUpperCase() ?? '?'}</span>
+                    <Avatar nombre={a.nombre} codigo={a.codigo ?? a.id} className="de-avatar" />
                     <span>{a.nombre}</span>
                   </div>
                 </td>

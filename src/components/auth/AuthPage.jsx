@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { haySesion, usuarioActual, RUTA_INICIO } from "../../services/sesion";
+import { haySesion, usuarioActual, rolActivoDe, RUTA_INICIO } from "../../services/sesion";
 import Login from "./Login";
 import Registro from "./Registro";
 import CuentaPendiente from "./CuentaPendiente";
@@ -32,7 +32,7 @@ function AuthPage() {
   useEffect(() => {
     if (pantalla.startsWith("recuperar")) return;
     if (haySesion()) {
-      const destino = RUTA_INICIO[usuarioActual().rol];
+      const destino = RUTA_INICIO[rolActivoDe(usuarioActual())];
       if (destino) navigate(destino, { replace: true });
     }
   }, [navigate, pantalla]);

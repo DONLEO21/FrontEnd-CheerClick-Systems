@@ -1,3 +1,5 @@
+import { inicialesDe } from "../utils/iniciales";
+
 const DIA_SEMANA_A_NUMERO = { dom: 0, lun: 1, mar: 2, mie: 3, jue: 4, vie: 5, sab: 6 };
 const LETRA_POR_DIA = ["D", "L", "M", "X", "J", "V", "S"]; 
 
@@ -60,9 +62,9 @@ export function nombreCortoNivel(categoria = "") {
   return categoria.replace(/^Nivel\s+\d+\s+/i, "").trim() || categoria;
 }
 
+// Misma regla que el Avatar (utils/iniciales.js): primer nombre + primer apellido
 export function iniciales(nombre = "", apellido = "") {
-  const palabras = `${nombre} ${apellido}`.trim().split(/\s+/);
-  return palabras.slice(0, 2).map((p) => p[0]).join("").toUpperCase();
+  return inicialesDe(nombre, apellido);
 }
 
 export function horarioDiasUnicos(horarios = []) {

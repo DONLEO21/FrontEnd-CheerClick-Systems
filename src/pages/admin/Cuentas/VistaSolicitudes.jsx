@@ -47,8 +47,8 @@ export default function VistaSolicitudes({ usuarios, cargando, tab, onTab, busqu
                 <td><span className="nombre-celda">{u.nombre}</span></td>
                 <td><span className="correo-celda">{u.email}</span></td>
                 <td>
-                  <span className={`badge badge--${u.rol === 'entrenador' ? 'amarillo' : 'azul'}`}>
-                    {NOMBRE_ROL[u.rol]}
+                  <span className={`badge badge--${u.rol === 'entrenador' ? 'amarillo' : u.rol === 'administrador' ? 'rojo' : 'azul'}`}>
+                    {NOMBRE_ROL[u.rol]}{u.tambienEntrenador ? ' + Entrenador' : ''}
                   </span>
                 </td>
                 <td>

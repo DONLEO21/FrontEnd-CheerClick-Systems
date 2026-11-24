@@ -1405,3 +1405,186 @@
     padding-block: 0;
     line-height: 32px;
 }
+
+
+/* ══════════════════════════════════════════════
+   MODAL DE DETALLE / EDICIÓN DE CUENTA
+   Centrado con scroll interno: la caja nunca pasa del 90 % de la altura de la ventana y solo el cuerpo se desplaza.
+   ══════════════════════════════════════════════ */
+:where(.adm-cuentas) .modal--detalles {
+    display: flex !important;
+    flex-direction: column;
+    max-height: 90vh;
+    max-height: 90dvh;
+}
+
+:where(.adm-cuentas) .modal--detalles .modal-cuerpo--scroll {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding-right: 4px;          /* aire para la barra de desplazamiento */
+}
+
+:where(.adm-cuentas) .modal--detalles .modal-pie { flex-shrink: 0; }
+
+:where(.adm-cuentas) .modal--editando {
+    max-width: 640px;
+    width: min(640px, 94vw);
+}
+
+/* Campo con icono dentro */
+:where(.adm-cuentas) .campo-con-icono { position: relative; display: flex; align-items: center; }
+
+:where(.adm-cuentas) .campo-con-icono__icono {
+    position: absolute;
+    left: 12px;
+    color: var(--texto-muted);
+    pointer-events: none;
+}
+
+:where(.adm-cuentas) .campo-con-icono .campo--icono { padding-left: 36px; }   /* más específico que .detalle-grupo input */
+
+:where(.adm-cuentas) .campo--error {
+    border-color: var(--rojo);
+    background: var(--blanco);
+}
+
+:where(.adm-cuentas) .campo--area { resize: none; min-height: 84px; line-height: 1.4; }
+:where(.adm-cuentas) .campo-con-icono:has(.campo--area) { align-items: flex-start; }
+:where(.adm-cuentas) .campo-con-icono:has(.campo--area) .campo-con-icono__icono { top: 12px; }
+
+:where(.adm-cuentas) .campo-error {
+    margin: 0;
+    font-size: 12px;
+    line-height: 1.3;
+    color: var(--rojo);
+}
+
+/* Certificado de EPS: icono + nombre + Ver + Descargar */
+:where(.adm-cuentas) .fila-certificado {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px 12px;
+    padding: 6px 8px 6px 12px;
+    border: 1.5px solid var(--gris-borde);
+    border-radius: var(--radio-sm);
+    background: var(--gris-fondo);
+}
+
+:where(.adm-cuentas) .fila-certificado__nombre {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    flex: 1 1 160px;
+    font-size: var(--texto-sm);
+    color: var(--texto-dark);
+}
+
+:where(.adm-cuentas) .fila-certificado__nombre span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+:where(.adm-cuentas) .fila-certificado__acciones { display: flex; gap: 6px; }
+
+:where(.adm-cuentas) .btn-certificado {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 32px;
+    padding: 0 12px;
+    border-radius: var(--radio-sm);
+    border: 1.5px solid #bfdbfe;
+    background: var(--azul-light);
+    color: var(--azul-oscuro);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transicion);
+}
+
+:where(.adm-cuentas) .btn-certificado:hover:not(:disabled) {
+    background: var(--azul);
+    border-color: var(--azul);
+    color: var(--blanco);
+}
+
+:where(.adm-cuentas) .btn-certificado:disabled { opacity: .65; cursor: progress; }
+
+:where(.adm-cuentas) .icono-girando { animation: icono-girar .8s linear infinite; }
+@keyframes icono-girar { to { transform: rotate(360deg); } }
+
+/* Interruptor «También actúa como entrenador» */
+:where(.adm-cuentas) .interruptor-fila {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 10px 12px;
+    border: 1.5px solid var(--gris-borde);
+    border-radius: var(--radio-sm);
+    background: var(--gris-fondo);
+    cursor: pointer;
+}
+
+:where(.adm-cuentas) .interruptor-fila__texto { display: flex; flex-direction: column; gap: 2px; font-size: var(--texto-sm); color: var(--texto-dark); }
+:where(.adm-cuentas) .interruptor-fila__texto small { color: var(--texto-muted); font-size: 12px; }
+
+:where(.adm-cuentas) .detalle-rol { gap: 6px; flex-wrap: wrap; }
+
+@media (max-width: 600px) {
+    :where(.adm-cuentas) .modal--editando .detalle-grid { grid-template-columns: 1fr; }
+}
+
+/* Gestión de cuentas: botón «ver / editar» junto al interruptor */
+:where(.adm-cuentas) .acciones-fila { display: flex; align-items: center; gap: 10px; }
+
+:where(.adm-cuentas) .btn-ver-cuenta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radio-sm);
+    border: 1.5px solid #bfdbfe;
+    background: var(--azul-light);
+    color: var(--azul-oscuro);
+    cursor: pointer;
+    transition: var(--transicion);
+}
+:where(.adm-cuentas) .btn-ver-cuenta:hover { background: var(--azul); border-color: var(--azul); color: var(--blanco); }
+
+:where(.adm-cuentas) .insignia-rol--administrador {
+    background: var(--rojo-light);
+    color: var(--rojo);
+}
+
+:where(.adm-cuentas) .alerta-modal {
+    padding: 10px 12px;
+    border-radius: var(--radio-sm);
+    border: 1px solid #fecaca;
+    background: var(--rojo-light);
+    color: var(--rojo);
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.35;
+}
+
+/* el nombre del certificado baja de línea en vez de cortarse con «…» */
+:where(.adm-cuentas) .fila-certificado__nombre span {
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+:where(.adm-cuentas) .alerta-modal--info {
+    border-color: #bfdbfe;
+    background: var(--azul-light);
+    color: var(--azul-oscuro);
+}

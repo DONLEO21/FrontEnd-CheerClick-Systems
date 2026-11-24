@@ -1,32 +1,23 @@
-import { useEffect, useRef, useState } from 'react';
-import { UserRound } from 'lucide-react';
-import { cargarMiPerfil } from '../../services/perfil';
+import { useEffect, useId, useRef } from 'react';
+import { Check } from 'lucide-react';
 import { almacenSesion } from '../../api/client';
+import useEstadoSesion from '../../hooks/useEstadoSesion';
+import { pasosDePerfil } from '../../utils/perfilFaltantes';
+import { bienvenidaYaVista, marcarBienvenidaVista } from '../../utils/bienvenidaPerfil';
+import logoClub from '../../assets/icons/Logo-Club.png';
 
 /**
- * Primer ingreso: invita al usuario a completar su perfil. Se muestra UNA sola vez por usuario.
- * Supuesto: "primer ingreso" = todavía no existe su perfil en el backend y no ha visto este aviso.
- * Como el backend no guarda una marca de "aviso visto", se recuerda en el navegador por id de usuario.
- * TODO(backend): campo `perfilBienvenidaVista` (o similar) para recordarlo entre dispositivos.
+ * Primer ingreso con el perfil incompleto: el único camino es «Completar mi perfil» (sin «Más tarde», X, Escape ni cierre por
+ * clic fuera). Completar el perfil es obligatorio: mientras `perfilCompleto` sea false, la app solo deja entrar a «Perfil».
+ * No reaparece cuando el perfil ya está completo, ni después de pulsar el botón. Como el backend no guarda una marca de
+ * "aviso visto", se recuerda en el navegador por id de usuario. Estilos: .ui-perfil-* en global.css
  */
-const clave = (id) => `cheerclick:bienvenida-perfil:${id}`;
-
-const yaVisto = (id) => { try { return localStorage.getItem(clave(id)) === '1'; } catch { return false; } };
-const marcarVisto = (id) => { try { localStorage.setItem(clave(id), '1'); } catch { /* sin almacenamiento: se mostrará de nuevo */ } };
-
 export default function ModalBienvenidaPerfil({ rutaPerfil, onIrAlPerfil }) {
-  const [abierto, setAbierto] = useState(false);
   const ref = useRef(null);
-  const usuarioId = almacenSesion.usuario()?.id;
-
-  useEffect(() => {
-    if (!usuarioId || yaVisto(usuarioId)) return undefined;
-    let vivo = true;
-    cargarMiPerfil()
-      .then((mi) => { if (vivo && !mi?.perfil) setAbierto(true); })
-      .catch(() => {});
-    return () => { vivo = false; };
-  }, [usuarioId]);
+  const idTitulo = useId();
+  const { perfilCompleto } = useEstadoSesion();
+  const usuario = almacenSesion.usuario();
+  const abierto = !!usuario?.id && !perfilCompleto && !bienvenidaYaVista(usuario.id);
 
   useEffect(() => {
     const dialogo = ref.current;
@@ -35,30 +26,37 @@ export default function ModalBienvenidaPerfil({ rutaPerfil, onIrAlPerfil }) {
     if (!abierto && dialogo.open) dialogo.close();
   }, [abierto]);
 
-  const cerrar = () => {
-    if (usuarioId) marcarVisto(usuarioId);
-    setAbierto(false);
+  const irAlPerfil = () => {
+    if (usuario?.id) marcarBienvenidaVista(usuario.id);
+    ref.current?.close();
+    onIrAlPerfil?.(`${rutaPerfil}?completar=1`);
   };
 
-  const irAlPerfil = () => {
-    cerrar();
-    onIrAlPerfil?.(rutaPerfil);
-  };
+  if (!abierto) return null;
 
   return (
-    <dialog ref={ref} className="ui-bienvenida" onCancel={cerrar} aria-labelledby="ui-bienvenida-titulo">
-      <div className="ui-bienvenida__icono" aria-hidden="true"><UserRound size={30} /></div>
-      <h2 id="ui-bienvenida-titulo" className="ui-bienvenida__titulo">¡Bienvenido a CheerClick!</h2>
-      <p className="ui-bienvenida__texto">
-        Completa tu perfil con tus datos personales y contactos de emergencia para que el club
-        pueda atenderte mejor. Puedes hacerlo ahora o más tarde desde «Perfil».
+    // Escape (cancel) no cierra el aviso: la única salida es el botón
+    <dialog
+      ref={ref}
+      className="ui-perfil-dialogo ui-perfil-dialogo--bienvenida ui-anim-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby={idTitulo}
+      onCancel={(e) => e.preventDefault()}
+    >
+      <span className="ui-perfil-dialogo__logo" aria-hidden="true"><img src={logoClub} alt="" /></span>
+      <h2 id={idTitulo} className="ui-perfil-dialogo__titulo">¡Bienvenido a CheerClick{usuario?.nombre ? `, ${usuario.nombre.split(' ')[0]}` : ''}! <span aria-hidden="true">👋</span></h2>
+      <p className="ui-perfil-dialogo__texto">
+        Antes de empezar, completa tu perfil. Así tu entrenador y el club tendrán tus datos al día.
       </p>
-      <div className="ui-bienvenida__acciones">
-        <button type="button" className="ui-bienvenida__btn ui-bienvenida__btn--primario" onClick={irAlPerfil}>
+      <ul className="ui-perfil-pasos">
+        {pasosDePerfil(usuario?.rol).map((paso) => (
+          <li key={paso}><span className="ui-perfil-pasos__check" aria-hidden="true"><Check size={13} strokeWidth={3} /></span>{paso}</li>
+        ))}
+      </ul>
+      <div className="ui-perfil-dialogo__acciones">
+        <button type="button" className="ui-confirmar__btn ui-confirmar__btn--peligro" onClick={irAlPerfil} autoFocus>
           Completar mi perfil
-        </button>
-        <button type="button" className="ui-bienvenida__btn" onClick={cerrar}>
-          Más tarde
         </button>
       </div>
     </dialog>

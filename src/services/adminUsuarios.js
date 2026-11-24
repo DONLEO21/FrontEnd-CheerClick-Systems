@@ -10,6 +10,7 @@ const ESTADO_APP = { Pendiente: 'pendiente', Aprobada: 'aprobada', Rechazada: 'r
 // Caché en memoria: al volver a la pantalla la lista aparece al instante
 let cache = null
 export const usuariosEnCache = () => cache
+const sinAdministradores = (filas) => filas.filter((u) => u.rol !== 'administrador')
 
 // Usuario del backend -> fila que pintan las tablas de Cuentas
 const aFila = (u) => ({
@@ -23,6 +24,7 @@ const aFila = (u) => ({
   activo: u.status !== false,
   created_at: u.createdAt,
   codigo: u.codigo ?? '—', // el código lo asigna el backend al aprobar la solicitud
+  tambienEntrenador: (u.rolesAdicionales ?? []).includes('Entrenador'),
 })
 
 // El backend pagina de 10 en 10: se recorren todas las páginas de un estado
@@ -38,11 +40,12 @@ async function traerTodas(estado) {
   return filas
 }
 
-export async function cargarUsuarios() {
+// conAdministradores: Gestión de cuentas los incluye (para editar sus datos y su rol adicional de entrenador);
+// el resto de pantallas (dashboard, solicitudes) solo trabaja con atletas y entrenadores.
+export async function cargarUsuarios({ conAdministradores = false } = {}) {
   const grupos = await Promise.all(['Pendiente', 'Aprobada', 'Rechazada'].map(traerTodas))
-  // Los administradores no se gestionan desde esta pantalla (solo atletas y entrenadores)
-  cache = grupos.flat().filter((u) => u.rol !== 'Administrador').map(aFila)
-  return cache
+  cache = grupos.flat().map(aFila)
+  return conAdministradores ? cache : sinAdministradores(cache)
 }
 
 export const aprobarSolicitud = (id, rol) => usuariosApi.aprobarSolicitud(id, { rol: ROL_API[rol] })
@@ -50,10 +53,11 @@ export const rechazarSolicitud = (id) => usuariosApi.rechazarSolicitud(id)
 export const cambiarRolUsuario = (id, rol) => usuariosApi.cambiarRol(id, { rol: ROL_API[rol] })
 export const cambiarActivoUsuario = (id, activo) => usuariosApi.cambiarStatus(id, { status: activo })
 
-export async function crearUsuarioAdmin({ rol, nombre, apellido, email, password, nivel, plan }) {
+export async function crearUsuarioAdmin({ rol, nombre, apellido, email, password, nivel, plan, tambienEntrenador }) {
   const { data } = await usuariosApi.crear({
     rol: ROL_API[rol], nombre, apellido, email, contrasena: password,
     nivel: nivel || undefined, planAsociado: plan || undefined,
+    ...(rol === 'administrador' && tambienEntrenador ? { tambienEntrenador: true } : {}),
   })
   return normalizarUsuario(data)
 }
@@ -62,10 +66,6 @@ export async function crearUsuarioAdmin({ rol, nombre, apellido, email, password
 export async function obtenerDetalleUsuario(id) {
   const { data } = await usuariosApi.detalle(id)
   const p = data.perfil
-  let certUrl = null
-  if (p?.tieneCertificadoEps) {
-    try { certUrl = URL.createObjectURL(await usuariosApi.descargarCertificadoEps(id)) } catch { /* sin archivo */ }
-  }
   const perfil = p && {
     tipo_documento: tipoDocDesdeApi(p.tipoDocumento),
     numero_documento: p.numDocumento,
@@ -73,8 +73,7 @@ export async function obtenerDetalleUsuario(id) {
     fecha_nacimiento: p.fechaNacimiento,
     telefono: p.telefono,
     eps: epsDesdeApi(p.eps) || p.eps,
-    certificado_eps_nombre: p.tieneCertificadoEps ? 'Certificado de EPS' : null,
-    certificado_eps_url_firmada: certUrl,
+    tiene_certificado_eps: !!p.tieneCertificadoEps, // el archivo es privado: se pide con el token al verlo o descargarlo
     foto_url: getImageUrl(p.fotoPerfil) || null,
     contactos: (data.contactos ?? []).map((c) => ({
       nombre: c.nombre, apellido: c.apellido, telefono: c.telefono, parentesco: parentescoDesdeApi(c.parentesco),
@@ -85,5 +84,24 @@ export async function obtenerDetalleUsuario(id) {
     nivel: data.usuario?.nivel?.nombre ?? null,
     plan: data.usuario?.planAsociado?.nombre ?? null,
   }
-  return { perfil: perfil ?? null, registro }
+  // `ficha` conserva los valores del backend tal cual (los usa el formulario de edición)
+  return { perfil: perfil ?? null, registro, ficha: { usuario: data.usuario, perfil: p ?? null, contactos: data.contactos ?? [] } }
+}
+
+/* ───────── edición de cuentas (solo administrador) ───────── */
+export const guardarFichaUsuario = (id, cuerpo) => usuariosApi.editarFicha(id, cuerpo)
+export const reasignarNivelUsuario = (id, nivel) => usuariosApi.reasignarNivel(id, { nivel })
+export const reasignarPlanUsuario = (id, planAsociado) => usuariosApi.reasignarPlan(id, { planAsociado })
+export const cambiarRolEntrenadorUsuario = (id, activo) => usuariosApi.cambiarRolEntrenador(id, { activo })
+
+// Certificado de EPS (privado): se pide con el token como Blob. El nombre de descarga sigue
+// certificado-eps-{codigo}-{apellido}.{ext} (la extensión sale del tipo real del archivo).
+const EXTENSION_POR_TIPO = { 'application/pdf': 'pdf', 'image/jpeg': 'jpg', 'image/png': 'png' }
+const slug = (t) => String(t ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
+
+export async function obtenerCertificadoEps(id, { codigo, apellido } = {}) {
+  const blob = await usuariosApi.descargarCertificadoEps(id)
+  const ext = EXTENSION_POR_TIPO[blob.type] ?? 'pdf'
+  const partes = ['certificado-eps', slug(codigo), slug(apellido)].filter(Boolean)
+  return { blob, tipo: blob.type, nombreArchivo: `${partes.join('-')}.${ext}` }
 }

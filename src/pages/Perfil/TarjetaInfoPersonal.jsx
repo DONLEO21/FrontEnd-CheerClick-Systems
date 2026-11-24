@@ -4,10 +4,17 @@ import {
 import Campo from './Campo.jsx';
 import { TIPOS_DOCUMENTO, GENEROS, EPS } from './perfilData.js';
 import { fechaMaximaPermitida } from '../../utils/fechaNacimiento.js';
+import { campoPerfilVacio } from '../../utils/perfilFaltantes.js';
 
 export default function TarjetaInfoPersonal({
-  vista, editando, bloqueos, onCambiar, onCambiarArchivoEps, rol, errorFecha, errorNombre,
+  vista, editando, bloqueos, onCambiar, onCambiarArchivoEps, rol, errorFecha, errorNombre, faltantes = [],
 }) {
+  // Perfil incompleto (obligatorio): el campo que el backend dice que falta lleva asterisco y, mientras siga vacío, borde de acento
+  // y el mensaje «Obligatorio…» debajo
+  const requerido = (campo) => editando && faltantes.includes(campo);
+  const sinLlenar = (campo) => requerido(campo) && campoPerfilVacio(campo, vista);
+  const marca = (campo) => (sinLlenar(campo) ? 'Obligatorio para completar tu perfil.' : undefined);
+  const aria = (campo) => (sinLlenar(campo) ? { 'aria-invalid': true } : {});
   const editable = (campo) => editando && !bloqueos[campo];
 
   const avisoUnaVez = (campo) =>
@@ -57,16 +64,16 @@ export default function TarjetaInfoPersonal({
 
         <Campo
           id="numero-doc" label="Número de documento" icono={CreditCard}
-          aviso={avisoUnaVez('numeroDocumento')}
+          aviso={avisoUnaVez('numeroDocumento')} error={marca('numDocumento')} requerido={requerido('numDocumento')} faltante={sinLlenar('numDocumento')}
         >
           <input
-            type="text" id="numero-doc" inputMode="numeric" placeholder="—"
+            type="text" id="numero-doc" inputMode="numeric" {...aria('numDocumento')} placeholder="—"
             value={vista.numeroDocumento} disabled={!editable('numeroDocumento')}
             onChange={(e) => onCambiar('numeroDocumento', e.target.value.replace(/\D/g, ''))}
           />
         </Campo>
 
-        <Campo id="genero" label="Género" icono={VenusAndMars} aviso={avisoUnaVez('genero')}>
+        <Campo id="genero" label="Género" icono={VenusAndMars} aviso={avisoUnaVez('genero')} error={marca('genero')} requerido={requerido('genero')} faltante={sinLlenar('genero')}>
           <select
             id="genero" value={vista.genero} disabled={!editable('genero')}
             onChange={(e) => onCambiar('genero', e.target.value)}
@@ -78,7 +85,7 @@ export default function TarjetaInfoPersonal({
 
         <Campo
           id="fecha-nacimiento" label="Fecha de nacimiento" icono={Calendar}
-          aviso={avisoUnaVez('fechaNacimiento')} error={errorFecha}
+          aviso={avisoUnaVez('fechaNacimiento')} error={errorFecha || marca('fechaNacimiento')} requerido={requerido('fechaNacimiento')} faltante={sinLlenar('fechaNacimiento')}
         >
           <input
             type="date" id="fecha-nacimiento"
@@ -95,14 +102,14 @@ export default function TarjetaInfoPersonal({
           />
         </Campo>
 
-        <Campo id="telefono-personal" label="Teléfono" icono={Phone}>
+        <Campo id="telefono-personal" label="Teléfono" icono={Phone} error={marca('telefono')} requerido={requerido('telefono')} faltante={sinLlenar('telefono')}>
           <input
-            type="tel" id="telefono-personal" placeholder="—" value={vista.telefono} disabled={!editando}
+            type="tel" id="telefono-personal" {...aria('telefono')} placeholder="—" value={vista.telefono} disabled={!editando}
             onChange={(e) => onCambiar('telefono', e.target.value)}
           />
         </Campo>
 
-        <Campo id="eps-nombre" label="Nombre de EPS" icono={Heart}>
+        <Campo id="eps-nombre" label="Nombre de EPS" icono={Heart} error={marca('eps')} requerido={requerido('eps')} faltante={sinLlenar('eps')}>
           <select
             id="eps-nombre" value={vista.eps} disabled={!editando}
             onChange={(e) => onCambiar('eps', e.target.value)}
@@ -112,8 +119,8 @@ export default function TarjetaInfoPersonal({
           </select>
         </Campo>
 
-        <div className="form-grupo">
-          <label>Certificado de EPS</label>
+        <div className={`form-grupo${sinLlenar('certificadoEps') ? ' perfil-campo--faltante' : ''}`} data-campo-perfil="certificadoEps">
+          <label>Certificado de EPS{requerido('certificadoEps') && <span className="perfil-asterisco" aria-hidden="true">*</span>}</label>
           <div className="campo-archivo-visualizacion">
             <File size={16} />
             {vista.certificadoEpsUrl ? (
@@ -138,6 +145,9 @@ export default function TarjetaInfoPersonal({
               </label>
             )}
           </div>
+          {marca('certificadoEps') && (
+            <small className="perfil-campo-error" role="alert">{marca('certificadoEps')}</small>
+          )}
         </div>
 
       </div>

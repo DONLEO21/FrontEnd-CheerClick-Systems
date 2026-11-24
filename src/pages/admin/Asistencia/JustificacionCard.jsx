@@ -1,4 +1,5 @@
-import { iniciales, nombreCortoNivel } from "../../../services/data";
+import { nombreCortoNivel } from "../../../services/data";
+import Avatar from "../../../components/Compartidos/Avatar";
 
 const ETIQUETA_ESTADO = {
   pendiente: "Pendiente",
@@ -17,7 +18,7 @@ export default function JustificacionCard({ justificacion, nivel, onAprobar, onR
   return (
     <div className={`just-card just-card-${justificacion.estado}`}>
       <div className="just-card-header">
-        <span className="just-avatar">{iniciales(nombrePila, resto.join(" "))}</span>
+        <Avatar nombre={nombrePila} apellido={resto.join(" ")} id={justificacion.usuario?._id ?? justificacion.usuario} className="just-avatar" />
         <div className="just-card-nombre-bloque">
           <span className="just-card-nombre">{nombreAtleta}</span>
           <span className="just-card-nivel">{nivelLabel}</span>

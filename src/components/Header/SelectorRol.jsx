@@ -1,6 +1,17 @@
 import { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { Check } from "lucide-react";
+import { useSesion } from "../../context/SesionContext";
+import { RUTA_INICIO } from "../../services/sesion";
+import { ETIQUETA_ROL } from "../../utils/roles";
+
+/**
+ * Etiqueta de rol del encabezado. Con un solo rol es solo texto; si el usuario tiene más de uno (p. ej. un administrador
+ * que también entrena) se vuelve un desplegable para cambiar de rol. Al elegir uno se guarda como rol activo y se navega a
+ * su panel; menú, barra lateral, dashboard y título cambian porque salen de la ruta del rol.
+ */
 export default function SelectorRol({ rol }) {
+  const { sesion, cambiarRol } = useSesion();
   const [abierto, setAbierto] = useState(false);
   const contenedorRef = useRef(null);
   const navigate = useNavigate();
@@ -22,21 +33,16 @@ export default function SelectorRol({ rol }) {
     };
   }, [abierto]);
 
-  let etiqueta = rol;
-  let opciones = [];
-  const ruta = pathname.toLowerCase().replace(/\/+$/, "");
-  const esRutaAdmin = ruta.startsWith("/admin");
+  // Un usuario con un solo rol no ve el desplegable
+  if (sesion.roles.length < 2) {
+    return <span className="etiqueta-rol">{rol}</span>;
+  }
 
-  if (esRutaAdmin && ruta.includes("horarios")) {
-    etiqueta = "Administrador";
-    opciones = [{ texto: "Vista Entrenador", ruta: "/admin/calendario" }];
-  } else if (esRutaAdmin && ruta.includes("calendario")) {
-    etiqueta = "Entrenador";
-    opciones = [{ texto: "Vista Administrador", ruta: "/admin/horarios" }];
-  }
-  if (!opciones.length) {
-    return <span className="etiqueta-rol">{etiqueta}</span>;
-  }
+  const elegir = (nuevo) => {
+    setAbierto(false);
+    if (nuevo === sesion.rol && pathname.startsWith(RUTA_INICIO[nuevo])) return;
+    if (cambiarRol(nuevo)) navigate(RUTA_INICIO[nuevo]);
+  };
 
   return (
     <div className={`selector-rol ${abierto ? "abierto" : ""}`} ref={contenedorRef}>
@@ -44,26 +50,26 @@ export default function SelectorRol({ rol }) {
         type="button"
         className="etiqueta-rol"
         onClick={() => setAbierto((a) => !a)}
-        aria-haspopup="true"
+        aria-haspopup="menu"
         aria-expanded={abierto}
+        aria-label={`Rol activo: ${rol}. Cambiar de rol`}
       >
-        {etiqueta}
+        {rol}
         <i className="bi bi-chevron-down chevron-rol" aria-hidden="true" />
       </button>
 
       <div className="menu-rol" role="menu">
-        {opciones.map((op) => (
+        {sesion.roles.map((r) => (
           <button
-            key={op.ruta}
+            key={r}
             type="button"
-            className="menu-rol__opcion"
-            role="menuitem"
-            onClick={() => {
-              setAbierto(false);
-              navigate(op.ruta);
-            }}
+            className={`menu-rol__opcion ${r === sesion.rol ? "menu-rol__opcion--activa" : ""}`}
+            role="menuitemradio"
+            aria-checked={r === sesion.rol}
+            onClick={() => elegir(r)}
           >
-            {op.texto}
+            {ETIQUETA_ROL[r] ?? r}
+            {r === sesion.rol && <Check size={14} strokeWidth={2.5} aria-hidden="true" />}
           </button>
         ))}
       </div>

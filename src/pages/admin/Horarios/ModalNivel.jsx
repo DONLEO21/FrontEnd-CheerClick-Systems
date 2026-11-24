@@ -1,6 +1,9 @@
 
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState, useCallback, useMemo } from "react";
 import { diasSemana, etiquetaDias, comprimirImagen } from "./horariosData";
+import SelectorEntrenador from "./SelectorEntrenador";
+import FotoPersona from "../../../components/Compartidos/FotoPersona";
+import { listarEntrenadoresAsignables } from "../../../services/horariosService";
 
 const BLOQUE_VACIO = () => ({ dias: [], inicio: "18:00", fin: "20:00" });
 
@@ -9,9 +12,34 @@ export default function ModalNivel({ abierto, formNivel, setFormNivel, onCerrar,
   const primerCampoRef = useRef(null);
 
 
+  // Entrenadores asignables (entrenadores y administradores que también entrenan), siempre del servidor
+  const [entrenadores, setEntrenadores] = useState([]);
+  const [cargandoEntrenadores, setCargandoEntrenadores] = useState(false);
+  const [errorEntrenadores, setErrorEntrenadores] = useState("");
+
+  const cargarEntrenadores = useCallback(() => {
+    setCargandoEntrenadores(true);
+    setErrorEntrenadores("");
+    listarEntrenadoresAsignables()
+      .then(setEntrenadores)
+      .catch((e) => setErrorEntrenadores(e?.message || "No se pudo cargar la lista de entrenadores."))
+      .finally(() => setCargandoEntrenadores(false));
+  }, []);
+
+  // El entrenador actual del nivel SIEMPRE está en las opciones y preseleccionado; si ya no puede dirigir niveles
+  // (perdió el rol, está inactivo o ya no existe) se marca «Sin rol de entrenador activo» en vez de dejar el campo vacío.
+  const opciones = useMemo(() => {
+    const actual = formNivel.entrenadorIdOriginal;
+    if (!actual || entrenadores.some((o) => o.id === actual)) return entrenadores;
+    const nombre = formNivel.entrenador || "Entrenador no encontrado";
+    return [{ id: actual, nombre: formNivel.entrenador, codigo: "", etiqueta: `${nombre} · Sin rol de entrenador activo`, marcada: true }, ...entrenadores];
+  }, [entrenadores, formNivel.entrenadorIdOriginal, formNivel.entrenador]);
+
   useEffect(() => {
-    if (abierto) primerCampoRef.current?.focus();
-  }, [abierto]);
+    if (!abierto) return;
+    primerCampoRef.current?.focus();
+    cargarEntrenadores();
+  }, [abierto, cargarEntrenadores]);
 
   if (!abierto) return null;
 
@@ -82,9 +110,12 @@ export default function ModalNivel({ abierto, formNivel, setFormNivel, onCerrar,
 
           <div className="grupo-formulario">
             <label className="etiqueta-formulario">Foto del Entrenador</label>
+            <p className="pista-subida mb-2" style={{ marginTop: -4 }}>
+              Si no subes una foto, la tarjeta usa la foto de perfil del entrenador.
+            </p>
             <div className="zona-subida-foto" onClick={() => inputFotoRef.current?.click()}>
               <div className="contenedor-vista-previa">
-                {formNivel.foto && <img src={formNivel.foto} alt="Vista previa" />}
+                {formNivel.foto && <FotoPersona src={formNivel.foto} nombre={formNivel.entrenador} alt="Vista previa" />}
               </div>
               <div>
                 <p className="texto-principal-subida mb-0">Haz clic para subir foto</p>
@@ -102,15 +133,16 @@ export default function ModalNivel({ abierto, formNivel, setFormNivel, onCerrar,
 
           <div className="grupo-formulario">
             <label className="etiqueta-formulario" htmlFor="modal-entrenador">
-              Nombre del Entrenador
+              Entrenador
             </label>
-            <input
+            <SelectorEntrenador
               id="modal-entrenador"
-              type="text"
-              className="campo-formulario"
-              placeholder="Ej: Jonathan Cruz"
-              value={formNivel.entrenador}
-              onChange={(e) => setFormNivel((f) => ({ ...f, entrenador: e.target.value }))}
+              opciones={opciones}
+              valorId={formNivel.entrenadorId}
+              cargando={cargandoEntrenadores}
+              errorCarga={errorEntrenadores}
+              onReintentar={cargarEntrenadores}
+              onElegir={(idElegido, o) => setFormNivel((f) => ({ ...f, entrenadorId: idElegido, entrenador: o.nombre ?? f.entrenador }))}
             />
           </div>
 

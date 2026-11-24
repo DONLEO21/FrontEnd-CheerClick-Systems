@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { ArrowLeft, Plus, Search, Sparkles } from "lucide-react";
+import { Plus, Search, Sparkles } from "lucide-react";
 import {
   listarHabilidades,
   guardarHabilidad as guardarHabilidadApi,
@@ -33,7 +33,7 @@ const POR_PAGINA = 12;
  * SUPUESTO: la habilidad tiene un `nivel` opcional (null = general, aparece en todos los niveles).
  * TODO(backend): la habilidad no guarda descripción.
  */
-function GestionDeHabilidades({ esEntrenador = false, onVolver }) {
+function GestionDeHabilidades({ esEntrenador = false }) {
   const puedeCrear = !esEntrenador;
 
   const [habilidades, setHabilidades] = useState([]);
@@ -147,11 +147,6 @@ function GestionDeHabilidades({ esEntrenador = false, onVolver }) {
       {/* 4.1 Encabezado */}
       <header className="adm-hab__encabezado">
         <div>
-          {onVolver && (
-            <button type="button" className="adm-hab__volver" onClick={() => onVolver()}>
-              <ArrowLeft size={15} /> Volver a Rendimiento
-            </button>
-          )}
           <h3 className="adm-hab__titulo">Gestión de habilidades</h3>
           <p className="adm-hab__sub">
             {puedeCrear

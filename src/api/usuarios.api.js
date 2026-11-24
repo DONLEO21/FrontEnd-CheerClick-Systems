@@ -12,4 +12,10 @@ export const usuariosApi = {
   cambiarStatus: (id, data) => apiClient.patch(`/usuarios/${id}/status`, data),
   cambiarRol: (id, data) => apiClient.patch(`/usuarios/${id}/rol`, data),
   update: (id, data) => apiClient.patch(`/usuarios/${id}`, data),
+  // Gestión de cuentas (solo administrador; el backend valida cada permiso)
+  editarFicha: (id, data) => apiClient.patch(`/usuarios/${id}/ficha`, data),
+  reasignarNivel: (id, data) => apiClient.patch(`/usuarios/${id}/nivel`, data),
+  reasignarPlan: (id, data) => apiClient.patch(`/usuarios/${id}/plan`, data),
+  cambiarRolEntrenador: (id, data) => apiClient.patch(`/usuarios/${id}/entrenador`, data),
+  listarEntrenadores: () => apiClient.get("/usuarios/entrenadores"),
 };

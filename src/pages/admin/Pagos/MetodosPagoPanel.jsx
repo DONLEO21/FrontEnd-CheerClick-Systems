@@ -10,18 +10,21 @@ import { prepararQR } from "../../../utils/archivos";
  * los atletas pagan. El formulario de "Registrar pago" y el pago del atleta usan SOLO estos métodos.
  * Backend: /api/metodo-pago (nombre + QR opcional). "Efectivo" no lleva QR; el QR solo aplica a los métodos
  * digitales (Nequi, Daviplata…). "Pago presencial" ya no existe: se reemplazó por Efectivo.
- * TODO(backend): titular y llave/cuenta del método aún no existen en el modelo.
+ * Datos opcionales para transferir: llave (texto libre), teléfono y cuenta (solo dígitos). El admin llena ninguno, uno o varios.
  */
+const DATOS_VACIOS = { llave: "", numeroTelefono: "", numeroCuenta: "" };
+
 export default function MetodosPagoPanel({ metodos, setMetodos, mostrarAviso }) {
   const [modal, setModal] = useState(null); // { tipo: 'crear' | 'editar' | 'eliminar', metodo? }
   const [nombre, setNombre] = useState("");
   const [qr, setQr] = useState(""); // data URL de la imagen del QR (opcional; no aplica a Efectivo)
   const [requiereComprobante, setRequiereComprobante] = useState(true); // ¿el atleta debe adjuntar comprobante?
+  const [datosPago, setDatosPago] = useState(DATOS_VACIOS); // llave, teléfono y cuenta (opcionales)
   const [error, setError] = useState("");
   const [guardando, setGuardando] = useState(false);
 
-  const abrirCrear = () => { setNombre(""); setQr(""); setRequiereComprobante(true); setError(""); setModal({ tipo: "crear" }); };
-  const abrirEditar = (metodo) => { setNombre(metodo.nombre); setQr(metodo.qr ?? ""); setRequiereComprobante(metodo.requiereComprobante !== false); setError(""); setModal({ tipo: "editar", metodo }); };
+  const abrirCrear = () => { setNombre(""); setQr(""); setDatosPago(DATOS_VACIOS); setRequiereComprobante(true); setError(""); setModal({ tipo: "crear" }); };
+  const abrirEditar = (metodo) => { setNombre(metodo.nombre); setQr(metodo.qr ?? ""); setDatosPago({ llave: metodo.llave ?? "", numeroTelefono: metodo.numeroTelefono ?? "", numeroCuenta: metodo.numeroCuenta ?? "" }); setRequiereComprobante(metodo.requiereComprobante !== false); setError(""); setModal({ tipo: "editar", metodo }); };
   const abrirEliminar = (metodo) => { setError(""); setModal({ tipo: "eliminar", metodo }); };
   const cerrar = () => { if (!guardando) setModal(null); };
 
@@ -34,16 +37,23 @@ export default function MetodosPagoPanel({ metodos, setMetodos, mostrarAviso }) 
     const repetido = metodos.some((m) => m.id !== modal.metodo?.id && m.nombre.trim().toLowerCase() === limpio.toLowerCase());
     if (repetido) return setError("Ya existe un método de pago con ese nombre.");
 
+    // Validación suave de los datos opcionales (el backend vuelve a validar): ninguno es obligatorio
+    if (!esMetodoEfectivo(limpio)) {
+      if (datosPago.llave.trim().length > 60) return setError("La llave no puede superar los 60 caracteres.");
+      if (datosPago.numeroTelefono.trim() && !/^\d{7,15}$/.test(datosPago.numeroTelefono.trim())) return setError("El teléfono debe tener solo dígitos (entre 7 y 15).");
+      if (datosPago.numeroCuenta.trim() && !/^\d{6,25}$/.test(datosPago.numeroCuenta.trim())) return setError("El número de cuenta debe tener solo dígitos (entre 6 y 25).");
+    }
+
     setGuardando(true);
     setError("");
     try {
       if (modal.tipo === "crear") {
-        const nuevo = await crearMetodoPago({ nombre: limpio, qr, requiereComprobante });
-        setMetodos((prev) => [...prev, { id: nuevo.id, nombre: nuevo.nombre, qr: nuevo.qr, requiereComprobante: nuevo.requiereComprobante }]);
+        const nuevo = await crearMetodoPago({ nombre: limpio, qr, requiereComprobante, ...datosPago });
+        setMetodos((prev) => [...prev, nuevo]);
         mostrarAviso("Método de pago creado");
       } else {
-        const actualizado = await actualizarMetodoPago(modal.metodo.id, { nombre: limpio, qr, requiereComprobante });
-        setMetodos((prev) => prev.map((m) => (m.id === actualizado.id ? { ...m, nombre: actualizado.nombre, qr: actualizado.qr, requiereComprobante: actualizado.requiereComprobante } : m)));
+        const actualizado = await actualizarMetodoPago(modal.metodo.id, { nombre: limpio, qr, requiereComprobante, ...datosPago });
+        setMetodos((prev) => prev.map((m) => (m.id === actualizado.id ? { ...m, ...actualizado } : m)));
         mostrarAviso("Método de pago actualizado");
       }
       setModal(null);
@@ -108,7 +118,7 @@ export default function MetodosPagoPanel({ metodos, setMetodos, mostrarAviso }) 
               <div className="adm-met__info">
                 <strong className="adm-met__nombre">{m.nombre}</strong>{m.codigo && <span className="ui-codigo">{m.codigo}</span>}
                 <span className="adm-met__estado">
-                  {esMetodoEfectivo(m.nombre) ? "Se paga en el club · sin comprobante" : `${m.qr ? "Con código QR" : "Sin código QR"} · ${m.requiereComprobante === false ? "sin comprobante" : "con comprobante"}`}
+                  {esMetodoEfectivo(m.nombre) ? "Se paga en el club · sin comprobante" : `${[m.qr && "QR", m.llave && "llave", m.numeroTelefono && "teléfono", m.numeroCuenta && "cuenta"].filter(Boolean).join(" · ") || "Sin datos de pago"} · ${m.requiereComprobante === false ? "sin comprobante" : "con comprobante"}`}
                 </span>
               </div>
               <div className="adm-met__acciones">
@@ -161,6 +171,20 @@ export default function MetodosPagoPanel({ metodos, setMetodos, mostrarAviso }) 
                 </div>
               ) : (
                 <p className="adm-met__texto">Efectivo se paga en el club: no necesita código QR ni comprobante. La solicitud queda «Pendiente de confirmación» hasta que la confirmes.</p>
+              )}
+              {pideQr && (
+                <fieldset className="adm-met__datos">
+                  <legend>Datos para transferir <small>(todos opcionales)</small></legend>
+                  <label htmlFor="adm-met-llave">Llave (Bre-B u otra)</label>
+                  <input id="adm-met-llave" type="text" maxLength={60} placeholder="Ej: @clubcheerclick"
+                    value={datosPago.llave} onChange={(e) => setDatosPago((d) => ({ ...d, llave: e.target.value }))} />
+                  <label htmlFor="adm-met-telefono">Número de teléfono</label>
+                  <input id="adm-met-telefono" type="text" inputMode="numeric" maxLength={15} placeholder="Solo dígitos"
+                    value={datosPago.numeroTelefono} onChange={(e) => setDatosPago((d) => ({ ...d, numeroTelefono: e.target.value.replace(/\D/g, "") }))} />
+                  <label htmlFor="adm-met-cuenta">Número de cuenta</label>
+                  <input id="adm-met-cuenta" type="text" inputMode="numeric" maxLength={25} placeholder="Solo dígitos"
+                    value={datosPago.numeroCuenta} onChange={(e) => setDatosPago((d) => ({ ...d, numeroCuenta: e.target.value.replace(/\D/g, "") }))} />
+                </fieldset>
               )}
               {error && <p className="adm-met__error" role="alert">{error}</p>}
             </div>

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Modal from "./Modal";
+import DatosPagoMetodo from "../../../components/Compartidos/DatosPagoMetodo";
 
 function ModalFormularioPago({ pago, metodos = [], guardando, onCerrar, onGuardar }) {
   const [fecha, setFecha] = useState("");
@@ -95,6 +96,13 @@ function ModalFormularioPago({ pago, metodos = [], guardando, onCerrar, onGuarda
               </select>
             </div>
           </section>
+          {metodos.some((m) => m.id === metodoId) && (
+            <DatosPagoMetodo
+              metodo={metodos.find((m) => m.id === metodoId)}
+              valor={pago.valor}
+              concepto={(pago.etiquetas ?? []).map((e) => e.texto).join(" · ") || undefined}
+            />
+          )}
           <label className="label" htmlFor="ob">Observaciones</label>
           <textarea id="ob" className="adm-pagos-ob" maxLength={100} value={observaciones} onChange={(e) => setObservaciones(e.target.value)} />
 

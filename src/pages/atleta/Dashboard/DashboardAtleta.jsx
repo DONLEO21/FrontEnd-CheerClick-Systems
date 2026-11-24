@@ -73,6 +73,7 @@ export default function DashboardAtleta({
 
               <TarjetaPerfilAtleta
                 nombre={nombreCompleto}
+                apellido={usuario.apellido}
                 foto={usuario.foto || null}
                 nivel={base.nivel?.nombre ?? 'Sin nivel'}
                 entrenamientos={metricas.entrenamientos}

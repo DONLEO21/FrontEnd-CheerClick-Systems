@@ -5,6 +5,7 @@ import { planesApi } from '../api/planes.api'
 import { competenciasApi } from '../api/competencias.api'
 import { inscripcionesCompetenciasApi } from '../api/inscripciones_competencias.api'
 import { pagosApi } from '../api/pagos.api'
+import { listarNotificaciones } from './notificacionesService'
 // Pagos de mensualidades y de competencias.
 // Backend: /api/mensualidades, /api/pagos, /api/plan-asociado, /api/metodo-pago, /api/competencias, /api/inscripciones_competencias
 
@@ -22,6 +23,9 @@ export async function listarMetodosPago() {
     id: m._id,
     nombre: m.nombre,
     qr: m.qr ?? '',
+    llave: m.llave ?? '',
+    numeroTelefono: m.numeroTelefono ?? '',
+    numeroCuenta: m.numeroCuenta ?? '',
     // ¿hay que adjuntar comprobante con este método? (Efectivo: no). Si el backend no lo informa, se deduce del nombre.
     requiereComprobante: m.requiereComprobante ?? !esMetodoEfectivo(m.nombre),
   }))
@@ -52,6 +56,7 @@ export function mensualidadDesdeApi(m, metodos = []) {
   const metodo = pago.metodoPago && typeof pago.metodoPago === 'object' ? pago.metodoPago.nombre : metodos.find((x) => x.id === pago.metodoPago)?.nombre
   return {
     id: m._id,
+    periodo: m.periodo ?? '', // 'AAAA-MM': ordena y agrupa por año (el nombre del mes solo no distingue noviembre de 2026 de 2027)
     // código consecutivo PG000 del pago (backend); mientras no exista se muestra el id
     codigo: pago.codigo ?? '', // PG000 (backend); nunca el _id interno
     pagoId: idDe(m.pago),
@@ -153,12 +158,22 @@ export async function obtenerMensualidad(id) {
 }
 
 /* ───────── ATLETA ───────── */
+// Pantalla «Mis pagos»: mensualidades + plan vigente real + avisos de pago. Cada parte falla por separado: si no llegan los
+// avisos o el plan, las mensualidades se siguen mostrando.
 export async function cargarPagosAtleta(usuario) {
-  const [{ data }, metodos] = await Promise.all([mensualidadesApi.list(), listarMetodosPago()])
+  const [{ data }, metodos, plan, avisos] = await Promise.all([
+    mensualidadesApi.list(),
+    listarMetodosPago(),
+    mensualidadesApi.miPlan().then((r) => r.data).catch(() => null),
+    listarNotificaciones().then((r) => r.items.filter((n) => n.tipo === 'pago')).catch(() => []),
+  ])
   const mensualidades = (data ?? []).map((m) => mensualidadDesdeApi(m, metodos))
   return {
-    atleta: { id: usuario.id, nombre: [usuario.nombre, usuario.apellido].filter(Boolean).join(' '), nivel: usuario.nivelNombre ?? '' },
+    atleta: { id: usuario.id, nombre: [usuario.nombre, usuario.apellido].filter(Boolean).join(' '), nivel: plan?.nivel ?? '' },
     mensualidades,
+    // Plan vigente del atleta (no el de su última mensualidad): { plan: { nombre, valor } | null, diaCorte }
+    miPlan: plan,
+    avisos,
   }
 }
 

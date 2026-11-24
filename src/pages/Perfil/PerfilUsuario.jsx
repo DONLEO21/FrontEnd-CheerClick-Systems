@@ -2,6 +2,9 @@ import { useNavigate } from 'react-router-dom';
 import AvisoToast from '../../components/Compartidos/AvisoToast';
 import useAviso from '../../hooks/useAviso';
 import useUsuario from '../../hooks/useUsuario';
+import useEstadoSesion from '../../hooks/useEstadoSesion';
+import BannerCompletarPerfil from '../../components/Compartidos/BannerCompletarPerfil';
+import { campoPerfilVacio, irACampoPerfil } from '../../utils/perfilFaltantes';
 
 import usePerfil from './usePerfil.js';
 import { iniciales } from './perfilData.js';
@@ -22,6 +25,7 @@ export default function PerfilUsuario({ rol = 'atleta' }) {
 
   const { aviso, mostrarAviso } = useAviso();
 
+  const { camposFaltantes } = useEstadoSesion();
   const usuario = useUsuario();
   const nombreCompleto = usuario.nombre || (usuario.cargando ? '' : 'Usuario');
   const apellido = usuario.apellido || '';
@@ -38,6 +42,7 @@ export default function PerfilUsuario({ rol = 'atleta' }) {
   return (
     <div className="perfil-pagina">
       <div className="perfil-main ui-contenido">
+          <BannerCompletarPerfil />
           <div className="perfil-contenedor">
 
             <section className="pagina-encabezado">
@@ -63,7 +68,17 @@ export default function PerfilUsuario({ rol = 'atleta' }) {
                   editando={editando}
                   onCambiarFoto={() => setModal('foto')}
                   onEditar={activarEdicion}
-                  onGuardar={() => (errorNombre || errorFecha ? mostrarAviso(errorNombre || errorFecha, 'error') : setModal('confirmar'))}
+                  onGuardar={() => {
+                    if (errorNombre || errorFecha) return mostrarAviso(errorNombre || errorFecha, 'error');
+                    // Perfil obligatorio: con datos que faltan no se guarda; los mensajes ya están bajo cada campo y se lleva al primero
+                    const sinLlenar = camposFaltantes.filter((f) => campoPerfilVacio(f.campo, vista));
+                    if (sinLlenar.length > 0) {
+                      mostrarAviso(`Completa los datos obligatorios: ${sinLlenar.map((f) => f.etiqueta).join(', ')}.`, 'error');
+                      irACampoPerfil(sinLlenar[0].campo);
+                      return;
+                    }
+                    setModal('confirmar');
+                  }}
                   onCancelar={cancelarEdicion}
                 />
 
@@ -85,6 +100,7 @@ export default function PerfilUsuario({ rol = 'atleta' }) {
                   rol={rol}
                   errorFecha={errorFecha}
                   errorNombre={errorNombre}
+                  faltantes={camposFaltantes.map((f) => f.campo)}
                 />
 
                 {/* Contactos de emergencia: 2 para atleta, 1 para entrenador/admin */}
@@ -93,6 +109,7 @@ export default function PerfilUsuario({ rol = 'atleta' }) {
                   editando={editando}
                   onCambio={cambiarContacto}
                   cantidad={cantidadContactos}
+                  falta={camposFaltantes.some((f) => f.campo === 'contactoEmergencia')}
                 />
               </div>
             )}

@@ -11,11 +11,7 @@ import { abrirReporteAsistencia } from "./exportarAsistencia";
 import { diasDeSesion, horarioDiasUnicos, nombreMes, fechaHoyISO, letraDeFecha } from "../../../services/data";
 import { ESTADOS_ASISTENCIA, ORDEN_ESTADOS, etiquetaEstado } from "../../../utils/estadoAsistencia";
 import IconoEstadoAsistencia from "../../../components/Compartidos/IconoEstadoAsistencia";
-
-function iniciales(nombre, apellido) {
-  const palabras = `${nombre ?? ""} ${apellido ?? ""}`.trim().split(/\s+/);
-  return palabras.slice(0, 2).map((p) => p[0]).join("").toUpperCase();
-}
+import Avatar from "../../../components/Compartidos/Avatar";
 
 // Hoy lleva el chip destacado; los días futuros quedan neutros (rayados y sin icono)
 const claseDia = (d, hoyStr) =>
@@ -249,7 +245,7 @@ function ModalConsultar({ abierto, onCerrar, nivel, atletas }) {
                     return (
                       <tr key={atleta.id}>
                         <td className="col-nombre-mes">
-                          <span className="avatar-iniciales">{iniciales(atleta.nombre, atleta.apellido)}</span>
+                          <Avatar nombre={atleta.nombre} apellido={atleta.apellido} id={atleta.id} className="avatar-iniciales" />
                           {atleta.nombre} {atleta.apellido}
                         </td>
                         {dias.map((d) => {

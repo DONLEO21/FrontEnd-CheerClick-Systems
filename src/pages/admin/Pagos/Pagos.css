@@ -1625,6 +1625,11 @@
 .adm-met__qr-subir { display: inline-flex; align-items: center; gap: 8px; align-self: flex-start; padding: 9px 16px; border: 1.5px dashed #cbd5e1; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 14px; }
 .adm-met__qr-subir:hover { border-color: var(--rojo); color: var(--rojo); }
 
+/* Datos para transferir del método (llave, teléfono, cuenta): todos opcionales */
+.adm-met__datos { display: flex; flex-direction: column; gap: 8px; margin: 4px 0 0; padding: 12px 14px 14px; border: 1px solid #e5e7eb; border-radius: 12px; }
+.adm-met__datos legend { float: none; width: auto; margin: 0; padding: 0 6px; font-size: 13px; font-weight: 700; color: #555; }
+.adm-met__datos legend small { font-weight: 400; color: var(--texto-muted); }
+
 /* ── Bloque 2: interruptor "requiere comprobante" del método de pago ── */
 .adm-met__interruptor { display: flex; align-items: flex-start; gap: 10px; margin-top: 6px; font-size: 14px; cursor: pointer; }
 .adm-met__interruptor input { margin-top: 3px; accent-color: var(--rojo); }

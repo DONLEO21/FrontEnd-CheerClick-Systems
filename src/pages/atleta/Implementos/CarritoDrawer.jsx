@@ -2,6 +2,7 @@ import { forwardRef, Fragment, useRef, useState } from "react";
 import { useCarrito } from "../../../context/CarritoContext";
 import { getImplementos } from "../../../services/ImplementosService";
 import { getMetodosPago } from "../../../services/MetodosPagoService";
+import DatosPagoMetodo from "../../../components/Compartidos/DatosPagoMetodo";
 import { crearPedido } from "../../../services/PedidosService";
 import { etiquetaTalla } from "../../../data/tallas";
 import { formatoCOP } from "../../../data/pedidos";
@@ -29,20 +30,17 @@ const CarritoDrawer = forwardRef(function CarritoDrawer({ onPedidoCreado }, ref)
   const [validando, setValidando] = useState(false);
   const [enviando, setEnviando] = useState(false);
   const enviandoRef = useRef(false); // bloqueo inmediato: el estado de React llega tarde ante dos clics seguidos
-  const [copiado, setCopiado] = useState(false);
   const [error, setError] = useState("");
 
   const metodo = metodos.find((m) => m.id === metodoId) ?? null;
   // Los DATOS mandan: el método dice si exige comprobante (Efectivo: no)
   const exigeComprobante = !!metodo?.requiereComprobante;
-  const esEfectivo = !!metodo && !exigeComprobante;
 
   const reiniciar = () => {
     setPaso("carrito");
     setMetodoId("");
     setComprobante("");
     setNombreArchivo("");
-    setCopiado(false);
     setError("");
   };
 
@@ -102,7 +100,6 @@ const CarritoDrawer = forwardRef(function CarritoDrawer({ onPedidoCreado }, ref)
     setMetodoId(id);
     setComprobante("");
     setNombreArchivo("");
-    setCopiado(false);
     setError("");
   };
 
@@ -118,16 +115,6 @@ const CarritoDrawer = forwardRef(function CarritoDrawer({ onPedidoCreado }, ref)
       setComprobante("");
       setNombreArchivo("");
       setError(err.message);
-    }
-  };
-
-  const copiarLlave = async () => {
-    try {
-      await navigator.clipboard.writeText(metodo.llave);
-      setCopiado(true);
-      setTimeout(() => setCopiado(false), 2000);
-    } catch {
-      // Sin permiso para el portapapeles: el número sigue visible para copiarlo a mano
     }
   };
 
@@ -292,38 +279,16 @@ const CarritoDrawer = forwardRef(function CarritoDrawer({ onPedidoCreado }, ref)
               </div>
             </div>
 
-            {esEfectivo && (
-              <p className="pago-ayuda-efectivo" role="note">
-                Pagarás en efectivo al recoger tu pedido en el club. Tu pedido quedará pendiente hasta la entrega.
-              </p>
-            )}
+            {/* Datos para pagar (QR, llave, teléfono, cuenta), valor y concepto: componente compartido por todos los pagos */}
+            <DatosPagoMetodo
+              metodo={metodo}
+              valor={total}
+              concepto={`Pedido de implementos (${unidades} ${unidades === 1 ? "artículo" : "artículos"})`}
+              textoEfectivo="Pagarás en efectivo al recoger tu pedido en el club. Tu pedido quedará pendiente hasta la entrega."
+            />
 
             {exigeComprobante && (
               <>
-                <div className="pago-digital">
-                  <p className="pago-digital-titulo">Escanea para pagar con {metodo.nombre}</p>
-                  <div className="pago-qr-marco">
-                    {metodo.qr ? (
-                      <img src={metodo.qr} alt={`Código QR de ${metodo.nombre}`} />
-                    ) : (
-                      <div className="pago-qr-vacio">QR no disponible</div>
-                    )}
-                  </div>
-                  {metodo.llave && (
-                    <div className="pago-llave">
-                      <span className="pago-llave-label">Llave</span>
-                      <strong className="pago-llave-valor">{metodo.llave}</strong>
-                      <button type="button" className="btn-copiar-llave" onClick={copiarLlave}>
-                        {copiado ? "¡Copiada!" : "Copiar llave"}
-                      </button>
-                    </div>
-                  )}
-                  {metodo.titular && (
-                    <p className="pago-titular">A nombre de <strong>{metodo.titular}</strong></p>
-                  )}
-                  <p className="pago-valor">Valor a pagar: <strong>{formatoCOP(total)}</strong></p>
-                </div>
-
                 <div className="form-section">
                   <p className="form-section-label">
                     <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"

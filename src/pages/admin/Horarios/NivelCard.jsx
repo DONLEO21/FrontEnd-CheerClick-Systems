@@ -1,5 +1,6 @@
 
 import { formatearDias } from "./horariosData";
+import FotoPersona from "../../../components/Compartidos/FotoPersona";
 import { formatearRangoHora } from "../../entrenador/Horarios/calendarioData";
 
 export default function NivelCard({ nivel, onModificar, onInhabilitar, delay = 0 }) {
@@ -11,9 +12,14 @@ export default function NivelCard({ nivel, onModificar, onInhabilitar, delay = 0
       <div className="encabezado-categoria">{nivel.categoria}{nivel.codigo && <span className="ui-codigo ui-codigo--claro">{nivel.codigo}</span>}</div>
       <div className="cuerpo-categoria">
         <div className="info-entrenador">
-          <img src={nivel.foto} alt={nivel.entrenador} className="foto-entrenador" />
+          <FotoPersona src={nivel.foto} nombre={nivel.entrenador || "?"} alt={`Foto de ${nivel.entrenador || "entrenador sin asignar"}`} className="foto-entrenador" />
           <div className="datos-entrenador">
-            <h3>{nivel.entrenador}</h3>
+            <h3>{nivel.entrenador || "Sin entrenador asignado"}</h3>
+            {(!nivel.entrenador || !nivel.entrenadorValido) && (
+              <span className="aviso-entrenador" title="Edita el nivel y elige un entrenador válido">
+                {nivel.entrenador ? "Sin rol de entrenador activo" : "Elige un entrenador al modificar"}
+              </span>
+            )}
             <div className="horarios">
               {nivel.horarios.map((bloque, idx) => (
                 <span key={idx} className="insignia-horario">

@@ -1,5 +1,6 @@
 import { forwardRef, useEffect, useState } from "react";
-import { iniciales, nombreCortoNivel } from "../../../services/data";
+import { nombreCortoNivel } from "../../../services/data";
+import Avatar from "../../../components/Compartidos/Avatar";
 
 const ModalRevisionJustificacion = forwardRef(function ModalRevisionJustificacion(
   { accion, justificacion, atleta, nivel, onConfirmar },
@@ -46,7 +47,7 @@ const ModalRevisionJustificacion = forwardRef(function ModalRevisionJustificacio
         </p>
 
         <div className="modal-revision-atleta">
-          <span className="just-avatar">{iniciales(atleta?.nombre, atleta?.apellido)}</span>
+          <Avatar nombre={atleta?.nombre} apellido={atleta?.apellido} id={atleta?.id} className="just-avatar" />
           <div className="just-card-nombre-bloque">
             <span className="just-card-nombre">{nombreAtleta}</span>
             <span className="modal-revision-atleta-meta">{nivelLabel} · {dia}/{mes}/{anio}</span>

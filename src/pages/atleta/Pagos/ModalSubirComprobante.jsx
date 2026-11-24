@@ -1,8 +1,11 @@
 import { useState, useEffect } from "react";
+import useFormularioAsincrono from "../../../hooks/useFormularioAsincrono";
+import EstadoTarjeta from "../../../components/Compartidos/EstadoTarjeta";
 import Modal from "../../admin/Pagos/Modal";
 import { listarMetodosPago } from "../../../services/pagosService";
 import { prepararComprobante } from "../../../utils/archivos";
 import { pesos } from "../../../components/utils/PagosAtleta";
+import DatosPagoMetodo from "../../../components/Compartidos/DatosPagoMetodo";
 
 const MAX_MB = 5;
 const TIPOS = ["image/jpeg", "image/png", "application/pdf"];
@@ -18,26 +21,29 @@ const hoyISO = () => {
  * ocultan referencia y comprobante, se quitan sus validaciones y no se envía ningún campo de archivo.
  */
 function ModalSubirComprobante({ mensualidad, guardando, onCerrar, onGuardar }) {
-  const [metodos, setMetodos] = useState([]);
-  const [metodoId, setMetodoId] = useState("");
-  const [referencia, setReferencia] = useState("");
-  const [fecha, setFecha] = useState(hoyISO());
+  return (
+    <Modal className="atl-pagos-menu-regis-atleta" abierto={!!mensualidad} onCerrar={onCerrar}>
+      {/* key: al abrir otra mensualidad el formulario se monta de cero (nada de lo escrito se arrastra) */}
+      {mensualidad && <FormularioPago key={mensualidad.id} mensualidad={mensualidad} guardando={guardando} onCerrar={onCerrar} onGuardar={onGuardar} />}
+    </Modal>
+  );
+}
+
+// PRIMERO los datos (métodos de pago del admin), DESPUÉS el formulario: ver hooks/useFormularioAsincrono.js
+function FormularioPago({ mensualidad, guardando, onCerrar, onGuardar }) {
+  const f = useFormularioAsincrono({
+    clave: mensualidad.id,
+    cargar: () => Promise.all([listarMetodosPago()]).then(([metodos]) => ({ metodos })),
+    inicial: () => ({ metodoId: "", referencia: mensualidad.referencia ?? "", fecha: hoyISO() }),
+  });
+  const metodos = f.datos?.metodos ?? [];
+  const { metodoId, referencia, fecha } = f.valores;
+  const setMetodoId = (v) => f.cambiar("metodoId", v);
+  const setReferencia = (v) => f.cambiar("referencia", v);
+  const setFecha = (v) => f.cambiar("fecha", v);
   const [archivo, setArchivo] = useState(null);
   const [vista, setVista] = useState("");
   const [error, setError] = useState("");
-
-  // Reinicia el formulario cada vez que se abre para otra mensualidad
-  useEffect(() => {
-    if (!mensualidad) return;
-    setMetodoId("");
-    setReferencia(mensualidad.referencia ?? "");
-    setFecha(hoyISO());
-    setArchivo(null);
-    setError("");
-    let vivo = true;
-    listarMetodosPago().then((l) => vivo && setMetodos(l)).catch(() => vivo && setMetodos([]));
-    return () => { vivo = false; };
-  }, [mensualidad]);
 
   // Vista previa de la imagen elegida
   useEffect(() => {
@@ -61,7 +67,7 @@ function ModalSubirComprobante({ mensualidad, guardando, onCerrar, onGuardar }) 
   // Mientras no se elige método se muestran los campos completos; un método sin comprobante los oculta
   const requiereComprobante = metodoSel ? metodoSel.requiereComprobante !== false : true;
 
-  const listo = !!metodoId && !!fecha && (!requiereComprobante || (!!referencia.trim() && !!archivo));
+  const listo = f.listo && !!metodoId && !!fecha && (!requiereComprobante || (!!referencia.trim() && !!archivo));
 
   const enviar = async () => {
     setError("");
@@ -79,8 +85,6 @@ function ModalSubirComprobante({ mensualidad, guardando, onCerrar, onGuardar }) 
   };
 
   return (
-    <Modal className="atl-pagos-menu-regis-atleta" abierto={!!mensualidad} onCerrar={onCerrar}>
-      {mensualidad && (
         <>
           <aside className="atl-pagos-cabe-menu-atl">
             <div className="atl-pagos-infor-cabe-atl">
@@ -98,10 +102,14 @@ function ModalSubirComprobante({ mensualidad, guardando, onCerrar, onGuardar }) 
           </aside>
 
           <div className="atl-pago-cuerpo">
-            <div className="atl-pago-valor">
-              <span>Valor a pagar</span>
-              <strong>{pesos(mensualidad.valor)}</strong>
-            </div>
+            <EstadoTarjeta cargando={f.cargando} error={f.error} onReintentar={f.reintentar} lineas={4}>
+            {/* Con un método elegido, el valor y el concepto salen junto a sus datos de pago (DatosPagoMetodo) */}
+            {!metodoSel && (
+              <div className="atl-pago-valor">
+                <span>Valor a pagar</span>
+                <strong>{pesos(mensualidad.valor)}</strong>
+              </div>
+            )}
 
             <div className="atl-pago-grid">
               <div className="atl-pago-campo">
@@ -124,10 +132,9 @@ function ModalSubirComprobante({ mensualidad, guardando, onCerrar, onGuardar }) 
               )}
             </div>
 
-            {!requiereComprobante && (
-              <p className="atl-pago-efectivo" role="note">
-                Pago en efectivo: tu solicitud quedará pendiente hasta que el administrador confirme la recepción.
-              </p>
+            {metodoSel && (
+              <DatosPagoMetodo metodo={metodoSel} valor={mensualidad.valor} concepto={`Mensualidad · ${mensualidad.mes}`}
+                textoEfectivo="Pagarás en el club. Tu solicitud quedará pendiente hasta que el administrador confirme la recepción." />
             )}
 
             {requiereComprobante && (
@@ -152,6 +159,7 @@ function ModalSubirComprobante({ mensualidad, guardando, onCerrar, onGuardar }) 
             )}
 
             {error && <p className="atl-pago-error" role="alert">{error}</p>}
+            </EstadoTarjeta>
           </div>
 
           <footer className="atl-pagos-conte-btn-atl">
@@ -161,8 +169,6 @@ function ModalSubirComprobante({ mensualidad, guardando, onCerrar, onGuardar }) 
             </button>
           </footer>
         </>
-      )}
-    </Modal>
   );
 }
 export default ModalSubirComprobante;

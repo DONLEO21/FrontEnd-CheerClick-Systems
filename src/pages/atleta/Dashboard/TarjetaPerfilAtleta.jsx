@@ -1,3 +1,4 @@
+import Avatar from "../../../components/Compartidos/Avatar";
 import { Calendar } from 'lucide-react';
 import { fechaLocal, hora12, mayus } from './dashboardAtletaData.js';
 
@@ -12,25 +13,15 @@ function formatearProximo(proximo) {
 }
 
 export default function TarjetaPerfilAtleta({
-  nombre, foto, nivel, entrenamientos, torneosInscritos, proximo,
+  nombre, apellido, foto, nivel, entrenamientos, torneosInscritos, proximo,
 }) {
-  const iniciales = nombre
-    .split(' ')
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((p) => p[0]?.toUpperCase())
-    .join('');
   const prox = formatearProximo(proximo);
 
   return (
     <article className="tarjeta-dashboard tarjeta-perfil-atleta">
       <div className="tarjeta-dashboard__contenido perfil-atleta">
         <figure className="perfil-atleta__foto">
-          {foto ? (
-            <img src={foto} alt={`Foto de ${nombre}`} />
-          ) : (
-            <span className="perfil-atleta__foto-vacia" aria-hidden="true">{iniciales}</span>
-          )}
+          <Avatar foto={foto} nombre={nombre} apellido={apellido} alt={`Foto de ${nombre}`} claseIniciales="perfil-atleta__foto-vacia" style={{ width: '100%', height: '100%', borderRadius: 0, fontSize: '4.5rem' }} />
         </figure>
         <h3 className="perfil-atleta__nombre">{nombre}</h3>
         <span className="insignia-categoria">{nivel}</span>

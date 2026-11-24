@@ -1,7 +1,6 @@
 
 import "./Horarios.css";
 import { useState, useEffect, useMemo } from "react";
-import { useLocation } from "react-router-dom";
 
 import CalendarioMes from "./CalendarioMes";
 import TarjetaDia from "./TarjetaDia";
@@ -23,9 +22,9 @@ import {
   sesionPorDefecto,
 } from "./calendarioData";
 
-function HorariosEntrenadorContenido({ esAdmin: esAdminProp }) {
-  const { pathname } = useLocation();
-  const esAdmin = esAdminProp ?? pathname.toLowerCase().startsWith("/admin");
+// Siempre muestra los niveles del usuario como ENTRENADOR (el backend los limita: entrenador, o administrador con el rol
+// adicional en la vista de entrenador). Con varios niveles hay un selector; con uno solo, el nivel va fijo.
+function HorariosEntrenadorContenido() {
 
   const [niveles, setNiveles] = useState([]);
   const [sesiones, setSesiones] = useState([]);
@@ -55,7 +54,7 @@ function HorariosEntrenadorContenido({ esAdmin: esAdminProp }) {
     return () => {
       activo = false;
     };
-  }, [esAdmin]);
+  }, []);
 
   const { aviso, mostrarAviso } = useAviso({ tipoPorDefecto: "ok" });
   const avisoErrorApi = (err) =>
@@ -247,7 +246,7 @@ function HorariosEntrenadorContenido({ esAdmin: esAdminProp }) {
     );
   }
 
-  if (!esAdmin && niveles.length === 0) {
+  if (niveles.length === 0) {
     return (
       <main className="ui-contenido container-fluid py-5 text-center text-secondary">
         <i className="bi bi-exclamation-circle" style={{ fontSize: "2rem" }} />
@@ -264,22 +263,22 @@ function HorariosEntrenadorContenido({ esAdmin: esAdminProp }) {
         <div className="contenedor-titulos">
           <h2 className="titulo-pagina">Calendario de Entrenamientos</h2>
           <p className="subtitulo-horario">
-            {esAdmin
-              ? "Gestione los horarios de entrenamiento de todos los niveles"
+            {niveles.length > 1
+              ? "Gestione los horarios de entrenamiento de sus niveles"
               : "Gestione los horarios de entrenamiento de su nivel"}
           </p>
         </div>
 
         <div className="d-flex align-items-center gap-3 flex-wrap">
-          {/* Solo el admin puede cambiar de nivel; el entrenador ve el suyo fijo */}
-          {esAdmin && niveles.length > 0 && (
+          {/* Con varios niveles a cargo se elige cuál ver; con uno solo va fijo */}
+          {niveles.length > 1 && (
             <SelectorNivel
               niveles={niveles}
               nivelActivoId={nivelActivoId}
               onCambiar={setNivelActivoId}
             />
           )}
-          {!esAdmin && nivelActivo && (
+          {niveles.length === 1 && nivelActivo && (
             <div className="selector-nivel">
               <span className="etiqueta-selector-nivel">Tu nivel:</span>
               <span className="nivel-asignado">{nivelActivo.categoria}</span>

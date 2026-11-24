@@ -1,8 +1,9 @@
+import Avatar from "../../../components/Compartidos/Avatar";
 import { useEffect, useMemo, useState } from 'react'
-import { ChevronLeft, ChevronRight, Users } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Users, Eye } from 'lucide-react'
 import { ROLES, NOMBRE_ROL, fecha, paginar } from './cuentasData.js'
 
-const BADGE_ROL = { atleta: 'badge--azul', entrenador: 'badge--amarillo' }
+const BADGE_ROL = { atleta: 'badge--azul', entrenador: 'badge--amarillo', administrador: 'badge--rojo' }
 
 const fechaDe = (u) => u.created_at ?? u.creado_en ?? u.fecha_registro ?? null
 const fechaTexto = (u) => {
@@ -11,7 +12,7 @@ const fechaTexto = (u) => {
 }
 
 export default function VistaGestion({
-  usuarios = [], cargando, busqueda = '', onToggle, onCambiarRol,
+  usuarios = [], cargando, busqueda = '', miId, onVer, onToggle, onCambiarRol,
 }) {
   const [pagina, setPagina] = useState(1)
 
@@ -88,22 +89,29 @@ export default function VistaGestion({
                   <td className="correo-celda">{codigos[u.id]}</td>
                   <td>
                     <div className="nombre-con-avatar">
-                      <span className="avatar-inicial">{(u.nombre ?? '?').charAt(0).toUpperCase()}</span>
+                      <Avatar nombre={u.nombre} codigo={codigos[u.id] ?? u.id} className="avatar-inicial" />
                       <span className="nombre-celda">{u.nombre}</span>
                     </div>
                   </td>
                   <td className="correo-celda">{u.email}</td>
                   <td>
-                    <select
-                      className={`select-rol badge ${BADGE_ROL[u.rol] ?? 'badge--azul'}`}
-                      value={u.rol}
-                      onChange={(e) => onCambiarRol(u, e.target.value)}
-                      aria-label={`Rol de ${u.nombre}`}
-                    >
-                      {ROLES.map((r) => (
-                        <option key={r} value={r}>{NOMBRE_ROL[r]}</option>
-                      ))}
-                    </select>
+                    {u.rol === 'administrador' ? (
+                      // El rol de un administrador no se cambia desde aquí (el backend además protege al último administrador)
+                      <span className={`badge ${BADGE_ROL.administrador}`}>
+                        {NOMBRE_ROL.administrador}{u.tambienEntrenador ? ' + Entrenador' : ''}
+                      </span>
+                    ) : (
+                      <select
+                        className={`select-rol badge ${BADGE_ROL[u.rol] ?? 'badge--azul'}`}
+                        value={u.rol}
+                        onChange={(e) => onCambiarRol(u, e.target.value)}
+                        aria-label={`Rol de ${u.nombre}`}
+                      >
+                        {ROLES.map((r) => (
+                          <option key={r} value={r}>{NOMBRE_ROL[r]}</option>
+                        ))}
+                      </select>
+                    )}
                   </td>
                   <td>
                     <span className={`badge ${u.activo ? 'badge--verde' : 'badge--rojo'}`}>
@@ -112,14 +120,20 @@ export default function VistaGestion({
                   </td>
                   <td className="correo-celda">{fechaTexto(u)}</td>
                   <td>
-                    <label className="toggle" title={u.activo ? 'Desactivar cuenta' : 'Activar cuenta'}>
-                      <input
-                        type="checkbox"
-                        checked={!!u.activo}
-                        onChange={() => onToggle(u)}
-                      />
-                      <span className="toggle__pista" />
-                    </label>
+                    <div className="acciones-fila">
+                      <button type="button" className="btn-ver-cuenta" onClick={() => onVer(u)} aria-label={`Ver y editar la cuenta de ${u.nombre}`} title="Ver y editar">
+                        <Eye size={15} strokeWidth={2} />
+                      </button>
+                      <label className="toggle" title={u.id === miId ? 'No puedes desactivar tu propia cuenta' : (u.activo ? 'Desactivar cuenta' : 'Activar cuenta')}>
+                        <input
+                          type="checkbox"
+                          checked={!!u.activo}
+                          disabled={u.id === miId}
+                          onChange={() => onToggle(u)}
+                        />
+                        <span className="toggle__pista" />
+                      </label>
+                    </div>
                   </td>
                 </tr>
               ))

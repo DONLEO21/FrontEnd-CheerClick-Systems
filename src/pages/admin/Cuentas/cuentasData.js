@@ -75,7 +75,8 @@ export const fechaVal = (iso) => {
   if (!iso) return '—'
   const d = new Date(iso)
   if (Number.isNaN(d.getTime())) return val(iso)
-  return d.toLocaleDateString('es-CO', { day: '2-digit', month: '2-digit', year: 'numeric' })
+  // timeZone UTC: la fecha de nacimiento se guarda a medianoche UTC; en hora de Colombia se vería un día antes
+  return d.toLocaleDateString('es-CO', { day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'UTC' })
 }
 
 export const parentescoLegible = (clave) => {

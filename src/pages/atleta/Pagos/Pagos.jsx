@@ -20,6 +20,9 @@ function PagosAtleta() {
   const { sesion } = useSesion();
   const [atleta, setAtleta] = useState(null);
   const [mensualidades, setMensualidades] = useState([]);
+  const [miPlan, setMiPlan] = useState(null);
+  const [avisos, setAvisos] = useState([]);
+  const [cargado, setCargado] = useState(false);
   const [filtro, setFiltro] = useState("recientes");
   const [mes, setMes] = useState("");
   const [aSubir, setASubir] = useState(null);
@@ -31,13 +34,16 @@ function PagosAtleta() {
   useEffect(() => {
     let vigente = true;
     cargarPagosAtleta(sesion.usuario)
-      .then(({ atleta: a, mensualidades: m }) => {
+      .then(({ atleta: a, mensualidades: m, miPlan: p, avisos: av }) => {
         if (vigente) {
           setAtleta(a);
           setMensualidades(m);
+          setMiPlan(p);
+          setAvisos(av);
         }
       })
-      .catch(console.error);
+      .catch(console.error)
+      .finally(() => vigente && setCargado(true));
     return () => {
       vigente = false;
     };
@@ -45,7 +51,7 @@ function PagosAtleta() {
 
   const ordenadas = useMemo(() => ordenarPorMes(mensualidades), [mensualidades]);
   const resumen = useMemo(() => calcularResumen(mensualidades), [mensualidades]);
-  const notificaciones = useMemo(() => construirNotificaciones(mensualidades), [mensualidades]);
+  const notificaciones = useMemo(() => construirNotificaciones(mensualidades, avisos), [mensualidades, avisos]);
   const ultima = ordenadas[0];
 
   const visibles = useMemo(() => {
@@ -67,7 +73,9 @@ function PagosAtleta() {
   };
 
   const recargarMensualidades = () =>
-    cargarPagosAtleta(sesion.usuario).then(({ mensualidades: m }) => setMensualidades(m)).catch(console.error);
+    cargarPagosAtleta(sesion.usuario)
+      .then(({ mensualidades: m, miPlan: p, avisos: av }) => { setMensualidades(m); setMiPlan(p); setAvisos(av); })
+      .catch(console.error);
 
   const guardarComprobante = async (datos) => {
     if (!puedePagar(aSubir)) throw new Error(motivoNoPuedePagar(aSubir));
@@ -100,7 +108,7 @@ function PagosAtleta() {
       <ResumenPagos resumen={resumen} />
 
       <section className="atl-pagos-panel-atl">
-        <h3 id="titulo-mensu">Mensualidades · Registro completo</h3>
+        <h3 id="titulo-mensu">Mensualidades · Subir comprobante</h3>
         {resumen.totalPendiente > 0 && (
           <div className="atl-pagos-mensaje-atl">
             <h4>
@@ -117,13 +125,18 @@ function PagosAtleta() {
               <TarjetaMensualidad key={m.id} mensualidad={m} onSubir={abrirPago} onVer={setAVer} />
             ))
           ) : (
-            <p style={{ padding: 20 }}>No hay mensualidades para este filtro.</p>
+            // El estado vacío solo aparece cuando de verdad no hay mensualidades; con un filtro sin resultados se dice por qué
+            <p style={{ padding: 20 }}>
+              {!cargado ? "Cargando mensualidades…"
+                : mensualidades.length === 0 ? "Aún no tienes mensualidades generadas. Aparecerán aquí cuando tu cuenta esté aprobada y tengas un plan asignado."
+                  : "No hay mensualidades para este filtro."}
+            </p>
           )}
         </section>
       </section>
 
       <footer className="atl-pagos-infor-final-atl">
-        <PlanMembresia plan={ultima?.plan} valor={ultima?.valor} vencimiento={ultima?.vencimiento} />
+        <PlanMembresia plan={miPlan?.plan?.nombre ?? ultima?.plan} valor={miPlan?.plan?.valor ?? ultima?.valor} diaCorte={miPlan?.diaCorte} sinPlan={!!miPlan && !miPlan.plan} />
         <NotificacionesPagos notificaciones={notificaciones} />
       </footer>
 

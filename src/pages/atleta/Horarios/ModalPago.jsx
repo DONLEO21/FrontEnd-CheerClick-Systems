@@ -1,7 +1,9 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
+import useFormularioAsincrono from "../../../hooks/useFormularioAsincrono";
 import { formatearMoneda } from "./horariosAtletaData";
 import { getMetodosPago } from "../../../services/MetodosPagoService";
 import { prepararComprobante } from "../../../utils/archivos";
+import DatosPagoMetodo from "../../../components/Compartidos/DatosPagoMetodo";
 
 const CAMPOS_VACIOS = { metodoId: "", referencia: "", fecha: "" };
 
@@ -14,11 +16,18 @@ const hoyISO = () => new Intl.DateTimeFormat("en-CA", { timeZone: "America/Bogot
  * 409, 400…) se muestra DENTRO del modal con su mensaje real. `onEnviar` debe devolver una promesa.
  */
 export default function ModalPago({ torneo, inscripcion, onCerrar, onEnviar }) {
-  const [campos, setCampos] = useState(CAMPOS_VACIOS);
+  // PRIMERO los datos (métodos activos), DESPUÉS el formulario: ver hooks/useFormularioAsincrono.js
+  const f = useFormularioAsincrono({
+    clave: torneo?.id,
+    activo: !!torneo,
+    cargar: () => Promise.all([getMetodosPago()]).then(([lista]) => ({ metodos: lista.filter((m) => m.activo) })),
+    inicial: () => CAMPOS_VACIOS,
+  });
+  const metodos = f.datos?.metodos ?? [];
+  const campos = { ...CAMPOS_VACIOS, ...f.valores }; // mientras carga, vacíos (inputs siempre controlados)
+  const cargandoMetodos = f.cargando;
+  const errorMetodos = f.error;
   const [errores, setErrores] = useState({});
-  const [metodos, setMetodos] = useState([]);
-  const [cargandoMetodos, setCargandoMetodos] = useState(true);
-  const [errorMetodos, setErrorMetodos] = useState("");
   const [comprobante, setComprobante] = useState(""); // data-URL listo para enviar
   const [archivo, setArchivo] = useState(null); // { nombre, tamanoKB }
   const [errorArchivo, setErrorArchivo] = useState("");
@@ -27,15 +36,6 @@ export default function ModalPago({ torneo, inscripcion, onCerrar, onEnviar }) {
   const [errorEnvio, setErrorEnvio] = useState("");
   const inputArchivoRef = useRef(null);
 
-  useEffect(() => {
-    let vivo = true;
-    getMetodosPago()
-      .then((lista) => vivo && setMetodos(lista.filter((m) => m.activo)))
-      .catch((e) => vivo && setErrorMetodos(e?.message || "No se pudieron cargar los métodos de pago."))
-      .finally(() => vivo && setCargandoMetodos(false));
-    return () => { vivo = false; };
-  }, []);
-
   const metodo = useMemo(() => metodos.find((m) => m.id === campos.metodoId) ?? null, [metodos, campos.metodoId]);
   if (!torneo) return null;
 
@@ -43,7 +43,7 @@ export default function ModalPago({ torneo, inscripcion, onCerrar, onEnviar }) {
   const requiereComprobante = !!metodo && metodo.requiereComprobante;
 
   const actualizarCampo = (campo, valor) => {
-    setCampos((c) => ({ ...c, [campo]: valor }));
+    f.cambiar(campo, valor);
     setErrores((e) => ({ ...e, [campo]: false }));
     setErrorEnvio("");
   };
@@ -131,7 +131,7 @@ export default function ModalPago({ torneo, inscripcion, onCerrar, onEnviar }) {
                 id="metodo-pago"
                 className={`entrada-campo ${errores.metodo ? "entrada-campo--error" : ""}`}
                 value={campos.metodoId}
-                disabled={cargandoMetodos || !!errorMetodos}
+                disabled={!f.listo}
                 onChange={(e) => cambiarMetodo(e.target.value)}
               >
                 <option value="" disabled>{cargandoMetodos ? "Cargando…" : "Método de pago"}</option>
@@ -139,7 +139,11 @@ export default function ModalPago({ torneo, inscripcion, onCerrar, onEnviar }) {
                   <option key={m.id} value={m.id}>{m.nombre}</option>
                 ))}
               </select>
-              {errorMetodos && <span className="pista-campo-bloqueado" role="alert">{errorMetodos}</span>}
+              {errorMetodos && (
+                <span className="pista-campo-bloqueado" role="alert">
+                  {errorMetodos} <button type="button" className="enlace-zona-carga" onClick={f.reintentar}>Reintentar</button>
+                </span>
+              )}
             </div>
             <div className="campo-formulario-atleta">
               <label className="etiqueta-campo-atleta" htmlFor="monto-pago">Monto a pagar</label>
@@ -156,6 +160,11 @@ export default function ModalPago({ torneo, inscripcion, onCerrar, onEnviar }) {
               </span>
             </div>
           </div>
+
+          {metodo && (
+            <DatosPagoMetodo metodo={metodo} valor={torneo.costo} concepto={`Inscripción${torneo.nombre ? ` · ${torneo.nombre}` : ""}`}
+              textoEfectivo="Pagarás en el club. Tu inscripción quedará pendiente hasta que el club confirme el pago." />
+          )}
 
           <div className={`cuadricula-campos-pago ${requiereComprobante ? "" : "cuadricula-campos-pago--una-col"}`}>
             {requiereComprobante && (
@@ -186,12 +195,6 @@ export default function ModalPago({ torneo, inscripcion, onCerrar, onEnviar }) {
           </div>
 
           <hr className="divisor-modal" />
-
-          {esEfectivo && (
-            <p className="nota-pago-efectivo">
-              Para pagos en efectivo no es necesario subir comprobante. Tu inscripción quedará pendiente hasta que el club confirme el pago.
-            </p>
-          )}
 
           {requiereComprobante && (
             <>
@@ -236,7 +239,7 @@ export default function ModalPago({ torneo, inscripcion, onCerrar, onEnviar }) {
 
         <footer className="pie-modal-pago">
           <button className="btn-cancelar-pago" type="button" onClick={onCerrar} disabled={enviando}>Cancelar</button>
-          <button className="btn-enviar-comprobante" type="button" onClick={enviarComprobante} disabled={enviando} aria-busy={enviando}>
+          <button className="btn-enviar-comprobante" type="button" onClick={enviarComprobante} disabled={enviando || !f.listo} aria-busy={enviando}>
             {enviando && <span className="spinner-border spinner-border-sm me-2" aria-hidden="true" />}
             {enviando ? "Enviando…" : reenvio ? "Reenviar comprobante" : "Enviar comprobante"}
           </button>

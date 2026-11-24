@@ -765,6 +765,9 @@
 /* ── Modal "Pagar mensualidad" ─────────────────────────────────────────── */
 .atl-pagos-menu-regis-atleta { width: min(540px, calc(100vw - 24px)); padding: 0; }
 .atl-pagos-menu-regis-atleta[open] { gap: 0; }
+/* Modal alto (con los datos de pago): el encabezado y los botones quedan fijos y solo el cuerpo se desplaza */
+.atl-pagos-menu-regis-atleta[open] { display: flex; flex-direction: column; max-height: calc(100dvh - 24px); overflow: hidden; }
+.atl-pagos-menu-regis-atleta .atl-pago-cuerpo { flex: 1 1 auto; min-height: 0; overflow-y: auto; }
 
 .atl-pago-cuerpo { display: flex; flex-direction: column; gap: 16px; padding: 20px 25px 4px; }
 
@@ -871,3 +874,7 @@
     opacity: 0.55;
     cursor: not-allowed;
 }
+
+/* Avatar del atleta: foto de perfil o, si no hay, sus iniciales */
+.atl-pagos-detalle-usu-atl { object-fit: cover; flex-shrink: 0; }
+.atl-pagos-detalle-usu-atl.foto-iniciales { background-color: #fbe3e4; font-size: 1rem; }

@@ -3,6 +3,7 @@ import { plantillaHorarioApi } from '../api/plantilla_horario.api'
 import { usuariosApi } from '../api/usuarios.api'
 import { competenciasApi } from '../api/competencias.api'
 import { horariosApi } from '../api/horarios.api'
+import { getImageUrl } from '../api/client'
 // Niveles, plantillas de horario, sesiones (horarios) y competencias.
 // Backend: /api/niveles, /api/plantilla_horario, /api/horarios, /api/competencias.
 // Todas las funciones devuelven los datos con la forma que ya usan las pantallas de Horarios.
@@ -33,8 +34,11 @@ const nivelDesdeApi = (n, plantillas = []) => ({
   codigo: n.codigo ?? '', // NV001 (backend)
   categoria: n.nombre,
   entrenador: nombreCompleto(n.usuario),
-  entrenadorId: idDe(n.usuario) ?? null,
-  foto: n.imagenEntre ?? '',
+  // ID guardado del entrenador (el backend lo envía aunque el usuario ya no exista) y si hoy puede dirigir niveles
+  entrenadorId: n.usuarioId ?? idDe(n.usuario) ?? null,
+  entrenadorValido: n.entrenadorValido !== false,
+  // Foto de la tarjeta: la del nivel y, si no tiene, la foto de perfil del entrenador (puede faltar: la tarjeta usa iniciales)
+  foto: getImageUrl(n.imagenEntre || n.fotoEntrenador) || '',
   horarios: bloquesDe(plantillas),
   inhabilitado: n.estado === 'Inactivo',
 })
@@ -55,16 +59,13 @@ export async function obtenerNivel(id) {
   return nivelDesdeApi(n, plantillas ?? [])
 }
 
-// El formulario de nivel pide el nombre del entrenador; el backend necesita su id.
-export async function buscarEntrenadorPorNombre(nombre) {
-  const buscado = nombre.trim().toLowerCase()
-  for (let pagina = 1; pagina < 50; pagina += 1) {
-    const r = await usuariosApi.listarSolicitudes({ estado: 'Aprobada', page: pagina })
-    const hallado = (r.data ?? []).find((u) => u.rol === 'Entrenador' && nombreCompleto(u).toLowerCase() === buscado)
-    if (hallado) return hallado._id
-    if (pagina * 10 >= (r.total ?? 0)) break
-  }
-  return null
+// Quienes pueden dirigir un nivel (entrenadores y administradores con «También actúa como entrenador»), para el selector.
+// El backend devuelve la etiqueta «Nombre Apellido · Rol»; el nivel se guarda por ID, no por nombre.
+export async function listarEntrenadoresAsignables() {
+  const { data } = await usuariosApi.listarEntrenadores()
+  return (data ?? []).map((u) => ({
+    id: u._id, etiqueta: u.etiqueta, nombre: nombreCompleto(u), codigo: u.codigo ?? '', rol: u.rol, foto: getImageUrl(u.foto) || '',
+  }))
 }
 
 // Sustituye las plantillas del nivel por las del formulario
@@ -78,12 +79,16 @@ async function sincronizarPlantillas(nivelId, bloques) {
   }
 }
 
-export async function guardarNivel({ id, categoria, entrenador, foto, horarios }) {
-  const usuario = await buscarEntrenadorPorNombre(entrenador)
-  if (!usuario) throw new Error(`No existe un entrenador llamado "${entrenador}". Escribe su nombre y apellido tal como está registrado.`)
-
+// `entrenadorId` es el ID del usuario elegido en el selector. Al EDITAR solo se envía si cambió (guardar otros datos de un nivel
+// cuyo entrenador ya no es válido no se bloquea). `foto` solo se envía si es una imagen nueva (data URL).
+export async function guardarNivel({ id, categoria, entrenadorId, entrenadorIdOriginal, foto, horarios }) {
   const dias = new Set(horarios.flatMap((b) => b.dias)).size
-  const cuerpo = { nombre: categoria, diasEntreno: dias, usuario, ...(foto ? { imagenEntre: foto } : {}) }
+  const cuerpo = {
+    nombre: categoria,
+    diasEntreno: dias,
+    ...(!id || entrenadorId !== entrenadorIdOriginal ? { usuario: entrenadorId } : {}),
+    ...(foto && foto.startsWith('data:') ? { imagenEntre: foto } : {}),
+  }
   const { data } = id ? await nivelesApi.update(id, cuerpo) : await nivelesApi.create(cuerpo)
   await sincronizarPlantillas(data._id, horarios)
   return obtenerNivel(data._id)

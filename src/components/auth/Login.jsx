@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { iniciarSesion as iniciarSesionApi, RUTA_INICIO } from '../../services/sesion'
+import { iniciarSesion as iniciarSesionApi, rolActivoDe, RUTA_INICIO, RUTA_CAMBIAR_CLAVE } from '../../services/sesion'
 import CampoClave from './CampoClave'
 import logoClub from '../../assets/icons/Logo-Club.png'
 
@@ -39,7 +39,7 @@ function Login({ irA }) {
     try {
       const usuario = await iniciarSesionApi(email, password)
       // "replace" sustituye la entrada de /acceso en el historial
-      navigate(RUTA_INICIO[usuario.rol] ?? '/atleta', { replace: true })
+      navigate(usuario.debeCambiarClave ? RUTA_CAMBIAR_CLAVE : RUTA_INICIO[rolActivoDe(usuario)] ?? '/atleta', { replace: true })
     } catch (err) {
       const texto = err.message ?? ''
       if (err.status === 403 && /pendiente/i.test(texto)) {

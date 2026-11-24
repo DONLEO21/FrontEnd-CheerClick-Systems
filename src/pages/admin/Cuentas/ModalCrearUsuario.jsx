@@ -5,7 +5,7 @@ import { ROLES, ROLES_CREAR, NOMBRE_ROL } from './cuentasData.js'
 import { listarNivelesOpciones, listarPlanesOpciones } from '../../../services/catalogos'
 
 const VACIO = {
-  rol: ROLES[0], nombre: '', apellido: '', email: '', password: '', nivel: '', plan: '',
+  rol: ROLES[0], nombre: '', apellido: '', email: '', password: '', nivel: '', plan: '', tambienEntrenador: false,
 }
 
 export default function ModalCrearUsuario({ onCerrar, onCrear, creando }) {
@@ -92,6 +92,7 @@ export default function ModalCrearUsuario({ onCerrar, onCrear, creando }) {
               <label htmlFor="crear-password">Contraseña</label>
               <CampoClave id="crear-password" placeholder="Mínimo 8 caracteres"
                 value={datos.password} onChange={cambiar('password')} />
+              <small>Es temporal: la persona deberá cambiarla en su primer inicio de sesión.</small>
             </div>
 
             <div className="detalle-grupo">
@@ -110,6 +111,20 @@ export default function ModalCrearUsuario({ onCerrar, onCrear, creando }) {
               </select>
             </div>
           </div>
+
+          {datos.rol === 'administrador' && (
+            <label className="interruptor-fila">
+              <span className="interruptor-fila__texto">
+                <strong>También actúa como entrenador</strong>
+                <small>Podrá dirigir niveles y usar la vista de entrenador.</small>
+              </span>
+              <span className="toggle">
+                <input type="checkbox" checked={datos.tambienEntrenador}
+                  onChange={(e) => setDatos((d) => ({ ...d, tambienEntrenador: e.target.checked }))} />
+                <span className="toggle__pista" />
+              </span>
+            </label>
+          )}
 
           {mensaje && <div className="mensaje-error">{mensaje}</div>}
         </div>

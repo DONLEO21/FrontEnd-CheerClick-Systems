@@ -95,3 +95,56 @@ PQRS (PQ0001), implementos (IM), pagos (PG), habilidades (HA) y pedidos (SL).
 | Punto | Archivo(s) | Cambio |
 |---|---|---|
 | Un pago ya enviado no se vuelve a pagar | `services/solicitudPago.services.js` (`dbAtletaActualizaPago`) | `PATCH /pagos/:id` del atleta responde **409** si el pago está `Pagado` («Esta mensualidad ya fue pagada») o ya enviado/en efectivo pendiente («Ya hay un pago en verificación»). La escritura es una actualización condicional **atómica** (solo si sigue sin enviar o `Rechazado`): dos envíos simultáneos → uno pasa y el otro 409. Un pago `Rechazado` sí se puede reintentar. |
+
+
+## Ronda 2026-11-22 (gestión de cuentas, admin que también entrena, mensualidad automática)
+
+**Roles.** `usuario.rol` es el rol **principal**; `usuario.rolesAdicionales` (hoy solo `['Entrenador']`, solo en administradores) son permisos extra.
+`helpers/roles.helpers.js`: `rolesDe`, `tieneRol`, `puedeEntrenar`, `actuaComoEntrenador`. `authorizationMiddleware` autoriza por el **conjunto** de roles
+guardado en la base de datos (el token solo identifica a la persona; el cliente nunca declara su rol). La cabecera opcional `X-Vista: entrenador` solo
+**restringe** los datos a los niveles propios (niveles, rendimiento, habilidades, asistencia, horarios) y solo si el usuario tiene el rol de entrenador.
+
+| Punto | Archivo(s) | Cambio |
+|---|---|---|
+| Editar datos de una cuenta | `controllers/gestionCuentas.controllers.js`, `helpers/validacionesUsuario.helpers.js` | `PATCH /usuarios/:id/ficha` (solo admin): nombre, apellido, correo, tipo/número de documento, género, fecha de nacimiento, teléfono, EPS, contactos de emergencia. Mismas reglas que el registro (correo y documento únicos → **409**; edad: admin y entrenador ≥ 18, atleta ≥ 5; teléfono 7-15 dígitos). No edita contraseña, código, estado ni rol. |
+| Auditoría | `models/auditoria.model.js`, `helpers/auditoria.helpers.js` | Colección `auditoria`: quién, cuándo, entidad y `cambios[{campo, anterior, nuevo}]`. Se registra al editar datos, reasignar nivel/plan y cambiar rol. Nunca rompe la operación principal. |
+| Reasignar nivel / plan | `gestionCuentas.controllers.js` | `PATCH /usuarios/:id/nivel` y `/plan` (solo admin; nivel/plan **activos**; 409 si es el mismo). El historial queda con el nivel anterior. Avisos a la campanita del atleta y de los entrenadores de ambos niveles. El plan usa `aplicarCambioDePlan`. |
+| «También actúa como entrenador» | `gestionCuentas.controllers.js`, `controllers/usuarios.controllers.js` | `PATCH /usuarios/:id/entrenador { activo }` (solo admin, solo administradores aprobados y mayores de edad). Quitarlo con niveles a cargo → **409** con la lista de niveles. `POST /usuarios` acepta `tambienEntrenador` solo para `rol: Administrador`. Nunca puede quedar el sistema sin administradores (409) ni un admin cambiar su propio rol. |
+| Entrenador por ID | `controllers/niveles.controllers.js`, `GET /usuarios/entrenadores` | `usuario` del nivel se valida por ID (400 `{errors:{usuario}}`) y debe poder entrenar. `GET /usuarios/entrenadores` (solo admin) lista entrenadores y administradores con el rol adicional, con `etiqueta` «Nombre Apellido · Rol». `GET /niveles` añade `fotoEntrenador` (foto de perfil del entrenador). |
+| Certificado de EPS | `controllers/cuentas.controllers.js`, `perfilUsuario.controllers.js`, `services/archivos.services.js`, `index.js` | `GET /usuarios/:id/certificado-eps` (solo admin) y `GET /perfilusuario/me/certificado-eps` (el propio atleta). `Content-Disposition: inline; filename="certificado-eps-{codigo}-{apellido}.{ext}"` y CORS lo expone (`exposedHeaders`). Otro atleta o un entrenador → 403. |
+| **Mensualidad automática** | `services/generacionMensualidades.services.js` | `asegurarMensualidad(atletaId, periodo)`: único camino, idempotente (índice único usuario+periodo), guarda plan y **valor** al crear, pago `Pendiente`, vence el día `MENSUALIDAD_DIA_VENCIMIENTO` (por defecto 10; si se crea después de ese día, plazo de 7 días), zona `America/Bogota`. Aviso «Tienes pendiente tu mensualidad de {mes}: ${valor}» con enlace a `/atleta/pagos`. Rechazados, inactivos o sin plan no generan nada. La usan: aprobar solicitud, crear admin un atleta, job del día 1, recuperación al arrancar, cambio de plan y apertura de «Mis pagos» (`GET /mensualidades`, que además marca `Vencido` lo no enviado). |
+| Cambio de plan | `aplicarCambioDePlan` | Pendiente sin enviar → se actualiza plan y valor; pagada / en verificación / vencida → el plan nuevo rige desde el periodo siguiente; el historial pagado nunca se toca. |
+| Plan vigente del atleta | `controllers/mensualidades.controllers.js` | `GET /mensualidades/mi-plan` (solo atleta): plan vigente, valor, nivel y día de corte, para «Mi plan de membresía». |
+| Migración y relleno | `scripts/migrar-roles.js`, `scripts/backfill-mensualidades.js` | `npm run migrar:roles` (idempotente; informa niveles cuyo entrenador no puede entrenar). `npm run backfill:mensualidades -- --dry-run` lista lo que crearía **sin escribir**; sin `--dry-run` aplica (opción `--sin-notificar`). |
+
+### Orden recomendado
+1. `npm run migrar:roles` y revisar el informe de niveles con entrenador no válido.
+2. `npm run backfill:mensualidades -- --dry-run`, revisar la lista y solo entonces `npm run backfill:mensualidades`.
+
+
+## Ronda 2026-11-22 (segunda parte: selector de entrenador y «Editar cuenta»)
+
+| Punto | Archivo(s) | Cambio |
+|---|---|---|
+| Entrenador de un nivel sin resolver | `services/niveles.services.js` (`enriquecerNiveles`) | `GET /niveles` y `GET /niveles/:id` ya no usan `populate` (un entrenador inexistente dejaba `usuario: null` y se perdía el ID → tarjeta «?» y «Selecciona el entrenador del nivel»). Devuelven `usuarioId` (ID guardado), `usuario` (o `null`), `entrenadorValido` y `fotoEntrenador`. La foto se busca por `perteneceA` (antes se consultaba un campo inexistente). |
+| Guardar un nivel sin cambiar su entrenador | `controllers/niveles.controllers.js` | `PATCH /niveles/:id` solo valida `usuario` si **cambió** (guardar otros datos de un nivel cuyo entrenador ya no es válido no se bloquea). |
+| Selector | `controllers/gestionCuentas.controllers.js` | `GET /usuarios/entrenadores` (solo admin): `id`, `codigo`, nombre, apellido, `rol`, `rolesAdicionales`, `foto` y etiqueta «Nombre Apellido · Entrenador» / «… · Administrador y entrenador». Solo activos y aprobados. |
+| Editar cuenta: errores y atomicidad | `gestionCuentas.controllers.js`, `helpers/validacionesUsuario.helpers.js` | `PATCH /usuarios/:id/ficha`: valida **solo lo enviado** (contactos por campo), todo **antes** de escribir; si un paso falla se deshacen los anteriores y se dice cuál falló. Errores `{ success:false, msg, message, errors:[{ campo, mensaje }] }` (400/404/409/500). Parentescos antiguos («Madre / Padre»…) se normalizan al catálogo al enviarse. Unicidad de correo/documento excluye al propio usuario. |
+| Interruptor «También actúa como entrenador» | `cambiarRolEntrenador` | Si la fecha de nacimiento del perfil incumple la edad (≥ 18), 400 con un mensaje accionable (corregir la fecha en «Editar cuenta»). |
+| Plan y mensualidad | `reasignarPlan` | Si ajustar la mensualidad falla, el plan vuelve al anterior (todo o nada). |
+| Auditoría de datos | `scripts/auditar-usuarios.js` | `npm run auditar:usuarios [-- --buscar=Ronald --niveles="Nivel 3 Magic,…"]`, **solo lectura**: fechas fuera de regla, correos/documentos duplicados, parentescos fuera del catálogo, contactos incompletos, atletas con nivel/plan inactivo, niveles sin entrenador resoluble; con `--buscar` muestra la ficha, la auditoría de cambios y las mensualidades. |
+
+
+## Ronda 2026-11-23 (admin como entrenador, datos de pago, guardias de sesión)
+
+| Punto | Archivo(s) | Cambio |
+|---|---|---|
+| Activar «También actúa como entrenador» | `controllers/gestionCuentas.controllers.js` (`cambiarRolEntrenador`) | **Causa raíz** de que Ronald no pudiera ser entrenador: el interruptor validaba la fecha de nacimiento GUARDADA (19/11/2026 → menor de 18) y respondía 400, así que `rolesAdicionales` nunca se guardaba. La edad se valida solo donde se edita la fecha (`editarFicha`); aquí, si la fecha guardada incumple, responde 200 con `aviso`. |
+| Selector de entrenadores | `listarEntrenadores` | Mismo criterio que `puedeEntrenar`: `rol: Entrenador` **o** `rolesAdicionales: Entrenador` (activo y aprobado). |
+| Prueba de integración | `tests/admin-entrenador.integracion.mjs` (`npm run probar:admin-entrenador`) | Flujo completo + restricciones (403 / 400 / 409). Solo corre contra una base local. |
+| Métodos de pago | `models/metodoPago.model.js`, `services/metodoPago.services.js` | Campos **opcionales** `llave` (≤ 60), `numeroTelefono` (7–15 dígitos), `numeroCuenta` (6–25 dígitos). Los métodos existentes devuelven `''` (sin migración). Efectivo los descarta. |
+| Contraseña temporal | `models/usuarios.model.js` | `debeCambiarClave` (true al crear con contraseña asignada por el admin) y `claveCambiadaEn` (invalida tokens anteriores). Cuentas existentes: `false`. |
+| Cambiar contraseña | `routes/auth.routes.js`, `controllers/auth.controllers.js` | `PATCH /api/auth/cambiar-contrasena { actual, nueva, confirmar }` (autenticado; ≥ 8 caracteres, distinta de la actual). Quita `debeCambiarClave`, invalida tokens anteriores y entrega un token nuevo. `restablecer-contrasena` también marca el cambio. |
+| Perfil completo | `helpers/perfilCompleto.helpers.js` | UNA función `perfilCompleto(usuario)` → `{ completo, faltantes }`. Todos: nombre, apellido, documento, fecha de nacimiento, género, teléfono; atleta además EPS, certificado y ≥ 1 contacto. `login`, `renovar-token` y `cambiar-contrasena` devuelven `perfilCompleto` y `camposFaltantes`. |
+| Guardias | `middlewares/authenticate.middlewares.js` | 1) `debeCambiarClave` → **403 `CAMBIO_CLAVE_REQUERIDO`** en toda ruta autenticada salvo `renovar-token` y `cambiar-contrasena`. 2) Atleta con perfil incompleto → **403 `PERFIL_INCOMPLETO`** en acciones (no consultas) de `/pagos`, `/mensualidades`, `/solicitud*`, `/justificacion`, `/inscripciones_competencias`; **solo si `PERFIL_OBLIGATORIO=true`**. |
+| Auditoría | `scripts/auditar-usuarios.js` | Agrega «Perfil incompleto» (quién quedaría obligado y qué le falta) y «Con contraseña temporal pendiente». |

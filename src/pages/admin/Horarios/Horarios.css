@@ -809,3 +809,34 @@
 :where(.adm-horarios) .campo-formulario input:focus {
     border-color: var(--rojo);
     box-shadow: 0 0 0 3px rgba(204, 0, 0, 0.1);}
+
+/* ── Selector buscable de entrenador (modal de nivel) ── */
+:where(.adm-horarios) .selector-entrenador { position: relative; }
+:where(.adm-horarios) .selector-entrenador__campo { position: relative; display: flex; align-items: center; }
+:where(.adm-horarios) .selector-entrenador__lupa { position: absolute; left: 12px; color: #9a9a9a; pointer-events: none; }
+:where(.adm-horarios) .selector-entrenador__flecha { position: absolute; right: 12px; color: #9a9a9a; pointer-events: none; }
+:where(.adm-horarios) .selector-entrenador__input { padding-left: 36px; padding-right: 34px; }
+:where(.adm-horarios) .selector-entrenador__lista {
+  position: absolute;
+  z-index: 5;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  max-height: 220px;
+  overflow-y: auto;
+  margin: 0;
+  padding: 4px;
+  list-style: none;
+  background: #fff;
+  border: 1.5px solid var(--color-borde);
+  border-radius: 7px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .12);
+}
+:where(.adm-horarios) .selector-entrenador__opcion { padding: 9px 12px; border-radius: 5px; font-size: 13.5px; cursor: pointer; }
+:where(.adm-horarios) .selector-entrenador__opcion.activa { background: #fdeaea; }
+:where(.adm-horarios) .selector-entrenador__opcion.elegida { font-weight: 700; color: var(--color-primario); }
+:where(.adm-horarios) .selector-entrenador__vacio { padding: 10px 12px; font-size: 13px; color: #777; }
+:where(.adm-horarios) .selector-entrenador__reintentar { border: 0; background: none; padding: 0; color: var(--color-primario); font-weight: 600; text-decoration: underline; cursor: pointer; }
+
+:where(.adm-horarios) .selector-entrenador__codigo { color: #9a9a9a; font-size: 12px; }
+:where(.adm-horarios) .aviso-entrenador { display: inline-block; margin-top: 2px; font-size: 11.5px; font-weight: 600; color: #b45309; }

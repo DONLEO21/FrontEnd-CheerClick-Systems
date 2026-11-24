@@ -125,6 +125,30 @@
     transform: translateY(-50%) translateX(0);
 }
 
+/* Módulo bloqueado (perfil incompleto): se ve apagado pero RECIBE clic/Enter/Espacio (abre el modal explicativo) y lleva un candado */
+.menu-lateral__elemento--bloqueado .menu-lateral__icono {
+  filter: brightness(0) invert(1) opacity(0.3);
+}
+
+.menu-lateral__elemento--bloqueado .menu-lateral__enlace {
+  cursor: pointer;
+}
+
+.menu-lateral__candado {
+  position: absolute;
+  right: 1px;
+  bottom: 1px;
+  display: grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--rojo, #cc0000);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  pointer-events: none;
+}
+
 .menu-lateral__elemento--activo::before {
     content: "";
     position: absolute;

@@ -16,7 +16,6 @@ const EXTRA = {
   "/admin": "Dashboard",
   "/entrenador": "Dashboard",
   "/atleta": "Dashboard",
-  "/admin/calendario": "Calendario", // vista de entrenador del administrador
 };
 
 // Pantallas internas de /acceso (AuthPage las controla con estado, no con rutas)

@@ -72,6 +72,8 @@ export default function usePerfil({ rol, mostrarAviso }) {
         setBorrador(inicial);
         setBloqueos(bloq);
         setCargandoPerfil(false); // el formulario aparece YA
+        // Perfil incompleto (obligatorio): el formulario se abre directamente en modo edición
+        if (almacenSesion.usuario()?.perfilCompleto === false) setEditando(true);
 
         // El certificado (ruta protegida) se descarga después, sin bloquear la pantalla
         if (cargados.certificadoEpsPath && !urlPrevia) {

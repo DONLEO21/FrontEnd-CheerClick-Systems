@@ -1,3 +1,4 @@
+import { inicialesDe } from '../../utils/iniciales.js';
 import menuAtleta from '../../data/menuAtleta.js';
 import menuAdmin from '../../data/menuAdmin.js';
 import menuEntrenador from '../../data/menuEntrenador.js';
@@ -93,11 +94,6 @@ export const BLOQUEOS_INICIALES = {
   numeroDocumento: false,
 };
 
-export function iniciales(nombreCompleto) {
-  return (nombreCompleto || '')
-    .split(' ')
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((p) => p[0]?.toUpperCase())
-    .join('');
+export function iniciales(nombreCompleto, apellido = '') {
+  return inicialesDe(nombreCompleto, apellido);
 }

@@ -1,8 +1,13 @@
+import FotoPersona from "../../../components/Compartidos/FotoPersona";
+import useUsuario from "../../../hooks/useUsuario";
+
 function InfoUsuario({ atleta }) {
+  const { foto } = useUsuario();
   return (
     <aside className="atl-pagos-infor-usuario-atl">
       <div className="atl-pagos-infor-usua-atl">
-        <div className="atl-pagos-detalle-usu-atl"></div>
+        {/* Foto de perfil; sin foto (o si no carga) se muestran las iniciales */}
+        <FotoPersona src={foto} nombre={atleta?.nombre ?? ""} className="atl-pagos-detalle-usu-atl" />
         <h3>
           {atleta?.nombre ?? "Cargando…"}
           <p>{atleta?.nivel ? `Atleta · ${atleta.nivel}` : "Atleta"}</p>

@@ -646,6 +646,213 @@ dialog:modal:not(.dialog-carrito)::backdrop {
   color: var(--blanco);
 }
 
+/* ───────────────────── DATOS PARA PAGAR CON UN MÉTODO (.ui-datos-pago) ────── */
+/* Compartido por todos los flujos de pago: QR + llave/teléfono/cuenta + valor y concepto (ver DatosPagoMetodo.jsx) */
+.ui-datos-pago {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid var(--gris-borde);
+  border-radius: 14px;
+  background: var(--gris-fondo);
+}
+
+.ui-datos-pago__resumen { display: flex; flex-wrap: wrap; gap: 8px 28px; }
+.ui-datos-pago__resumen > div { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.ui-datos-pago__etiqueta { font-size: 11.5px; font-weight: 600; color: var(--texto-muted); text-transform: uppercase; letter-spacing: 0.03em; }
+.ui-datos-pago__monto { font-size: 20px; color: var(--rojo); }
+.ui-datos-pago__valor { font-size: 14px; color: var(--texto-dark); overflow-wrap: anywhere; }
+
+/* QR y datos lado a lado; apilados en pantallas estrechas */
+.ui-datos-pago__cuerpo { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 16px; }
+.ui-datos-pago__qr { display: flex; flex-direction: column; align-items: center; gap: 8px; flex: 0 0 auto; margin-inline: auto; }
+.ui-datos-pago__datos { display: flex; flex-direction: column; gap: 8px; flex: 1 1 220px; min-width: 0; }
+
+.ui-datos-pago__qr-marco {
+  position: relative;
+  display: block;
+  width: 200px;
+  height: 200px;
+  padding: 8px;
+  border: 1px solid var(--gris-borde);
+  border-radius: 12px;
+  background: var(--blanco);
+  cursor: zoom-in;
+}
+.ui-datos-pago__qr-marco img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.ui-datos-pago__ampliar {
+  position: absolute; right: 6px; bottom: 6px; display: grid; place-items: center;
+  width: 24px; height: 24px; border-radius: 50%; background: var(--rojo); color: var(--blanco);
+}
+.ui-datos-pago__qr-roto {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+  width: 200px; height: 200px; border: 1px dashed var(--gris-borde); border-radius: 12px;
+  background: var(--blanco); color: var(--texto-muted); font-size: 13px; text-align: center;
+}
+
+.ui-datos-pago__descargar {
+  display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px;
+  border: 1.5px solid var(--gris-borde); border-radius: 8px; background: var(--blanco);
+  color: var(--texto-dark); font-size: 12.5px; font-weight: 700; cursor: pointer;
+}
+.ui-datos-pago__descargar:hover { background: var(--gris-fondo); }
+
+.ui-datos-pago__fila {
+  display: flex; align-items: center; gap: 10px; padding: 8px 10px;
+  border: 1px solid var(--gris-borde); border-radius: 10px; background: var(--blanco);
+}
+.ui-datos-pago__icono { display: grid; place-items: center; flex: 0 0 auto; width: 30px; height: 30px; border-radius: 8px; background: var(--rojo-light); color: var(--rojo); }
+.ui-datos-pago__texto { display: flex; flex-direction: column; flex: 1 1 auto; min-width: 0; }
+.ui-datos-pago__copiar {
+  display: inline-flex; align-items: center; gap: 5px; flex: 0 0 auto; padding: 5px 10px;
+  border: 1.5px solid var(--gris-borde); border-radius: 8px; background: var(--blanco);
+  color: var(--texto-dark); font-size: 12px; font-weight: 700; cursor: pointer;
+}
+.ui-datos-pago__copiar:hover { background: var(--gris-fondo); }
+.ui-datos-pago__copiar--ok { border-color: var(--rojo); color: var(--rojo); }
+
+.ui-datos-pago__ayuda { margin: 0; color: var(--texto-muted); font-size: 13.5px; line-height: 1.5; }
+
+.ui-datos-pago__visor {
+  width: min(92vw, 520px);
+  padding: 22px 18px 18px;
+  border: none;
+  border-radius: 16px;
+  background: var(--blanco);
+  text-align: center;
+}
+.ui-datos-pago__visor::backdrop { background: rgba(0, 0, 0, 0.6); }
+.ui-datos-pago__visor[open] { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.ui-datos-pago__visor img { max-width: 100%; max-height: 70vh; object-fit: contain; }
+.ui-datos-pago__visor-cerrar {
+  position: absolute; top: 8px; right: 8px; display: grid; place-items: center; width: 30px; height: 30px;
+  border: none; border-radius: 50%; background: var(--gris-fondo); color: var(--texto-dark); cursor: pointer;
+}
+
+@media (max-width: 520px) {
+  .ui-datos-pago__qr-marco, .ui-datos-pago__qr-roto { width: 180px; height: 180px; }
+  .ui-datos-pago__datos { flex-basis: 100%; }
+}
+
+/* ───────────────────── PERFIL OBLIGATORIO (.ui-perfil-*) ─────────────────────
+   Modal de módulo bloqueado, bienvenida y banner: mismos colores, iconos y lenguaje. Solo animan opacity y transform. */
+.ui-perfil-dialogo {
+  position: relative;
+  width: min(440px, 92vw);
+  max-width: 92vw;
+  padding: 28px 26px 24px;
+  border: 0;
+  border-radius: 18px;
+  background: var(--blanco);
+  color: var(--color-texto);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+  text-align: center;
+}
+.ui-perfil-dialogo[open] { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.ui-perfil-dialogo::backdrop { background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(2px); }
+.ui-perfil-dialogo__cerrar {
+  position: absolute; top: 10px; right: 10px; display: grid; place-items: center; width: 30px; height: 30px;
+  border: 0; border-radius: 50%; background: transparent; color: var(--texto-muted); cursor: pointer;
+}
+.ui-perfil-dialogo__cerrar:hover { background: var(--gris-fondo); color: var(--color-texto); }
+.ui-perfil-dialogo__icono,
+.ui-perfil-dialogo__logo {
+  display: grid; place-items: center; width: 64px; height: 64px; border-radius: 50%;
+  background: var(--rojo-light); color: var(--rojo); box-shadow: 0 0 0 8px rgba(204, 0, 0, 0.07);
+}
+.ui-perfil-dialogo__logo { width: 76px; height: 76px; background: var(--blanco); border: 1px solid var(--gris-borde); box-shadow: 0 0 0 9px rgba(204, 0, 0, 0.07); overflow: hidden; }
+.ui-perfil-dialogo__logo img { width: 64px; height: 64px; object-fit: contain; }
+.ui-perfil-dialogo__titulo { margin: 6px 0 0; font-size: 20px; line-height: 1.3; }
+.ui-perfil-dialogo__texto { margin: 0; color: var(--texto-muted); font-size: 14px; line-height: 1.55; }
+.ui-perfil-dialogo__texto strong { color: var(--color-texto); }
+.ui-perfil-dialogo__acciones { display: flex; flex-direction: column; gap: 8px; width: 100%; margin-top: 6px; }
+.ui-perfil-dialogo__acciones .ui-confirmar__btn { width: 100%; }
+
+.ui-perfil-faltantes { display: flex; flex-direction: column; align-items: center; gap: 6px; width: 100%; }
+.ui-perfil-faltantes__titulo { font-size: 12px; font-weight: 700; letter-spacing: 0.03em; color: var(--texto-muted); text-transform: uppercase; }
+.ui-perfil-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.ui-perfil-chip {
+  display: inline-flex; align-items: center; padding: 4px 11px; border: 1px solid #f3cccc; border-radius: 999px;
+  background: var(--rojo-light); color: #9b0000; font-size: 12.5px; font-weight: 600; line-height: 1.3;
+}
+.ui-perfil-chip--mas { background: var(--gris-fondo); border-color: var(--gris-borde); color: var(--texto-muted); }
+.ui-perfil-chip--btn { cursor: pointer; font-family: inherit; transition: background 0.15s ease, transform 0.15s ease; }
+.ui-perfil-chip--btn:hover { background: #fbdede; }
+.ui-perfil-chip--btn:focus-visible { outline: 2px solid var(--rojo); outline-offset: 2px; }
+
+.ui-perfil-pasos { display: flex; flex-direction: column; gap: 8px; width: 100%; margin: 2px 0 4px; padding: 12px 16px; list-style: none; border-radius: 12px; background: var(--gris-fondo); text-align: left; font-size: 14px; }
+.ui-perfil-pasos li { display: flex; align-items: center; gap: 10px; }
+.ui-perfil-pasos__check { display: grid; place-items: center; flex: 0 0 auto; width: 20px; height: 20px; border-radius: 50%; background: var(--rojo); color: var(--blanco); }
+
+/* Banner de la vista de Perfil: tarjeta suave con borde de acento (no una barra sólida) */
+.ui-perfil-banner {
+  position: sticky;
+  top: calc(var(--alto-encabezado) + 8px);
+  z-index: 5;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin: 0 0 16px;
+  padding: 14px 18px;
+  border: 1px solid #f6d6d6;
+  border-left: 4px solid var(--rojo);
+  border-radius: 12px;
+  background: #fff6f6;
+  color: var(--color-texto);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  animation: ui-perfil-entrada 0.3s ease-out backwards;
+  transition: opacity 0.45s ease, transform 0.45s ease;
+}
+.ui-perfil-banner--exito { border-color: #bfe3cd; border-left-color: var(--verde); background: #f1faf4; }
+.ui-perfil-banner--saliendo { opacity: 0; transform: translateY(-8px); }
+.ui-perfil-banner__icono { display: grid; place-items: center; flex: 0 0 auto; width: 40px; height: 40px; border-radius: 50%; background: var(--rojo-light); color: var(--rojo); }
+.ui-perfil-banner--exito .ui-perfil-banner__icono { background: #dcf3e5; color: var(--verde); }
+.ui-perfil-banner__cuerpo { display: flex; flex-direction: column; gap: 8px; min-width: 0; max-width: 100%; flex: 1 1 auto; }
+.ui-perfil-banner__titulo { margin: 0; font-size: 15.5px; line-height: 1.35; }
+.ui-perfil-banner__sub { margin: 2px 0 0; color: var(--texto-muted); font-size: 13.5px; }
+.ui-perfil-progreso { display: flex; align-items: center; gap: 10px; }
+.ui-perfil-progreso__pista { flex: 1 1 auto; height: 6px; overflow: hidden; border-radius: 999px; background: rgba(0, 0, 0, 0.08); }
+.ui-perfil-progreso__barra { height: 100%; border-radius: inherit; background: var(--rojo); transform-origin: left center; transition: transform 0.5s ease; }
+.ui-perfil-banner--exito .ui-perfil-progreso__barra { background: var(--verde); }
+.ui-perfil-progreso__texto { flex: 0 0 auto; font-size: 12.5px; font-weight: 700; color: var(--texto-muted); }
+.ui-perfil-chips--fila { justify-content: flex-start; }
+
+@keyframes ui-perfil-entrada { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+
+@media (max-width: 600px) {
+  .ui-perfil-banner { flex-direction: column; gap: 10px; padding: 12px 14px; }
+  .ui-perfil-banner__cuerpo { width: 100%; }
+  .ui-perfil-chips--fila { max-width: 100%; flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
+  .ui-perfil-chips--fila .ui-perfil-chip { white-space: nowrap; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ui-perfil-banner { animation: none; transition: none; }
+  .ui-perfil-progreso__barra, .ui-perfil-chip--btn { transition: none; }
+}
+
+/* Formulario de Perfil en modo completar: campo obligatorio que falta */
+.perfil-asterisco { margin-left: 3px; color: var(--rojo); font-weight: 700; }
+.perfil-campo--faltante .campo-con-icono { border-radius: 10px; box-shadow: 0 0 0 1.5px rgba(204, 0, 0, 0.35); }
+
+/* Banner fijo mientras el perfil está incompleto (obligatorio) */
+.ui-banner-perfil {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  margin-bottom: 14px;
+  padding: 11px 16px;
+  border: 1px solid var(--rojo);
+  border-radius: 12px;
+  background: var(--rojo-light);
+  color: var(--texto-dark);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
 /* ───────────────────── 9. BOTONES DE ACCIÓN DE TABLA (.ui-accion) ─────────── */
 /* <div class="ui-acciones"><button class="ui-accion ui-accion--editar" title="Editar">…icono…</button></div> */
 .ui-acciones {
@@ -1152,3 +1359,19 @@ dialog:modal:not(.dialog-carrito)::backdrop {
 
 /* Anclas y foco: ningún título queda tapado por el header fijo al hacer scroll hasta él */
 html { scroll-padding-top: calc(var(--alto-encabezado) + 16px); }
+
+/* Avatar compartido (components/Compartidos/Avatar.jsx): círculo de 40px por defecto; la clase de cada módulo puede cambiarlo */
+:where(.ui-avatar) { width: 40px; height: 40px; border-radius: 50%; flex: 0 0 auto; object-fit: cover; }
+
+/* Respaldo de FotoPersona: iniciales cuando la foto no existe o no carga */
+.foto-iniciales {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #fbe3e4;
+    color: var(--color-primario, #d71920);
+    font-weight: 700;
+    font-size: 1.05rem;
+    letter-spacing: .02em;
+    user-select: none;
+}

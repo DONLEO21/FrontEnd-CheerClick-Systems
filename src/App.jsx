@@ -12,6 +12,7 @@ import menuEntrenador from './data/menuEntrenador';
 import Rutaprotegida from './components/Rutaprotegida.jsx';
 import Landing from './components/landing/Landing.jsx';
 import AuthPage from './components/auth/AuthPage.jsx';
+import CambiarClave from './components/auth/CambiarClave.jsx';
 import Proximamente from './components/Compartidos/Proximamente.jsx';
 
 // Administrador
@@ -58,6 +59,8 @@ export default function App() {
           {/* Públicas */}
           <Route path="/" element={<Landing />} />
           <Route path="/acceso" element={<AuthPage />} />
+          {/* Contraseña temporal: pantalla obligatoria, sin menú (la guarda sola: si no hay nada pendiente, redirige) */}
+          <Route path="/cambiar-clave" element={<CambiarClave />} />
 
           {/* Área Administrador */}
           <Route
@@ -78,9 +81,9 @@ export default function App() {
             <Route path="rendimiento" element={<RendimientoAdmin />} />
             <Route path="perfil" element={<PerfilUsuario rol="admin" />} />
 
-            {/* Vista Entrenador del Admin: es entrenador de TODOS los niveles,
-                por eso esAdmin=true habilita el selector para cambiar de nivel. */}
-            <Route path="calendario" element={<EntrenadorHorarios esAdmin={true} />} />
+            {/* Antes era la «Vista Entrenador» del admin sobre todos los niveles. Ahora un admin que también entrena
+                cambia de rol en el encabezado y usa /entrenador/* con SUS niveles. */}
+            <Route path="calendario" element={<Navigate to="/entrenador/horarios" replace />} />
 
             {/* Secciones del menú que aún no existen */}
             <Route path="*" element={<Proximamente />} />
@@ -97,7 +100,7 @@ export default function App() {
           >
             <Route index element={<DashboardEntrenador />} />
             {/* El backend devuelve solo los niveles del entrenador autenticado */}
-            <Route path="horarios" element={<EntrenadorHorarios esAdmin={false} />} />
+            <Route path="horarios" element={<EntrenadorHorarios />} />
             <Route path="asistencia" element={<EntreAsistencia />} />
             <Route path="rendimiento" element={<RendimientoAdmin esEntrenador />} />
             {/* El entrenador solo ENVÍA PQRS; ver y responder es del administrador */}

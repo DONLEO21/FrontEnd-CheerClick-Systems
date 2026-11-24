@@ -22,7 +22,9 @@ import {
 const ESTADO_INICIAL_NIVEL = {
   id: null,
   categoria: "",
-  entrenador: "",
+  entrenador: "",     // nombre (solo para mostrar)
+  entrenadorId: null, // ID del usuario elegido en el selector: lo que se guarda
+  entrenadorIdOriginal: null, // el que tenía el nivel al abrir el formulario (si no cambia, no se vuelve a validar)
   foto: "",
   horarios: [{ dias: [], inicio: "18:00", fin: "20:00" }],
 };
@@ -102,6 +104,7 @@ function HorariosContenido() {
   const abrirEditarNivel = (nivel) => {
     setFormNivel({
       ...nivel,
+      entrenadorIdOriginal: nivel.entrenadorId,
       horarios: nivel.horarios.map((b) => ({ ...b, dias: [...b.dias] })),
     });
     setModalNivelAbierto(true);
@@ -109,9 +112,8 @@ function HorariosContenido() {
 
   const guardarNivel = () => {
     const categoria = formNivel.categoria.trim();
-    const entrenador = formNivel.entrenador.trim();
     if (!categoria) return mostrarAviso("El nombre del nivel es obligatorio.", "error");
-    if (!entrenador) return mostrarAviso("El nombre del entrenador es obligatorio.", "error");
+    if (!formNivel.entrenadorId) return mostrarAviso("Selecciona el entrenador del nivel.", "error");
 
     for (const bloque of formNivel.horarios) {
       if (!bloque.dias.length) {
@@ -123,7 +125,7 @@ function HorariosContenido() {
     }
 
     const esNuevo = formNivel.id === null;
-    guardarNivelApi({ id: formNivel.id, categoria, entrenador, foto: formNivel.foto, horarios: formNivel.horarios })
+    guardarNivelApi({ id: formNivel.id, categoria, entrenadorId: formNivel.entrenadorId, entrenadorIdOriginal: formNivel.entrenadorIdOriginal, foto: formNivel.foto, horarios: formNivel.horarios })
       .then((guardado) => {
         setNiveles((prev) => (esNuevo ? [...prev, guardado] : prev.map((n) => (n.id === guardado.id ? guardado : n))));
         mostrarAviso(esNuevo ? "Nivel creado." : "Cambios guardados.", "ok");

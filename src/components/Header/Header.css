@@ -120,6 +120,14 @@ button.etiqueta-rol:hover {
     background-color: #fdeaea;
     color: var(--color-primario);
 }
+/* Rol activo del selector (solo usuarios con más de un rol) */
+.menu-rol__opcion--activa {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    color: var(--color-primario);
+}
 
 /* Íconos del encabezado */
 .encabezado__iconos-logo {

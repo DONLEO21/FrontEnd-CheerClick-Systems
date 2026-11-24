@@ -1,3 +1,4 @@
+import { inicialesDe } from "../../../utils/iniciales";
 
 export const MESES = [
   "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
@@ -82,13 +83,9 @@ export function a12h(t) {
   return `${h12}:${String(m).padStart(2, "0")} ${ampm}`;
 }
 
+// Misma regla que el Avatar (utils/iniciales.js)
 export function obtenerIniciales(nombre = "") {
-  return nombre
-    .trim()
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((p) => p[0]?.toUpperCase() || "")
-    .join("");
+  return inicialesDe(nombre);
 }
 
 export function formatearMoneda(valor) {

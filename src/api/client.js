@@ -21,6 +21,7 @@ export const API_BASE_URL = (import.meta.env.VITE_API_URL ?? '').replace(/\/+$/,
 /** Llaves de localStorage de la sesión (la clave del token conserva el prefijo del proyecto). */
 export const TOKEN_STORAGE_KEY = 'cheerclick:token';
 const USUARIO_STORAGE_KEY = 'cheerclick:usuario';
+const ROL_ACTIVO_STORAGE_KEY = 'cheerclick:rol-activo';
 
 export const RUTA_LOGIN = '/acceso?view=login';
 
@@ -40,6 +41,12 @@ const esRutaPublica = (config) =>
   config?.publico === true || RUTAS_PUBLICAS.some((r) => (config?.url ?? '').startsWith(r));
 
 /* ───────── almacenamiento de la sesión (solo este archivo toca localStorage) ───────── */
+// Cada cambio de la sesión guardada avisa a la interfaz (guardias de contraseña y de perfil, menú, banner)
+export const EVENTO_SESION = 'cheerclick:sesion';
+const avisarCambioDeSesion = () => {
+  try { window.dispatchEvent(new Event(EVENTO_SESION)); } catch { /* sin ventana (pruebas) */ }
+};
+
 export const almacenSesion = {
   token() {
     try { return localStorage.getItem(TOKEN_STORAGE_KEY); } catch { return null; }
@@ -47,16 +54,32 @@ export const almacenSesion = {
   usuario() {
     try { return JSON.parse(localStorage.getItem(USUARIO_STORAGE_KEY) || 'null'); } catch { return null; }
   },
+  // Rol con el que el usuario está usando la app (solo importa si tiene más de uno). Es una preferencia de pantalla:
+  // el backend nunca confía en ella para autorizar.
+  rolActivo() {
+    try { return localStorage.getItem(ROL_ACTIVO_STORAGE_KEY); } catch { return null; }
+  },
+  fijarRolActivo(rol) {
+    try { localStorage.setItem(ROL_ACTIVO_STORAGE_KEY, rol); } catch { /* almacenamiento no disponible */ }
+  },
   guardar(token, usuario) {
     try {
       if (token) localStorage.setItem(TOKEN_STORAGE_KEY, token);
       if (usuario) localStorage.setItem(USUARIO_STORAGE_KEY, JSON.stringify(usuario));
     } catch { /* almacenamiento no disponible */ }
+    avisarCambioDeSesion();
+  },
+  // Mezcla datos en el usuario guardado (p. ej. las marcas de los guardias) sin tocar el token
+  actualizar(parcial) {
+    const usuario = this.usuario();
+    if (!usuario) return;
+    this.guardar(null, { ...usuario, ...parcial });
   },
   limpiar() {
     try {
       localStorage.removeItem(TOKEN_STORAGE_KEY);
       localStorage.removeItem(USUARIO_STORAGE_KEY);
+      localStorage.removeItem(ROL_ACTIVO_STORAGE_KEY);
     } catch { /* almacenamiento no disponible */ }
   },
 };
@@ -112,6 +135,8 @@ apiClient.interceptors.request.use((config) => {
   if (!esRutaPublica(config)) {
     const token = almacenSesion.token();
     if (token) config.headers['X-Token'] = token;
+    // Vista de entrenador: el backend limita los datos a los niveles del usuario (solo restringe, no concede permisos)
+    if (almacenSesion.rolActivo() === 'entrenador') config.headers['X-Vista'] = 'entrenador';
   }
   // FormData: el Content-Type (con su boundary) lo calcula el navegador; fijarlo a mano rompe la subida
   if (typeof FormData !== 'undefined' && config.data instanceof FormData) {
@@ -145,6 +170,9 @@ apiClient.interceptors.response.use(
     // Solo en desarrollo: método, URL, status y cuerpo de la respuesta de cada error (sin el cuerpo enviado: puede llevar archivos)
     if (import.meta.env.DEV) console.error('[api]', config?.method?.toUpperCase(), config?.url, response.status, cuerpo);
     if (response.status === 401 && !esRutaPublica(config)) sesionExpirada();
+    // Guardias del backend: NO cierran la sesión; marcan el estado y la interfaz lleva al usuario a la pantalla que corresponde
+    if (response.status === 403 && cuerpo?.code === 'CAMBIO_CLAVE_REQUERIDO') almacenSesion.actualizar({ debeCambiarClave: true });
+    if (response.status === 403 && cuerpo?.code === 'PERFIL_INCOMPLETO') almacenSesion.actualizar({ perfilCompleto: false, camposFaltantes: cuerpo.camposFaltantes ?? [] });
     throw new ApiError(mensajeDe(cuerpo, response.status), response.status, cuerpo);
   },
 );

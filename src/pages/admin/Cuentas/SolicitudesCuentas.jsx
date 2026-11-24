@@ -11,12 +11,14 @@ import ModalDetalle from './ModalDetalle.jsx'
 import ModalConfirmar from '../../../components/Compartidos/ModalConfirmar'
 import { ACCIONES } from './cuentasData.js'
 import ModalCrearUsuario from './ModalCrearUsuario.jsx'
+import { useSesion } from '../../../context/SesionContext'
 
 import './SolicitudCuentas.css'
 
 export default function SolicitudesCuentas() {
   const { aviso, mostrarAviso } = useAviso()
   const c = useCuentas(mostrarAviso)
+  const { sesion } = useSesion()
 
   const [busqueda, setBusqueda] = useState('')
   useEffect(() => { setBusqueda('') }, [c.esGestion])
@@ -73,6 +75,8 @@ export default function SolicitudesCuentas() {
             usuarios={c.usuarios}
             cargando={c.cargando}
             busqueda={busqueda}
+            miId={sesion.atletaId}
+            onVer={c.abrirDetalle}
             onToggle={(u) => c.pedirConfirmacion(u, u.activo ? 'desactivar' : 'activar')}
             onCambiarRol={(u, rol) => c.pedirConfirmacion(u, 'cambiar-rol', { rol })}
           />
@@ -94,9 +98,17 @@ export default function SolicitudesCuentas() {
           detalle={c.detalle}
           perfil={c.perfilDetalle}
           registro={c.registroDetalle}
+          ficha={c.fichaDetalle}
           cargandoPerfil={c.cargandoDetalle}
+          niveles={c.catalogos.niveles}
+          planes={c.catalogos.planes}
+          puedeEditar={sesion.rol === 'administrador'}
           onCerrar={c.cerrarDetalle}
           onAccion={accionDesdeDetalle}
+          onGuardar={c.guardarFicha}
+          onReasignarNivel={c.reasignarNivel}
+          onReasignarPlan={c.reasignarPlan}
+          onCambiarEntrenador={c.cambiarEntrenador}
         />
       )}
 

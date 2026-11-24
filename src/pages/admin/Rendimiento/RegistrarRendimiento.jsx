@@ -196,7 +196,7 @@ function RegistrarRendimiento({ atleta, onVolver, onAviso }) {
           <div className="adm-rendimiento-detalle-linea"></div>
 
           <h4 className="titu-conte">Datos de la sesión</h4>
-          <div className="conte-input">
+          <div className="conte-input adm-rendimiento-sesion-campo">
             <div></div>
             <label className="titu-input" htmlFor="fecha">
               Fecha
@@ -223,7 +223,7 @@ function RegistrarRendimiento({ atleta, onVolver, onAviso }) {
             )}
           </div>
 
-          <div className="conte-input">
+          <div className="conte-input adm-rendimiento-sesion-campo">
             <label className="titu-input" htmlFor="nota-sesion">
               Notas de la sesión
             </label>

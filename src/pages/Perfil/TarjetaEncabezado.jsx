@@ -1,9 +1,10 @@
+import Avatar from "../../components/Compartidos/Avatar";
 import { Pencil, Save, FileText } from 'lucide-react';
 import { ETIQUETA_ROL } from './perfilData.js';
 import { URL_POLIZA } from '../../config/enlaces.js';
 
 export default function TarjetaEncabezado({
-  rol, esAtleta, fotoUrl, inicialesUsuario, nombre, apellido,
+  rol, esAtleta, fotoUrl, nombre, apellido,
   editando, onCambiarFoto, onEditar, onGuardar, onCancelar,
 }) {
   return (
@@ -11,11 +12,7 @@ export default function TarjetaEncabezado({
       <div className="perfil-encabezado-foto">
         <div className="foto-contenedor">
           <figure className="foto-circulo">
-            {fotoUrl ? (
-              <img src={fotoUrl} alt="Foto de perfil" />
-            ) : (
-              <span className="foto-circulo__vacia" aria-hidden="true">{inicialesUsuario}</span>
-            )}
+            <Avatar foto={fotoUrl} nombre={nombre} apellido={apellido} alt="Foto de perfil" claseIniciales="foto-circulo__vacia" style={{ width: '100%', height: '100%', borderRadius: 0 }} />
           </figure>
           <button
             className="foto-lapiz" type="button"

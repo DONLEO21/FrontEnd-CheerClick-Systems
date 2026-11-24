@@ -1,4 +1,5 @@
 import "./Rendimiento.css";
+import { ArrowLeft } from "lucide-react";
 import { listarNivelesOpciones } from "../../../services/catalogos";
 import { listarAtletas, listarAtletasEntrenador, listarProgresoAtleta, listarHabilidades, guardarProgresoAtleta } from "../../../services/rendimientoAdminService";
 import Filtros from "./Filtros";
@@ -210,19 +211,37 @@ function RendimientoContenido({ esEntrenador = false }) {
             itemsPorPagina={itemsPorPagina}
           />
         </>
-      ) : vista === "consultar" ? (
-        <ConsultarRendimiento 
-          atleta={atletaSeleccionado} onVolver={handleVolver} 
-        />
-      ) : vista === "editar" ? (
-        <EditarRendimiento 
-          atleta={atletaSeleccionado} onVolver={handleVolver} onAviso={mostrarAviso}
-        />
-      ) : vista === "registrar" ? (
-        <RegistrarRendimiento atleta={atletaSeleccionado} onVolver={handleVolver} onAviso={mostrarAviso} />
-      ) : vista === "habilidades" ? (
-        <GestionDeHabilidades esEntrenador={esEntrenador} onVolver={handleVolver} />
-      ) : null}
+      ) : (
+        <div className="adm-rendimiento-secundaria">
+          {/* Vistas secundarias (detalle, registrar, editar, habilidades): siempre hay un camino visible de vuelta al panel.
+              El panel es el mismo para administrador y entrenador (la ruta la define el rol activo). */}
+          <nav className="adm-rendimiento-volver" aria-label="Navegación de rendimiento">
+            <button type="button" className="adm-rendimiento-volver__btn" onClick={() => handleVolver()}>
+              <ArrowLeft size={15} aria-hidden="true" /> Volver al panel de rendimiento
+            </button>
+            <ol className="adm-rendimiento-migas">
+              <li>Rendimiento</li>
+              {vista === "habilidades" ? (
+                <li aria-current="page">Gestión de habilidades</li>
+              ) : (
+                <>
+                  <li>{atletaSeleccionado?.nombre ?? "Atleta"}</li>
+                  <li aria-current="page">{vista === "consultar" ? "Detalle" : vista === "editar" ? "Editar" : "Registrar"}</li>
+                </>
+              )}
+            </ol>
+          </nav>
+          {vista === "consultar" ? (
+            <ConsultarRendimiento atleta={atletaSeleccionado} onVolver={handleVolver} />
+          ) : vista === "editar" ? (
+            <EditarRendimiento atleta={atletaSeleccionado} onVolver={handleVolver} onAviso={mostrarAviso} />
+          ) : vista === "registrar" ? (
+            <RegistrarRendimiento atleta={atletaSeleccionado} onVolver={handleVolver} onAviso={mostrarAviso} />
+          ) : vista === "habilidades" ? (
+            <GestionDeHabilidades esEntrenador={esEntrenador} />
+          ) : null}
+        </div>
+      )}
 
       <ModalConfirmar
         abierto={!!porReiniciar}
