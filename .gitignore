@@ -26,3 +26,16 @@ dist-ssr
 .env
 .env.*
 !.env.example
+
+# Configuración local de herramientas de IA
+.claude/
+CLAUDE.md
+CLAUDE.local.md
+
+# Secretos y credenciales
+*.pem
+*.key
+*.p12
+*.pfx
+credentials*.json
+secrets*.json
